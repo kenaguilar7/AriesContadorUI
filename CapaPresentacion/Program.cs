@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CapaLogica;
+using System;
 using System.Windows.Forms;
 
 namespace CapaPresentacion
@@ -13,6 +14,7 @@ namespace CapaPresentacion
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            RESTClient.InitializeClient(); 
             GlobalConfig globalConfig = new GlobalConfig(); 
             Application.Run(new FrameMenu());
         }

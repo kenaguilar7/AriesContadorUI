@@ -2,10 +2,12 @@
 using CapaEntidad.Enumeradores;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CapaEntidad.Entidades.Compañias
 {
-    public class Compañia
+    //[JsonConverter(typeof(ByteConverter))]
+    public abstract class Compañia
     {
 
         public String Codigo { get; set; }

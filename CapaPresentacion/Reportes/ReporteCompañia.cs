@@ -33,7 +33,7 @@ namespace CapaPresentacion.Reportes
         private async Task CargarDatos()
         {
             lstIds.SelectedIndex = 0;
-            compañias = await Task.Run(()=>compañiaCL.GetAll(GlobalConfig.Usuario));
+            compañias = await Task.Run(()=>compañiaCL.GetAllAsync(GlobalConfig.Usuario));
             RadiosbuttonChanceStatus(null, null);
         }
 

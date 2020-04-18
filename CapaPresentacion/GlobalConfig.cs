@@ -32,6 +32,15 @@ namespace CapaPresentacion
 
         }
 
+
+
+
+
+
+
+
+
+
         public static List<Modulo> Permisos = new List<Modulo>();
 
 

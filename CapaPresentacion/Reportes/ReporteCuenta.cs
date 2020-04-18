@@ -17,7 +17,7 @@ namespace CapaPresentacion.Reportes
     public partial class ReporteCuenta : Form
     {
 
-        private Compañia _compania = new Compañia();
+        private Compañia _compania;
         private Usuario _usuario = new Usuario();
         private List<Cuenta> _lstCuentas = new List<Cuenta>();
         private List<Cuenta> _lstCuentasFiltradas = new List<Cuenta>();
