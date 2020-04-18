@@ -75,15 +75,15 @@ namespace CapaPresentacion.Seguridad
         /// Cargar los datos del usuario seleccionado
         /// </summary>
         /// <param name="usuario"></param>
-        private void CargarUsuario(Usuario usuario)
+        private async Task CargarUsuarioAsync(Usuario usuario)
         {
 
             ///Traigo todas las compañias que el usuario tenga asignado
             listCompañiasAsignadas.Items.Clear();
             listCompañiasSinAsignar.Items.Clear();
 
-            TodasLasCompañias = compañiaCL.GetAll(GlobalConfig.Usuario);
-            CompañiasDelUsuario = compañiaCL.GetAll(usuario);
+            TodasLasCompañias = await compañiaCL.GetAllAsync(GlobalConfig.Usuario);
+            CompañiasDelUsuario = await compañiaCL.GetAllAsync(usuario);
 
             ///Buscamos todas las compañias
             TodasLasCompañias.ForEach((Compañia) =>
@@ -114,7 +114,7 @@ namespace CapaPresentacion.Seguridad
                 var user = (Usuario)lstUsuarios.SelectedItem;
                 if (user != null)
                 {
-                    CargarUsuario(user);
+                    CargarUsuarioAsync(user);
                 }
                 else
                 {

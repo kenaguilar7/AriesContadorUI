@@ -39,7 +39,7 @@ namespace CapaPresentacion.FrameCompañias
 
             lstTipoId.SelectedIndex = 0;
             txtCodigoCia.Text = await Task.Run(() => compañiaCL.NuevoCodigo());
-            var lstCompanies = await Task.Run(() => compañiaCL.GetAll(GlobalConfig.Usuario));
+            var lstCompanies = await Task.Run(() => compañiaCL.GetAllAsync(GlobalConfig.Usuario));
 
             //eventos
             this.lstTipoId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SiguienteEnter);
@@ -74,7 +74,7 @@ namespace CapaPresentacion.FrameCompañias
             ///Y agregamos una nueva compañia con el nombre maestro  de cuentas por defecto, esta sera la opcion que el 
             ///usuario puede marcar para que no duplique de ninguna otra compañia
             var lstMCuentas = new Compañia[lst.Count + 1];
-            lstMCuentas[0] = new Compañia() { Nombre = "", Codigo = "POR DEFECTO" };
+            lstMCuentas[0] = new PersonaJuridica() { Nombre = "", Codigo = "POR DEFECTO" };
             ///Copiamos la lista de cuentas a la nueva lista para guardarla en el seleccionador de maestros de cuenta
             lst.CopyTo(lstMCuentas, 1);
             lstCopiarMaestroCuentas.DataSource = lstMCuentas;
@@ -355,7 +355,7 @@ namespace CapaPresentacion.FrameCompañias
             }
         }
 
-        private void ActualizarCompañia(object sender, EventArgs e)
+        private void ActualizarCompañiaAsync(object sender, EventArgs e)
         {
             if (MessageBox.Show("Se actualizaran los datos, ¿Desea continuar?", TextoGeneral.NombreApp, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
@@ -374,17 +374,21 @@ namespace CapaPresentacion.FrameCompañias
                     com.Activo = chekActive.Checked;
                     com.TipoMoneda = (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1;
 
-                    if (com is PersonaFisica)
+                    PersonaFisica personaFisica = (PersonaFisica)com; 
+
+                    if (personaFisica is PersonaFisica)
                     {
                         ((PersonaFisica)com).MyApellidoPaterno = txtBoxOp1.Text;
                         ((PersonaFisica)com).MyApellidoMaterno = txtBoxOp2.Text;
-                        if (compañiaCL.Update(com, GlobalConfig.Usuario, out String mensaje))
+                        if (compañiaCL.UpdateAsync(com, GlobalConfig.Usuario).IsCompleted)
                         {
+                            var mensaje = "Compañia actualizada correctamente";
                             MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         }
                         else
                         {
+                            var mensaje = "No se actualizó la compañia";
                             MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
 
@@ -393,13 +397,17 @@ namespace CapaPresentacion.FrameCompañias
                     {
                         ((PersonaJuridica)com).MyRepresentanteLegal = txtBoxOp1.Text;
                         ((PersonaJuridica)com).MyIDRepresentanteLegal = txtBoxOp2.Text;
-                        if (compañiaCL.Update(com, GlobalConfig.Usuario, out String mensaje))
+
+
+                        if (compañiaCL.UpdateAsync(com, GlobalConfig.Usuario).IsCompleted)
                         {
+                            var mensaje = "Compañia actualizada correctamente"; 
                             MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         }
                         else
                         {
+                            var mensaje = "No se actualizó la compañia"; 
                             MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                     }

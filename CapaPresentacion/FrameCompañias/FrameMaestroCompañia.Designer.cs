@@ -675,7 +675,7 @@
             this.btnActualizar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnActualizar.UseVisualStyleBackColor = true;
             this.btnActualizar.Visible = false;
-            this.btnActualizar.Click += new System.EventHandler(this.ActualizarCompañia);
+            this.btnActualizar.Click += new System.EventHandler( this.ActualizarCompañiaAsync);
             // 
             // btnLimpiar
             // 
