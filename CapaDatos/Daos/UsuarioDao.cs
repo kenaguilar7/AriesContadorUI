@@ -142,7 +142,7 @@ namespace CapaDatos.Daos
                 Object[] vs = item.ItemArray;
 
                retorno.Add(new Usuario(
-                    myID: Convert.ToString(vs[0]),                                       ///"user_id, " +            ///0   
+                    myID: Convert.ToDouble(vs[0]),                                       ///"user_id, " +            ///0   
                     username: Convert.ToString(vs[1]),                                   ///"user_name, " +          ///1
                     tipoUsuario: (TipoUsuario)Convert.ToInt16(vs[2]),                    ///"user_type+0, " +        ///2
                     myCedula: Convert.ToString(vs[3]),                                   ///"number_id, " +          ///3
@@ -155,7 +155,7 @@ namespace CapaDatos.Daos
                    /* myAdmin: Convert.ToBoolean(vs[10]),            */                      ///"admin, " +              ///10
                     myFechaCreacion: Convert.ToDateTime(vs[10]),                         ///"created_at, " +         ///11
                     myFechaActualizacion: Convert.ToDateTime(Convert.ToString(vs[11])),  ///"updated_at, " +         ///12
-                    myUpdated: Convert.ToString(Convert.ToString(vs[12])),               ///"updated_by ," +         ///13
+                    updatedBy: Convert.ToString(Convert.ToString(vs[12])),               ///"updated_by ," +         ///13
                     myActivo: Convert.ToBoolean(vs[13]),                                 ///"active, "+              ///14
                     myClave: Convert.ToString(vs[14])                                    ///"password "+             ///15
                                        ));

@@ -11,28 +11,27 @@ namespace CapaEntidad.Entidades.Usuarios
 {
     public class Usuario
     {
-        // public String UsuarioId { get; set;  }
-        public String UsuarioId { get; set; }///Cambiar a decimal
-        public String UserName { get; set; }
+        public double UsuarioId { get; set; }
+        public string UserName { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
-        public String MyCedula { get; set; }
-        public String MyNombre { get; set; }
-        public String MyApellidoPaterno { get; set; }
-        public String MyApellidoMaterno { get; set; }
-        public String MyTelefono { get; set; }
-        public String MyMail { get; set; }
-        public String MyNotas { get; set; }
-        public String MyClave { get; set; }
-        public String MyUpdated { get; set; }
-        public Boolean MyActivo { get; set; }
+        public string MyCedula { get; set; }
+        public string MyNombre { get; set; }
+        public string MyApellidoPaterno { get; set; }
+        public string MyApellidoMaterno { get; set; }
+        public string MyTelefono { get; set; }
+        public string MyMail { get; set; }
+        public string MyNotas { get; set; }
+        public string MyClave { get; set; }
+        public string UpdatedBy { get; set; }
+        public bool MyActivo { get; set; }
         //public Boolean MyAdmin { get; set; }
         public DateTime MyFechaCreacion { get; set; }
         public DateTime MyFechaActualizacion { get; set; }
         public List<Modulo> Modulos { get; set; } = new List<Modulo>(); 
 
-        public Usuario(string myCedula, string myNombre, String username, TipoUsuario tipoUsuario, string myApellidoPaterno, string myApellidoMaterno,
+        public Usuario(string myCedula, string myNombre, string username, TipoUsuario tipoUsuario, string myApellidoPaterno, string myApellidoMaterno,
                        string myTelefono, string myMail, string myNotas, string myClave, bool myActivo,
-                       DateTime myFechaCreacion, DateTime myFechaActualizacion, string myID = "null", String myUpdated = "")
+                       DateTime myFechaCreacion, DateTime myFechaActualizacion, double myID = 0, string updatedBy = "")
         {
             UsuarioId = myID;
             MyCedula = myCedula ?? throw new ArgumentNullException("CEDULA ");
@@ -49,10 +48,10 @@ namespace CapaEntidad.Entidades.Usuarios
             MyFechaCreacion = myFechaCreacion;
             MyFechaActualizacion = myFechaActualizacion;
             //MyAdmin = myAdmin;
-            MyUpdated = myUpdated;
+            UpdatedBy = updatedBy;
         }
-        public Usuario(string myCedula, string myNombre, String username, TipoUsuario tipoUsuario, string myApellidoPaterno, string myApellidoMaterno,
-                   string myTelefono, string myMail, string myNotas, string myClave, bool myActivo, string myID = "null",  String myUpdated = "")
+        public Usuario(string myCedula, string myNombre, string username, TipoUsuario tipoUsuario, string myApellidoPaterno, string myApellidoMaterno,
+                   string myTelefono, string myMail, string myNotas, string myClave, bool myActivo, double myID = 0,  string myUpdated = "")
         {
             UsuarioId = myID;
             MyCedula = myCedula ?? throw new ArgumentNullException("CEDULA ");
@@ -67,19 +66,12 @@ namespace CapaEntidad.Entidades.Usuarios
             MyClave = myClave ?? throw new ArgumentNullException("CLAVE");
             MyActivo = myActivo;
             //MyAdmin = myAdmin;
-            MyUpdated = myUpdated;
+            UpdatedBy = myUpdated;
         }
         public Usuario() { }
         public override string ToString()
         {
             return $"{MyNombre} {MyApellidoPaterno} {MyApellidoMaterno}"; 
         }
-
-        //public CRUD GetCRUD(Ventana ventana) {
-
-        //    var r = Modulos.Find(x => x.Ventana.Code == ventana.Code);
-        //    return r.CRUD;
-
-        //}
     }
 }
