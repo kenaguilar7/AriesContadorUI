@@ -34,10 +34,10 @@ namespace CapaPresentacion.Seguridad
             CargarDatos();
         }
 
-        private void CargarDatos()
+        private async Task CargarDatos()
         {
             ///Cargamos los usuarios,
-            TodosLosUsuarios = usuarioCL.GetAll();
+            TodosLosUsuarios = await  usuarioCL.GetAllAsync();
             lstUsuarios.DataSource = TodosLosUsuarios;
             lstUsuarios.SelectedIndex = -1;
         }
