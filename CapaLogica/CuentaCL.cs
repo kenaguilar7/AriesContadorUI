@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CapaDatos.Daos;
 using CapaEntidad.Entidades.Compañias;
@@ -10,6 +11,7 @@ using CapaEntidad.Entidades.FechaTransacciones;
 using CapaEntidad.Entidades.Usuarios;
 using CapaEntidad.Enumeradores;
 using CapaEntidad.Interfaces;
+using Newtonsoft.Json;
 
 namespace CapaLogica
 {
@@ -21,54 +23,82 @@ namespace CapaLogica
         {
             if (!cuenta.Editable || cuenta.Indicador != IndicadorCuenta.Cuenta_Auxiliar)
             {
-                mensaje = (cuenta.Editable) ? $"Cuentas con la propiedad: {cuenta.Indicador.ToString().Replace('_', ' ') } \n No pueden ser eliminadas" : $"Cuentas del sistema no pueden ser eliminadas.";  ;
+                mensaje = (cuenta.Editable) ? $"Cuentas con la propiedad: {cuenta.Indicador.ToString().Replace('_', ' ') } \n No pueden ser eliminadas" : $"Cuentas del sistema no pueden ser eliminadas."; ;
                 return false;
             }
             return cuentaDao.Deleted(cuenta, usuario, out mensaje);
         }
         public List<Cuenta> GetAll(Compañia t)
         {
-            var cuentas = cuentaDao.GetAll(t);
-            return Ordernar(cuentas);
+            return GetAll(t.Codigo).GetAwaiter().GetResult();
         }
-        public Boolean Insert(ref Cuenta nuevaCuenta, Cuenta cuentaPadre, out String Mensaje, Usuario user)
+
+
+        public async Task<List<Cuenta>> GetAll(string companyId) 
+            => await RestClientService<List<Cuenta>>.Get($"accounts/{companyId}");
+        
+        
+        public async Task<List<ICuentaRestClient>> GetAllJusu(string companyId)
         {
-
-            if (VerificarNombre(nuevaCuenta, nuevaCuenta.Nombre, out Mensaje, nuevaCuenta.MyCompania))
+            HttpResponseMessage response = await RESTClient.ApiClient.GetAsync($"accounts/{companyId}");
+            if (response.IsSuccessStatusCode)
             {
-
-                ///Reglas de negocio para heredar saldo
-                /// Si la cuenta es auxiliar tiene que heredar el saldo de la anterior
-                /// en el siguiente codigo estamos heredandole los debitos y credito y saldos anteriores
-                /// aunque esos saldos no se vayan a insertar en la base de datos, lo jacemos para retornarla
-                /// y el callingform pueda ver reflejada esos movimientos
-                ///
-                if (cuentaPadre.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
-                {
-                    nuevaCuenta.SaldoAnteriorColones = cuentaPadre.SaldoAnteriorColones;
-                    nuevaCuenta.SaldoAnteriorDolares = cuentaPadre.SaldoAnteriorDolares;
-                    nuevaCuenta.DebitosColones = cuentaPadre.DebitosColones;
-                    nuevaCuenta.CreditosColones = cuentaPadre.CreditosColones;
-                    nuevaCuenta.DebitosDolares = cuentaPadre.DebitosDolares;
-                    nuevaCuenta.CreditosDolares = cuentaPadre.CreditosDolares;
-                    //cambiarle el estado despues de insertar en la base de datos
-                    //cuentaPadre.Indicador = IndicadorCuenta.Cuenta_De_Mayor; 
-                }
-
-                if (cuentaDao.Insert(ref nuevaCuenta, cuentaPadre, user, out Mensaje))
-                {
-                    Mensaje = "Cuenta guardada exitosamente";
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return await response.Content.ReadAsAsync<List<ICuentaRestClient>>();
             }
             else
             {
-                return false;
+                throw new Exception(response.ReasonPhrase);
             }
+        }
+        //=> await RestClientService<List<ICuentaRestClient>>.Get($"accounts/{companyId}");
+
+
+
+        public async Task<string> Insert(Cuenta nuevaCuenta, Cuenta cuentaPadre, Usuario user)
+        {
+
+
+
+            //if (VerificarNombre(nuevaCuenta, nuevaCuenta.Nombre, out Mensaje, nuevaCuenta.MyCompania))
+
+
+            ///Reglas de negocio para heredar saldo
+            /// Si la cuenta es auxiliar tiene que heredar el saldo de la anterior
+            /// en el siguiente codigo estamos heredandole los debitos y credito y saldos anteriores
+            /// aunque esos saldos no se vayan a insertar en la base de datos, lo jacemos para retornarla
+            /// y el callingform pueda ver reflejada esos movimientos
+            ///
+            if (cuentaPadre.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
+            {
+                nuevaCuenta.SaldoAnteriorColones = cuentaPadre.SaldoAnteriorColones;
+                nuevaCuenta.SaldoAnteriorDolares = cuentaPadre.SaldoAnteriorDolares;
+                nuevaCuenta.DebitosColones = cuentaPadre.DebitosColones;
+                nuevaCuenta.CreditosColones = cuentaPadre.CreditosColones;
+                nuevaCuenta.DebitosDolares = cuentaPadre.DebitosDolares;
+                nuevaCuenta.CreditosDolares = cuentaPadre.CreditosDolares;
+                //cambiarle el estado despues de insertar en la base de datos
+                //cuentaPadre.Indicador = IndicadorCuenta.Cuenta_De_Mayor; 
+            }
+
+
+
+            HttpResponseMessage response = await RESTClient.ApiClient.PostAsJsonAsync("accounts", nuevaCuenta);
+            //response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                response.EnsureSuccessStatusCode();
+                var newUserUrl = response.Headers.Location.ToString();
+                //Ther user can be consume using newUserUrl string
+                return newUserUrl;
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+
+
         }
         public DataTable GetInfoCompleta(Cuenta cuenta)
         {
@@ -144,7 +174,7 @@ namespace CapaLogica
         }
         public Boolean UpdatesettInfo(Cuenta t, Usuario user, out String mensaje)
         {
-            return cuentaDao.UpdatesettInfo(t, user, out mensaje); 
+            return cuentaDao.UpdatesettInfo(t, user, out mensaje);
         }
 
         /// <summary>
@@ -281,6 +311,8 @@ namespace CapaLogica
         }
         public Boolean VerificarSiEsApta(Cuenta cuentaPadre, out String Mensaje)
         {
+
+            //Esta validacion pasa al backend 
             List<FechaTransaccion> meses = _fechaTransaccionCL.GetAllActive(cuentaPadre.MyCompania, null);
 
             if (meses.Count != 0)
@@ -329,7 +361,8 @@ namespace CapaLogica
             return retorno;
         }
 
-        public Boolean GenerarSaldosEnCeroParaCierreDeAsieto(Cuenta cuentaSaldoAsiento, Compañia compañia, Usuario usuario, int limitSec) {
+        public Boolean GenerarSaldosEnCeroParaCierreDeAsieto(Cuenta cuentaSaldoAsiento, Compañia compañia, Usuario usuario, int limitSec)
+        {
             return cuentaDao.GenerarSaldosEnCeroParaCierreDeAsieto(cuentaSaldoAsiento, compañia, usuario, limitSec);
         }
 

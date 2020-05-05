@@ -3,32 +3,68 @@ using CapaEntidad.Entidades.Compañias;
 using System;
 using CapaEntidad.Enumeradores;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CapaEntidad.Entidades.Cuentas
 {
+
     public class Cuenta
     {
-        public String Nombre { get; set; }
-        public Compañia MyCompania { get; set; } ///Quitar
-        public int Id { get; set; }
-        public int Padre { get; set; }
-        public decimal SaldoAnteriorColones { get; set; }
-        public decimal SaldoAnteriorDolares { get; set; }
-        public decimal DebitosColones { get; set; }
-        public decimal DebitosDolares { get; set; }
-        public decimal CreditosColones { get; set; }
-        public decimal CreditosDolares { get; set; }
-        public String Detalle { get; set; }
-        public Boolean Active { get; set; }
-        public IndicadorCuenta Indicador { get; set; }
-        public ITipoCuenta TipoCuenta { get; set; }
-        public Boolean Editable { get; set; }
-        public String PathDirection { get; set; }
-        public Boolean Cuadrada { get; set; }
-        public Cuenta()
-        {
+        [JsonProperty("nombre")]
+        public string Nombre { get; set; }
 
-        }
+        [JsonIgnore]
+        //[JsonProperty("myCompania")]
+        public Compañia MyCompania { get; set; } ///Quitar
+
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        //[JsonProperty("padre")]
+        public int Padre { get; set; }
+
+        //[JsonProperty("saldoAnteriorColones")]
+        public decimal SaldoAnteriorColones { get; set; }
+
+        //[JsonProperty("saldoAnteriorDolares")]
+        public decimal SaldoAnteriorDolares { get; set; }
+
+        //[JsonProperty("debitosColones")]
+        public decimal DebitosColones { get; set; }
+
+        //[JsonProperty("debitosDolares")]
+        public decimal DebitosDolares { get; set; }
+
+        //[JsonProperty("creditosColones")]
+        public decimal CreditosColones { get; set; }
+
+        //[JsonProperty("creditosDolares")]
+        public decimal CreditosDolares { get; set; }
+
+        //[JsonProperty("detalle")]
+        public String Detalle { get; set; }
+
+        //[JsonProperty("active")]
+        public Boolean Active { get; set; }
+
+        //[JsonProperty("indicador")]
+        public IndicadorCuenta Indicador { get; set; }
+
+
+        //[JsonProperty("tipoCuenta")]
+        public ITipoCuenta TipoCuenta { get; set; }
+
+        //[JsonProperty("editable")]
+        public Boolean Editable { get; set; }
+
+        //[JsonProperty("pathDirection")]
+        public String PathDirection { get; set; }
+
+        //[JsonProperty("cuadrada")]
+        public Boolean Cuadrada { get; set; }
+
+        public Cuenta() { }
+
         public Cuenta(string nombre, Compañia myCompania, ITipoCuenta tipoCuenta, IndicadorCuenta indicador, String detalle,
                       int padre, int id = 0, decimal saldoAnteriorColones = 0.0M, decimal saldoAnteriorDolares = 0.00M,
                       decimal debitos = 0.0M, decimal creditos = 0.0M, bool active = true, bool editable = false, bool cuadrada = true)
@@ -46,7 +82,7 @@ namespace CapaEntidad.Entidades.Cuentas
             TipoCuenta = tipoCuenta;
             Indicador = indicador;
             Editable = editable;
-            Cuadrada = cuadrada; 
+            Cuadrada = cuadrada;
         }
         public Cuenta(string nombre, int id, int padre, IndicadorCuenta indicadorCuenta = IndicadorCuenta.Cuenta_Auxiliar)
         {
@@ -55,22 +91,31 @@ namespace CapaEntidad.Entidades.Cuentas
             Padre = padre;
             Indicador = indicadorCuenta;
         }
+
+        [JsonIgnore]
         public decimal SaldoActualColones
         {
             get { return TipoCuenta.SaldoActual(this.SaldoAnteriorColones, this.DebitosColones, this.CreditosColones); }
         }
+
+        [JsonIgnore]
         public decimal SaldoMensualColones
         {
             get { return TipoCuenta.SaldoMensual(this.DebitosColones, this.CreditosColones); }
         }
+
+        [JsonIgnore]
         public decimal SaldoActualDolares
         {
             get { return TipoCuenta.SaldoActual(this.SaldoAnteriorDolares, DebitosDolares, CreditosDolares); }
         }
+
+        [JsonIgnore]
         public decimal SaldoMensualDolares
         {
             get { return TipoCuenta.SaldoMensual(this.DebitosDolares, this.CreditosDolares); }
         }
+
         public override string ToString()
         {
             return Nombre;
@@ -270,6 +315,11 @@ namespace CapaEntidad.Entidades.Cuentas
             }
 
         }
+        public bool Validate(IValidator<Cuenta> validator, ref IEnumerable<string> brokenRules)
+        {
+            return validator.IsValid(this, ref brokenRules);
+        }
+
     }
 
 }

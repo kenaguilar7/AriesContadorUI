@@ -39,7 +39,6 @@ namespace CapaPresentacion.Seguridad
             this.txtBoxUsuario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
             rdbUsuarioNormal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
             rdbUsuarioAdmin.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
-
         }
         /// <summary>
         /// Carga datos 
@@ -54,8 +53,8 @@ namespace CapaPresentacion.Seguridad
 
         }
 
-
-        private async Task GuardarUsuario() {
+        private void GuardarUsuario(object sender, EventArgs e)
+        {
             try
             {
                 //if (MessageBox.Show("¿Desea guardar un nuevo usuario?", TextoGeneral.NombreApp, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
@@ -81,7 +80,7 @@ namespace CapaPresentacion.Seguridad
                     usuario.TipoUsuario = TipoUsuario.Administrador;
                 }
 
-                if (await usuarioCL.Insert(usuario, GlobalConfig.Usuario))
+                if (usuarioCL.Insert(usuario, GlobalConfig.Usuario).GetAwaiter().GetResult() != null)
                 {
                     var mensaje = "usuario creado exitosamente";
                     MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -98,11 +97,6 @@ namespace CapaPresentacion.Seguridad
             {
                 MessageBox.Show(ex.Message, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void GuardarUsuario(object sender, EventArgs e)
-        {
-            GuardarUsuario(); 
         }
         /// <summary>
         /// Carga el usuario al formulario
