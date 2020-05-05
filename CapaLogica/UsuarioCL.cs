@@ -11,37 +11,42 @@ namespace CapaLogica
     public class UsuarioCL
     {
         UsuarioDao usuarioDao = new UsuarioDao();
-        public async Task<Boolean> Insert(Usuario userInsert, Usuario user)
+        public async Task<string> Insert(Usuario userInsert, Usuario user)
         {
-            HttpResponseMessage response = await RESTClient.ApiClient.PostAsJsonAsync("users",userInsert);
-            response.EnsureSuccessStatusCode();
 
-            if (response.IsSuccessStatusCode)
-            {
-                response.EnsureSuccessStatusCode();
-                var newUserUrl = response.Headers.Location;
-                //Ther user can be consume using newUserUrl string
-                return true; 
-            }
-            else
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
+           return await RestClientService<Usuario>.Post("users", userInsert); 
+
+            //HttpResponseMessage response = await RESTClient.ApiClient.PostAsJsonAsync("users",userInsert);
+            ////response.EnsureSuccessStatusCode();
+
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var newUserUrl = response.Headers.Location;
+            //    //Ther user can be consume using newUserUrl string
+            //    return true; 
+            //}
+            //else
+            //{
+            //    throw new Exception(response.ReasonPhrase);
+            //}
         }
 
         public async Task<List<Usuario>> GetAllAsync()
         {
-            List<Usuario> usuarios = null;
-            HttpResponseMessage response = await RESTClient.ApiClient.GetAsync("users");
-            if (response.IsSuccessStatusCode)
-            {
-                usuarios = await response.Content.ReadAsAsync<List<Usuario>>();
-                return usuarios;
-            }
-            else
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
+
+            return await RestClientService<List<Usuario>>.Get("users"); 
+            //List<Usuario> usuarios = null;
+            //HttpResponseMessage response = await RESTClient.ApiClient.GetAsync("users");
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    usuarios = await response.Content.ReadAsAsync<List<Usuario>>();
+            //    return usuarios;
+            //}
+            //else
+            //{
+            //    throw new Exception(response.ReasonPhrase);
+            //}
         }
 
         public async Task<Boolean> Update(Usuario user, Usuario userTrigger)
@@ -116,6 +121,10 @@ namespace CapaLogica
                 return true; 
             }
 
+
+        }
+
+        public void Test() {
 
         }
     }

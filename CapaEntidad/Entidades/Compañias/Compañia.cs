@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace CapaEntidad.Entidades.Compañias
 {
     //[JsonConverter(typeof(ByteConverter))]
-    public abstract class Compañia
+    public class Compañia
     {
 
         public String Codigo { get; set; }
