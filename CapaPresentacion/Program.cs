@@ -1,0 +1,26 @@
+﻿using CapaLogica;
+using System;
+using System.Net.NetworkInformation;
+using System.Windows.Forms;
+
+namespace CapaPresentacion
+{
+    static class Program
+    {
+        /// <summary>
+        /// Punto de entrada principal para la aplicación.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            RESTClient.InitializeClient(); 
+            GlobalConfig globalConfig = new GlobalConfig(); 
+            Application.Run(new FrameMenu());
+        }
+
+
+    }
+}
+//to do: la referencia de IUser en companies en la base de datos permmite insertar valores nulos corregir.
