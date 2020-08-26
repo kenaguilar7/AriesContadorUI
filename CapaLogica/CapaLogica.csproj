@@ -107,7 +107,7 @@
     <Compile Include="RESTClient.cs" />
     <Compile Include="RestClientService.cs" />
     <Compile Include="TransaccionCL.cs" />
-    <Compile Include="UsuarioCL.cs" />
+    <Compile Include="UserCL.cs" />
     <Compile Include="Validaciones\CuentaIsGoodFatherValidator.cs" />
     <Compile Include="Validaciones\CuentaRegisterValidator.cs" />
     <Compile Include="Validaciones\Validaciones de compania\CompanyRegisterValidator.cs" />
