@@ -1,73 +1,87 @@
 ﻿using CapaLogica;
 using System;
 using System.Windows.Forms;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Verificaciones;
 using System.Linq;
 using System.Collections.Generic;
-using CapaEntidad.Textos;
 using CapaPresentacion.Reportes;
 using System.Threading.Tasks;
 using System.ComponentModel;
-using CapaLogica.Validaciones.Validaciones_de_compania;
 using System.Text.RegularExpressions;
+using AriesContador.Entities.Administration.Companies;
+using AriesContador.Entities;
+using AriesContador.Entities.Utils;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace CapaPresentacion.FrameCompañias
 {
     public partial class FrameMaestroCompañia : Form
     {
         private CompañiaCL _companyCL { get; } = new CompañiaCL();
-        private List<Compañia> _lstCompanies { get; set; } = new List<Compañia>();
+        private List<CompanyDTO> _lstCompanies { get; set; } = new List<CompanyDTO>();
         public FrameMaestroCompañia()
         {
             InitializeComponent();
 
         }
 
-        private Compañia BuilCompany()
+        private CompanyDTO BuilCompany()
         {
-            Compañia retorno;
 
-            //mas uno porque porque no tenemos cero como valor en el tipo id
-            TipoID _tipoId = (TipoID)lstTipoId.SelectedIndex + 1;
+            throw new NotImplementedException();  
+            //CompanyDTO company = Factory.CreateCompany();
 
-            if (lstTipoId.SelectedIndex == 0)
-            {
-                retorno = new PersonaJuridica(
-                    codigo: ttCodigo.Text,
-                    numeroId: txtBoxID.Text,
-                    tipoID: _tipoId,
-                    nombre: txtBoxNombre.Text,
-                    TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
-                    representanteLegal: txtBoxOp1.Text,
-                    IDRepresentante: txtBoxOp2.Text,
-                    direccion: txtBoxDireccion.Text,
-                    web: txtBoxWeb.Text,
-                    correo: txtBoxMail.Text,
-                    observaciones: txtBoxObservaciones.Text,
-                    telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
-                    activo: chekActive.Checked);
-            }
-            else
-            {
-                retorno = new PersonaFisica(
-                    codigo: ttCodigo.Text,
-                    numeroId: txtBoxID.Text,
-                    tipoID: _tipoId,
-                    nombre: txtBoxNombre.Text,
-                    TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
-                    apellidoPaterno: txtBoxOp1.Text,
-                    apellidoMaterno: txtBoxOp2.Text,
-                    direccion: txtBoxDireccion.Text,
-                    web: txtBoxWeb.Text,
-                    correo: txtBoxMail.Text,
-                    observaciones: txtBoxObservaciones.Text,
-                    telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
-                    activo: chekActive.Checked);
-            }
+            ////mas uno porque porque no tenemos cero como valor en el tipo id
+            //company. = (TipoID)lstTipoId.SelectedIndex + 1;
+            //company.Code = ttCodigo.Text; 
+            //company.IdNumber = txtBoxID.Text;
+            //company.Name = txtBoxNombre.Text;
 
-            return retorno;
+            //company.Address = txtBoxDireccion.Text;
+            //company.Mail = txtBoxMail.Text;
+            //company.Memo = txtBoxObservaciones.Text;
+            //company.PhoneNumber1 = txtBoxTelefono1.Text;
+            //company.PhoneNumber2 = txtBoxTelefono2.Text;
+            //company.Delete = chekActive.Checked;
+            //company.CurrencyType = (CurrencyTypeCompany)lstMovimientosRegistro.SelectedIndex + 1; 
+            
+
+
+            //if (lstTipoId.SelectedIndex == 0)
+            //{
+            //    company = new PersonaJuridica(
+            //        codigo: ttCodigo.Text,
+            //        numeroId: txtBoxID.Text,
+            //        tipoID: _tipoId,
+            //        nombre: txtBoxNombre.Text,
+            //        TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
+            //        representanteLegal: txtBoxOp1.Text,
+            //        IDRepresentante: txtBoxOp2.Text,
+            //        //direccion: txtBoxDireccion.Text,
+            //        //web: txtBoxWeb.Text,
+            //        //correo: txtBoxMail.Text,
+            //        //observaciones: txtBoxObservaciones.Text,
+            //        //telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
+            //        //activo: chekActive.Checked);
+            //}
+            //else
+            //{
+            //    company = new PersonaFisica(
+            //        codigo: ttCodigo.Text,
+            //        numeroId: txtBoxID.Text,
+            //        tipoID: _tipoId,
+            //        nombre: txtBoxNombre.Text,
+            //        TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
+            //        apellidoPaterno: txtBoxOp1.Text,
+            //        apellidoMaterno: txtBoxOp2.Text,
+            //        direccion: txtBoxDireccion.Text,
+            //        web: txtBoxWeb.Text,
+            //        correo: txtBoxMail.Text,
+            //        observaciones: txtBoxObservaciones.Text,
+            //        telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
+            //        activo: chekActive.Checked);
+            //}
+
+            //return company;
         }
         private string GetCopyFrom()
         {
@@ -88,7 +102,7 @@ namespace CapaPresentacion.FrameCompañias
             try
             {
                 var companyResoulse = await _companyCL.InsertAsync(newCompany, copyFromId);
-                var mensaje = $"Compañia creada exitosamente con el código {companyResoulse.Codigo}";
+                var mensaje = $"Compañia creada exitosamente con el código {companyResoulse.Code}";
                 MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LimpiarFormulario();
                 FrameMaestroCompaniaLoad(null, null);
@@ -117,7 +131,7 @@ namespace CapaPresentacion.FrameCompañias
         {
             try
             {
-                await _companyCL.UpdateAsync(BuilCompany(), GlobalConfig.IUser);
+                await _companyCL.UpdateAsync(BuilCompany(), GlobalConfig.UserDTO);
                 var mensaje = "Compañia actualizada correctamente";
                 MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -142,8 +156,8 @@ namespace CapaPresentacion.FrameCompañias
             ///load companies
             ///Remove index change event momentarily
             this.lstCompanias.SelectedIndexChanged -= new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
-            var companyListFromApi = await _companyCL.GetAllAsync(GlobalConfig.IUser);
-            _lstCompanies = (from cmp in companyListFromApi orderby cmp.Codigo descending select cmp).ToList<Compañia>();
+            var companyListFromApi = await _companyCL.GetAllAsync(GlobalConfig.UserDTO);
+            _lstCompanies = (from cmp in companyListFromApi orderby cmp.Code descending select cmp).ToList<CompanyDTO>();
             lstCompanias.DataSource = _lstCompanies;
             lstCompanias.SelectedIndex = -1;
             this.lstCompanias.SelectedIndexChanged += new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
@@ -160,53 +174,53 @@ namespace CapaPresentacion.FrameCompañias
             lstTipoId.SelectedIndex = 0;
             this.lstMovimientosRegistro.SelectedIndex = 0;
         }
-        private void CargarCompaniaFormulario(Compañia compania)
+        private void CargarCompaniaFormulario(CompanyDTO compania)
         {
             /**
              * la lista lstTipoId tiene como primer indice 0; mientras que 
              * los unum de tipo id tiene como primer indice 1
              * en este caso le restamos 1 
              */
-            lstTipoId.SelectedIndex = Convert.ToInt16(compania.TipoId) - 1;
-            lstCopiarMaestroCuentas.SelectedIndex = -1;
-            lstCopiarMaestroCuentas.Enabled = false;
-            btnActualizar.Tag = compania;
-            this.txtBoxID.Text = compania.NumeroCedula;
-            this.txtBoxID.ReadOnly = true;
-            this.txtBoxNombre.Text = compania.Nombre;
-            this.txtBoxDireccion.Text = compania.Direccion;
-            this.txtBoxTelefono1.Text = compania.Telefono[0];
-            this.txtBoxTelefono2.Text = compania.Telefono[1];
-            this.ttCodigo.Text = compania.Codigo;
-            this.groupCodigo.Visible = true;
-            this.txtBoxWeb.Text = compania.Web;
-            this.txtBoxMail.Text = compania.Correo;
-            this.txtBoxObservaciones.Text = compania.Observaciones;
-            this.chekActive.Enabled = true;
-            this.chekActive.Checked = compania.Activo;
-            if (compania is PersonaFisica)
-            {
-                txtBoxOp1.Text = ((PersonaFisica)compania).MyApellidoPaterno;
-                txtBoxOp2.Text = ((PersonaFisica)compania).MyApellidoMaterno;
-            }
-            if (compania is PersonaJuridica)
-            {
+            //lstTipoId.SelectedIndex = Convert.ToInt16(compania.TipoId) - 1;
+            //lstCopiarMaestroCuentas.SelectedIndex = -1;
+            //lstCopiarMaestroCuentas.Enabled = false;
+            //btnActualizar.Tag = compania;
+            //this.txtBoxID.Text = compania.NumeroCedula;
+            //this.txtBoxID.ReadOnly = true;
+            //this.txtBoxNombre.Text = compania.Nombre;
+            //this.txtBoxDireccion.Text = compania.Direccion;
+            //this.txtBoxTelefono1.Text = compania.Telefono[0];
+            //this.txtBoxTelefono2.Text = compania.Telefono[1];
+            //this.ttCodigo.Text = compania.Codigo;
+            //this.groupCodigo.Visible = true;
+            //this.txtBoxWeb.Text = compania.Web;
+            //this.txtBoxMail.Text = compania.Correo;
+            //this.txtBoxObservaciones.Text = compania.Observaciones;
+            //this.chekActive.Enabled = true;
+            //this.chekActive.Checked = compania.Activo;
+            //if (compania is PersonaFisica)
+            //{
+            //    txtBoxOp1.Text = ((PersonaFisica)compania).MyApellidoPaterno;
+            //    txtBoxOp2.Text = ((PersonaFisica)compania).MyApellidoMaterno;
+            //}
+            //if (compania is PersonaJuridica)
+            //{
 
-                txtBoxOp1.Text = ((PersonaJuridica)compania).MyRepresentanteLegal;
-                txtBoxOp2.Text = ((PersonaJuridica)compania).MyIDRepresentanteLegal;
+            //    txtBoxOp1.Text = ((PersonaJuridica)compania).MyRepresentanteLegal;
+            //    txtBoxOp2.Text = ((PersonaJuridica)compania).MyIDRepresentanteLegal;
 
-            }
-            this.lstMovimientosRegistro.SelectedIndex = Convert.ToInt32(compania.TipoMoneda) - 1;
+            //}
+            //this.lstMovimientosRegistro.SelectedIndex = Convert.ToInt32(compania.TipoMoneda) - 1;
 
-            if (compania.TipoMoneda == TipoMonedaCompañia.Solo_Colones)
-            {
-                lstMovimientosRegistro.Enabled = false;
-            }
-            this.btnActualizar.Visible = true;
-            this.btnActualizar.Enabled = true;
-            this.btnGuardar.Enabled = false;
-            this.btnGuardar.Visible = false;
-            this.lstTipoId.Enabled = false;
+            //if (compania.TipoMoneda == TipoMonedaCompañia.Solo_Colones)
+            //{
+            //    lstMovimientosRegistro.Enabled = false;
+            //}
+            //this.btnActualizar.Visible = true;
+            //this.btnActualizar.Enabled = true;
+            //this.btnGuardar.Enabled = false;
+            //this.btnGuardar.Visible = false;
+            //this.lstTipoId.Enabled = false;
 
 
         }
@@ -267,14 +281,14 @@ namespace CapaPresentacion.FrameCompañias
 
 
             txtBoxID.Enabled = true;
-            txtBoxID.Mask = VerificaString.MascaraIdentificacion((TipoID)lstTipoId.SelectedIndex + 1);
+            //txtBoxID.Mask = VerificaString.MascaraIdentificacion((IdType)lstTipoId.SelectedIndex + 1);
 
         }
         private void LstCompaniasSelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                CargarCompaniaFormulario((Compañia)this.lstCompanias.SelectedItem);
+                CargarCompaniaFormulario((CompanyDTO)this.lstCompanias.SelectedItem);
                 // btnActualizar.Tag = (Compañia)this.lstCompanias.SelectedItem;
             }
             catch (Exception)
@@ -318,7 +332,7 @@ namespace CapaPresentacion.FrameCompañias
                     //Le decimos que me devuelva un String con el formto del parametro
                     var cod = "C" + num.ToString("000");
 
-                    List<Compañia> salida = (from c in (List<Compañia>)lstCompanias.DataSource where c.Codigo == cod select c).Take(1).ToList<Compañia>();
+                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == cod select c).Take(1).ToList<CompanyDTO>();
 
                     if (salida.Count != 0)
                     {
@@ -327,7 +341,7 @@ namespace CapaPresentacion.FrameCompañias
                 }
                 else
                 {
-                    List<Compañia> salida = (from c in (List<Compañia>)lstCompanias.DataSource where c.Codigo == txtBoxBuscar.Text select c).Take(1).ToList<Compañia>();
+                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == txtBoxBuscar.Text select c).Take(1).ToList<CompanyDTO>();
                     if (salida.Count != 0)
                     {
                         CargarCompaniaFormulario(salida[0]);
@@ -390,7 +404,7 @@ namespace CapaPresentacion.FrameCompañias
 
         private bool IsUserIdValid(string txtId)
         {
-            return _lstCompanies.All(x => x.NumeroCedula != txtId);
+            return _lstCompanies.All(x => x.IdNumber != txtId);
         }
 
         private void SetErrorMessage(Control control, string message, ref CancelEventArgs e, bool cancel)

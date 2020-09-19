@@ -1,9 +1,4 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Entidades.IUsers;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Financial.PostingPeriods;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -27,12 +22,12 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async void FrameAdministrarMesesLoad(object sender, EventArgs e)
         {
-            var companyId = GlobalConfig.Compañia.Codigo;
+            var companyId = GlobalConfig.company.Code;
             try
             {
 
                 dtRegistros.DataSource = await _fechaCL.GetDataTableAsync(companyId);
-                var lstMonths = (await _fechaCL.GetAllAsync(companyId)).TakeWhile(x => !x.Cerrada);
+                var lstMonths = (await _fechaCL.GetAllAsync(companyId)).TakeWhile(x => !x.Closed);
                 var lstAvailableMonths = await _fechaCL.GetAvailableMonthsAsync(companyId);
                 lstCerrarMes.DataSource = lstMonths.ToList();
                 lstAbrirMes.DataSource = lstAvailableMonths.ToList();
@@ -43,14 +38,14 @@ namespace CapaPresentacion.FrameCuentas
             }
 
         }
-        private FechaTransaccion GetMonthForOpen() => (FechaTransaccion)lstAbrirMes.SelectedItem;
-        private FechaTransaccion GetMonthForClose() => (FechaTransaccion)lstCerrarMes.SelectedItem;
+        private IPostingPeriod GetMonthForOpen() => (IPostingPeriod)lstAbrirMes.SelectedItem;
+        private IPostingPeriod GetMonthForClose() => (IPostingPeriod)lstCerrarMes.SelectedItem;
         private async void SaveNewMonthBtnEvent(object sender, EventArgs e)
         {
             try
             {
                 this.btnGuardar.Click -= new System.EventHandler(this.SaveNewMonthBtnEvent);
-                var newEntity = await _fechaCL.InsertAsync(GetMonthForOpen(), GlobalConfig.Compañia.Codigo);
+                var newEntity = await _fechaCL.InsertAsync(GetMonthForOpen(), GlobalConfig.company.Code);
                 var mensaje = $"Perido contable abierto correctamente";
                 MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 FrameAdministrarMesesLoad(sender, e);
@@ -71,7 +66,7 @@ namespace CapaPresentacion.FrameCuentas
             {
                 try
                 {
-                    await _fechaCL.CloseMonthAsync(GlobalConfig.Compañia.Codigo, GetMonthForClose());
+                    await _fechaCL.CloseMonthAsync(GlobalConfig.company.Code, GetMonthForClose());
                     var mensaje = "Mes cerrado correctamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FrameAdministrarMesesLoad(sender, e);

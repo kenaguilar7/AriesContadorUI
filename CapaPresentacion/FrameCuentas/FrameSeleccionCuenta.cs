@@ -1,10 +1,7 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Interfaces;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Financial.Accounts;
 using CapaLogica;
 using CapaPresentacion.cods;
+using CapaPresentacion.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +17,7 @@ namespace CapaPresentacion.FrameCuentas
     public partial class FrameSeleccionCuenta : Form, ICallingForm
     {
         private CuentaCL _cuentaCL { get; } = new CuentaCL(); 
-        private List<Cuenta> LstCuentas { get; set; }
+        private List<AccountDTO> LstCuentas { get; set; }
         private ICallingForm _getCuenta;
         public FrameSeleccionCuenta(ICallingForm callingForm)
         {
@@ -30,7 +27,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async void FrameSeleccionCuenta_Load(object sender, EventArgs e)
         {
-            LstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.Compañia.Codigo); 
+            LstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code); 
             treeCuentas.Nodes.AddRange(TreeViewCuentas.CrearTreeView(LstCuentas));
 
         }
@@ -42,7 +39,7 @@ namespace CapaPresentacion.FrameCuentas
         {
             try
             {
-                Cuenta sele = (Cuenta)treeCuentas.SelectedNode.Tag;
+                AccountDTO sele = (AccountDTO)treeCuentas.SelectedNode.Tag;
                 sele.PathDirection = treeCuentas.SelectedNode.FullPath;
 
                 if (_getCuenta.TransferirCuenta(sele))
@@ -92,7 +89,7 @@ namespace CapaPresentacion.FrameCuentas
                     return;
 
                 }
-                else if (!(treeCuentas.SelectedNode.Tag is Cuenta cuenta) || cuenta.Indicador == IndicadorCuenta.Cuenta_Titulo)
+                else if (!(treeCuentas.SelectedNode.Tag is AccountDTO cuenta) || cuenta.AccountType == AccountType.Cuenta_Titulo)
                 {
                     MessageBox.Show("No se puede crear cuentas en este nivel", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
@@ -134,7 +131,7 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        public bool TransferirCuenta(Cuenta cuenta)
+        public bool TransferirCuenta(AccountDTO cuenta)
         {
             if (cuenta != null)
             {

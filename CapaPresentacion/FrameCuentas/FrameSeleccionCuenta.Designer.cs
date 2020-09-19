@@ -38,7 +38,7 @@
             this.btnSeleccionar = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtNombreCuenta = new GlobalTech.TextBoxControl.TextBoxUniversal();
+            this.txtNombreCuenta = new System.Windows.Forms.TextBox(); 
             this.label1 = new System.Windows.Forms.Label();
             this.panelCuentas.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -182,18 +182,12 @@
             // 
             // txtNombreCuenta
             // 
-            this.txtNombreCuenta.AcceptDecimal = false;
             this.txtNombreCuenta.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtNombreCuenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtNombreCuenta.Location = new System.Drawing.Point(143, 24);
             this.txtNombreCuenta.Name = "txtNombreCuenta";
-            this.txtNombreCuenta.NumeroDecimales = ((short)(2));
             this.txtNombreCuenta.Size = new System.Drawing.Size(369, 20);
-            this.txtNombreCuenta.SombrearTexto = false;
             this.txtNombreCuenta.TabIndex = 1;
-            this.txtNombreCuenta.TipoControl = GlobalTech.TextBoxControl.TextBoxUniversal.TipoDato.AlfaNumerico;
-            this.txtNombreCuenta.WaterMarkColor = System.Drawing.Color.Gray;
-            this.txtNombreCuenta.WaterMarkText = "";
             this.txtNombreCuenta.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtNombreCuentaKeyPress);
             this.txtNombreCuenta.KeyUp += new System.Windows.Forms.KeyEventHandler(this.BucarNodes);
             // 
@@ -242,7 +236,7 @@
         private System.Windows.Forms.Button btnSeleccionar;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label1;
-        private GlobalTech.TextBoxControl.TextBoxUniversal txtNombreCuenta;
+        private System.Windows.Forms.TextBox txtNombreCuenta;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }

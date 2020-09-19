@@ -11,14 +11,14 @@ using System.Windows.Forms;
 
 namespace CapaPresentacion.Seguridad
 {
-    public partial class FrameMaestroIUser : Form
+    public partial class FrameMaestroUsuario : Form
     {
         #region Class properties
         private IUserCL _userCL { get; set; } = new IUserCL();
-        private List<IUser> _userList { get; set; } = new List<IUser>();
-        private IUser _userInDashboard { get; set; } = Factory.CreateUser();
+        private List<UserDTO> _userList { get; set; } = new List<UserDTO>();
+        private UserDTO _userInDashboard { get; set; } = new UserDTO();
         #endregion
-        public FrameMaestroIUser()
+        public FrameMaestroUsuario()
         {
             InitializeComponent();
             LoadEvents();
@@ -31,9 +31,9 @@ namespace CapaPresentacion.Seguridad
             lstIUsers.Items.AddRange(_userList.ToArray());
         }
 
-        private IUser BuildUser()
+        private UserDTO BuildUser()
         {
-            var user = Factory.CreateUser();
+            var user = new UserDTO(); 
             user.Id = _userInDashboard.Id;
             user.IdNumber = txtBoxID.Text;
             user.Name = txtBoxNombre.Text;
@@ -53,10 +53,13 @@ namespace CapaPresentacion.Seguridad
         {
             if (ValidateChildren())
             {
+
+                var user = BuildUser(); 
+
                 try
                 {
-                    var newUser = await ExecutePostAsync();
-                    var mensaje = $"IUser {newUser.Name} código {newUser.UserName} - id {newUser.Id} creado exitosamente";
+                    var newUser = await _userCL.InsertAsync(user, GlobalConfig.UserDTO);
+                    var mensaje = $"UserDTO {newUser.Name} código {newUser.UserName} - id {newUser.Id} creado exitosamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LimpiarFormulario(null, null);
                 }
@@ -71,19 +74,14 @@ namespace CapaPresentacion.Seguridad
             }
         }
 
-        private async Task<IUser> ExecutePostAsync()
-        {
-            return await _userCL.InsertAsync(BuildUser(), GlobalConfig.IUser);
-        }
-
         private async void ActualizarIUser(object sender, EventArgs e)
         {
             if (ValidateChildren())
             {
                 try
                 {
-                    await _userCL.UpdateAsync(BuildUser(), GlobalConfig.IUser);
-                    var mensaje = "IUser actualizado correctamente";
+                    await _userCL.UpdateAsync(BuildUser(), GlobalConfig.UserDTO);
+                    var mensaje = "UserDTO actualizado correctamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -160,7 +158,7 @@ namespace CapaPresentacion.Seguridad
                 }
                 else
                 {
-                    MessageBox.Show($"No se encontro ningun IUser con el IUser {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show($"No se encontro ningun UserDTO con el UserDTO {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -173,7 +171,7 @@ namespace CapaPresentacion.Seguridad
         }
         private void UsersDrownListSelectedIndexChanged(object sender, EventArgs e)
         {
-            _userInDashboard = (IUser)lstIUsers.SelectedItem;
+            _userInDashboard = (UserDTO)lstIUsers.SelectedItem;
             LoadUsersToDashboard();
         }
         private void LoadEvents()
@@ -225,11 +223,11 @@ namespace CapaPresentacion.Seguridad
             }
             else if (string.IsNullOrWhiteSpace(txtName))
             {
-                SetErrorMessage(txtBoxUserName, "Código de IUser no puede ir en blanco!", ref e, true);
+                SetErrorMessage(txtBoxUserName, "Código de UserDTO no puede ir en blanco!", ref e, true);
             }
             else if (!IsUserNameValid(txtName))
             {
-                SetErrorMessage(txtBoxUserName, "Código de IUser en uso!", ref e, true);
+                SetErrorMessage(txtBoxUserName, "Código de UserDTO en uso!", ref e, true);
             }
             else
             {
@@ -281,7 +279,7 @@ namespace CapaPresentacion.Seguridad
 
             if (string.IsNullOrEmpty(txtNombre))
             {
-                SetErrorMessage(txtBoxNombre, "Nombre de IUser no puede ir en blanco!", ref e, true);
+                SetErrorMessage(txtBoxNombre, "Nombre de UserDTO no puede ir en blanco!", ref e, true);
             }
             else
             {

@@ -5,7 +5,7 @@
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
         <!-- Opciones del manifiesto UAC
-             Si quiere cambiar el nivel del Control de cuentas de IUser de Windows reemplace el 
+             Si quiere cambiar el nivel del Control de cuentas de UserDTO de Windows reemplace el 
              nodo requestedExecutionLevel por uno de los siguientes.
 
         <requestedExecutionLevel  level="asInvoker" uiAccess="false" />

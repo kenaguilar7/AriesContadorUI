@@ -1,6 +1,6 @@
 ﻿namespace CapaPresentacion.Seguridad
 {
-    partial class FrameMaestroIUser
+    partial class FrameMaestroUsuario
     {
         /// <summary>
         /// Required designer variable.
@@ -64,7 +64,7 @@
             this.txtBoxObservaciones = new System.Windows.Forms.TextBox();
             this.txtBoxOp2 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.txtBoxBuscar = new GlobalTech.TextBoxControl.TextBoxUniversal();
+            this.txtBoxBuscar = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lstIUsers = new System.Windows.Forms.ComboBox();
@@ -212,7 +212,7 @@
             this.groupBox5.Size = new System.Drawing.Size(944, 254);
             this.groupBox5.TabIndex = 2;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Nuevo IUser";
+            this.groupBox5.Text = "Nuevo UserDTO";
             // 
             // panel2
             // 
@@ -243,7 +243,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(121, 17);
             this.label7.TabIndex = 71;
-            this.label7.Text = "Estado de IUser:";
+            this.label7.Text = "Estado de UserDTO:";
             // 
             // label6
             // 
@@ -264,7 +264,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 17);
             this.label4.TabIndex = 67;
-            this.label4.Text = "Tipo de IUser:";
+            this.label4.Text = "Tipo de UserDTO:";
             // 
             // rdbIUserNormal
             // 
@@ -275,7 +275,7 @@
             this.rdbIUserNormal.Size = new System.Drawing.Size(76, 21);
             this.rdbIUserNormal.TabIndex = 8;
             this.rdbIUserNormal.TabStop = true;
-            this.rdbIUserNormal.Text = "IUser ";
+            this.rdbIUserNormal.Text = "UserDTO ";
             this.rdbIUserNormal.UseVisualStyleBackColor = true;
             // 
             // rdbIUserAdmin
@@ -309,7 +309,7 @@
             this.estado.Name = "estado";
             this.estado.Size = new System.Drawing.Size(115, 21);
             this.estado.TabIndex = 10;
-            this.estado.Text = "IUser Activo";
+            this.estado.Text = "UserDTO Activo";
             this.estado.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -320,7 +320,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(111, 17);
             this.label2.TabIndex = 61;
-            this.label2.Text = "Nombre IUser:";
+            this.label2.Text = "Nombre UserDTO:";
             // 
             // label24
             // 
@@ -506,18 +506,12 @@
             // 
             // txtBoxBuscar
             // 
-            this.txtBoxBuscar.AcceptDecimal = false;
             this.txtBoxBuscar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBoxBuscar.Location = new System.Drawing.Point(758, 25);
             this.txtBoxBuscar.MaxLength = 20;
             this.txtBoxBuscar.Name = "txtBoxBuscar";
-            this.txtBoxBuscar.NumeroDecimales = ((short)(2));
             this.txtBoxBuscar.Size = new System.Drawing.Size(166, 25);
-            this.txtBoxBuscar.SombrearTexto = false;
             this.txtBoxBuscar.TabIndex = 9;
-            this.txtBoxBuscar.TipoControl = GlobalTech.TextBoxControl.TextBoxUniversal.TipoDato.AlfaNumerico;
-            this.txtBoxBuscar.WaterMarkColor = System.Drawing.Color.Gray;
-            this.txtBoxBuscar.WaterMarkText = "";
             this.txtBoxBuscar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressSearchKey);
             this.txtBoxBuscar.Leave += new System.EventHandler(this.UserLeaveSearchBox);
             // 
@@ -567,7 +561,7 @@
             this.Name = "FrameMaestroIUser";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Maestro de IUser";
+            this.Text = "Maestro de UserDTO";
             this.panel1.ResumeLayout(false);
             this.opnPanel.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
@@ -619,7 +613,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnVerContraseña;
-        private GlobalTech.TextBoxControl.TextBoxUniversal txtBoxBuscar;
+        private System.Windows.Forms.TextBox txtBoxBuscar;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ErrorProvider errorProviderApp;
     }

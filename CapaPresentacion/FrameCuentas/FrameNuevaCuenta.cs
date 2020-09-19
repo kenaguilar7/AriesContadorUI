@@ -1,9 +1,7 @@
-﻿using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Interfaces;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities;
+using AriesContador.Entities.Financial.Accounts;
 using CapaLogica;
-using CapaLogica.Validaciones;
+using CapaPresentacion.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,16 +12,16 @@ namespace CapaPresentacion.FrameCuentas
 {
     public partial class FrameNuevaCuenta : Form
     {
-        public IEnumerable<Cuenta> Cuentas { get; set; }
+        public IEnumerable<AccountDTO> Cuentas { get; set; }
         private CuentaCL cuentaCL = new CuentaCL();
-        private Cuenta CuentaPadre { get; set; } = new Cuenta();
+        private AccountDTO CuentaPadre { get; set; }
         private ICallingForm FormParaEnviarCuenta = null;
-        public FrameNuevaCuenta(ICallingForm callingFrom, Cuenta cuenta)
+        public FrameNuevaCuenta(ICallingForm callingFrom, AccountDTO cuenta)
         {
             FormParaEnviarCuenta = callingFrom as ICallingForm;
             CuentaPadre = cuenta;
             InitializeComponent();
-            txtCuentaPadre.Text = CuentaPadre.Nombre;
+            txtCuentaPadre.Text = CuentaPadre.Name;
 
         }
         private void IUserKeyPress(object sender, KeyPressEventArgs e)
@@ -35,22 +33,20 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private Cuenta CrearEntidad()
+        private AccountDTO CrearEntidad()
         {
-
-            return new Cuenta
-            {
-                Nombre = txtBoxNombre.Text,
-                Indicador = IndicadorCuenta.Cuenta_Auxiliar,
-                MyCompania = CuentaPadre.MyCompania,
-                TipoCuenta = CuentaPadre.TipoCuenta,
-                Detalle = txtBoxDetalle.Text,
-                Padre = CuentaPadre.Id,
-                Editable = true
-            };
-
+            var account = new AccountDTO(); 
+            account.Name = txtBoxNombre.Text;
+            account.AccountType = AccountType.Cuenta_Auxiliar;
+            account.CompanyId = CuentaPadre.CompanyId;
+            account.AccountTag = CuentaPadre.AccountTag;
+            account.Memo = txtBoxDetalle.Text;
+            account.FatherAccount = CuentaPadre;
+            account.Editable = true;
+            return account; 
         }
-        public void SetUpTransfferpipe(Cuenta cuenta)
+
+        public void SetUpTransfferpipe(AccountDTO cuenta)
         {
 
             if (FormParaEnviarCuenta != null)
@@ -69,7 +65,7 @@ namespace CapaPresentacion.FrameCuentas
                 try
                 {
                     this.btnGuardar.Click -= new System.EventHandler(this.CrearCuenta);
-                    var newEntidad = await cuentaCL.InsertAsync(GlobalConfig.Compañia.Codigo, CrearEntidad());
+                    var newEntidad = await cuentaCL.InsertAsync(GlobalConfig.company.Code, CrearEntidad());
                     SetUpTransfferpipe(newEntidad);
                     this.Close();
 
@@ -91,7 +87,7 @@ namespace CapaPresentacion.FrameCuentas
         private void txtBoxNombre_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             var txtNombre = txtBoxNombre.Text;
-            bool namerepeat = IsNameRepeat(txtNombre, CuentaPadre.TipoCuenta);
+            bool namerepeat = IsNameRepeat(txtNombre, CuentaPadre.AccountTag);
 
             if (string.IsNullOrEmpty(txtNombre))
             {
@@ -110,12 +106,12 @@ namespace CapaPresentacion.FrameCuentas
 
         }
 
-        private bool IsNameRepeat(string txtNombre, ITipoCuenta tipoCuenta)
+        private bool IsNameRepeat(string txtNombre, AccountTag tipoCuenta)
         {
             var retorno = false;
             foreach (var item in Cuentas)
             {
-                if ((item.TipoCuenta.TipoCuenta == tipoCuenta.TipoCuenta) && (item.Nombre == txtNombre))
+                if ((item.AccountTag == tipoCuenta) && (item.Name == txtNombre))
                 {
                     return true;
                 }
@@ -124,10 +120,11 @@ namespace CapaPresentacion.FrameCuentas
             //return Cuentas.All(x => x.TipoCuenta.TipoCuenta == tipoCuenta.TipoCuenta && x.Nombre == txtNombre);
         }
 
-        private bool IsNameValid(string txtNombre, ITipoCuenta tipoCuenta)
+        private bool IsNameValid(string txtNombre, AccountTag tipoCuenta)
         {
-            return Cuentas.All(x => x.TipoCuenta == tipoCuenta && x.Nombre != txtNombre);
+            return Cuentas.All(x => x.AccountTag == tipoCuenta && x.Name != txtNombre);
         }
+
         private void SetErrorMessage(Control control, string message, ref CancelEventArgs e, bool cancel)
         {
             e.Cancel = cancel;

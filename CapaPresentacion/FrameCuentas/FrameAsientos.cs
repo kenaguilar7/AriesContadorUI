@@ -5,26 +5,40 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CapaEntidad.Entidades.Asientos;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Interfaces;
-using CapaEntidad.Textos;
+using AriesContador.Entities;
+using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.JournalEntries;
+using AriesContador.Entities.Financial.PostingPeriods;
+using AriesContador.Entities.Utils;
 using CapaLogica;
 using CapaPresentacion.Reportes;
-
+using CapaPresentacion.utils;
 
 namespace CapaPresentacion.FrameCuentas
 {
     public partial class FrameAsientos : Form, ICallingForm
     {
         #region Properties
-        private Asiento _asiento;
-        private Transaccion TransaccionOnEdit = new Transaccion();
+        private JournalEntryDTO journalEntry;
+        private JournalEntryLineDTO TransaccionOnEdit { get; set; }
+        private CuentaCL _cuentaCL = new CuentaCL(); 
         private AsientoCL _asientoCL = new AsientoCL();
         private FechaTransaccionCL _fechaTransaccion = new FechaTransaccionCL();
         private TransaccionCL _transaccionCL = new TransaccionCL();
+        private AccountDTO AccountInTxtBoxNombreCuenta
+        {
+            get
+            {
+                if (txtBoxNombreCuenta.Tag != null)
+                {
+                    return txtBoxNombreCuenta.Tag as AccountDTO;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         #endregion
 
         public FrameAsientos()
@@ -36,7 +50,7 @@ namespace CapaPresentacion.FrameCuentas
         #region SetUpData
         private async void FrameAsientos_Load(object sender, EventArgs e)
         {
-            ConfigExchangeController(GlobalConfig.Compañia.TipoMoneda);
+            ConfigExchangeController(GlobalConfig.company.CurrencyType);
             await LoadAccountingPeriodList();
         }
         private void AgregarEventos()
@@ -46,39 +60,48 @@ namespace CapaPresentacion.FrameCuentas
             this.txtTipoCambio.KeyPress += IUserKeyPress;
 
         }
-        private void CargarDatosPanelTransaction(Transaccion dummy)
+        private void CargarDatosPanelTransaction(JournalEntryLineDTO jLine)
         {
 
-            TransaccionOnEdit = dummy;
-            TransferirCuenta(dummy.CuentaDeAsiento);
+            TransaccionOnEdit = jLine;
+
+            var account = _cuentaCL.GetAccountById(jLine.AccountId).GetAwaiter().GetResult(); 
+            TransferirCuenta(account);
             //establece cual radio button estara checado.
-            if (dummy.ComportamientoCuenta == Comportamiento.Debito)
+            if (jLine.DebOCred == DebOCred.Debito)
             { rDebitos.PerformClick(); }
             else { rCreditos.PerformClick(); }
 
-            txtBoxReferencia.Text = dummy.Referencia;
-            txtBoxDetalle.Text = dummy.Detalle;
-            txtBoxFechaFactura.Text = dummy.FechaFactura.ToShortDateString();
+            txtBoxReferencia.Text = jLine.Reference;
+            txtBoxDetalle.Text = jLine.Memo;
+            txtBoxFechaFactura.Text = jLine.Date.ToShortDateString();
 
-            if (dummy.TipoCambio == TipoCambio.Dolares)
+            CargaMontosEnPanelDeTransaccion(jLine);
+        }
+
+        private void CargaMontosEnPanelDeTransaccion(JournalEntryLineDTO jLine)
+        {
+            if (jLine.Currency == Currency.dolares)
             {
-                TxtMontoTotalTransaccion.Text = (dummy.Monto / dummy.MontoTipoCambio).ToString();
-                lstTipoCambio.SelectedIndex = 1;
-                txtTipoCambio.Text = dummy.MontoTipoCambio.ToString();
+                TxtMontoTotalTransaccion.Text = jLine.ForenignAmount.ToString();
+                lstTipoCambio.SelectedIndex = lstTipoCambio.Items.IndexOf(Currency.dolares);
+                txtTipoCambio.Text = jLine.ForenignAmount.ToString();
             }
             else
             {
-                TxtMontoTotalTransaccion.Text = dummy.Monto.ToString();
-                lstTipoCambio.SelectedIndex = 0;
+                TxtMontoTotalTransaccion.Text = jLine.Amount.ToString();
+                lstTipoCambio.SelectedIndex = lstTipoCambio.Items.IndexOf(Currency.dolares);
             }
         }
+
         private void SetColorBalance()
         {
 
-            this.txtTotalDebitos.Text = string.Format("{0:₡###,###,###,##0.00}", _asiento.DebitosColones);
-            this.txtTotalCreditos.Text = string.Format("{0:₡###,###,###,##0.00}", _asiento.CreditosColones);
+            this.txtTotalDebitos.Text = string.Format("{0:₡###,###,###,##0.00}", journalEntry.DebitBalance);
+            this.txtTotalCreditos.Text = string.Format("{0:₡###,###,###,##0.00}", journalEntry.CreditBalance);
+            var cuadrado = (journalEntry.DebitBalance == journalEntry.CreditBalance) ? true : false;
 
-            if (_asiento.Cuadrado && (_asiento.Transaccions.Count != 0))
+            if (cuadrado && (journalEntry.JournalEntryLines.Count != 0))
             {
                 txtTotalCreditos.ForeColor = Color.Green;
                 txtTotalDebitos.ForeColor = Color.Green;
@@ -104,32 +127,34 @@ namespace CapaPresentacion.FrameCuentas
             decimal debitos = 0;
             decimal creditos = 0;
 
-            foreach (var tr in _asiento.Transaccions)
+            foreach (var tr in journalEntry.JournalEntryLines)
             {
 
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(GridDatos);
                 row.Tag = tr;
-                row.Cells[0].Value = tr.CuentaDeAsiento;
-                row.Cells[1].Value = tr.Referencia;
-                row.Cells[2].Value = tr.Detalle;
-                row.Cells[3].Value = tr.FechaFactura;
+                row.Cells[0].Value = tr.AccountId;
+                row.Cells[1].Value = tr.Reference;
+                row.Cells[2].Value = tr.Memo;
+                row.Cells[3].Value = tr.Date;
 
-                if (tr.ComportamientoCuenta == Comportamiento.Debito)
+                if (tr.DebOCred == DebOCred.Debito)
                 {
-                    row.Cells[4].Value = tr.Monto;
-                    debitos += Convert.ToDecimal(tr.Monto);
+                    row.Cells[4].Value = tr.Amount;
+                    debitos += tr.Amount;
                 }
-                else if (tr.ComportamientoCuenta == Comportamiento.Credito)
+                else if (tr.DebOCred == DebOCred.Credito)
                 {
-                    row.Cells[5].Value = tr.Monto;
-                    creditos += Convert.ToDecimal(tr.Monto);
+                    row.Cells[5].Value = tr.Amount;
+                    creditos += tr.Amount;
                 }
-                row.Cells[6].Value = tr.TipoCambio.ToString();
-                row.Cells[7].Value = tr.MontoTipoCambio;
-                if (tr.TipoCambio == TipoCambio.Dolares)
+
+                row.Cells[6].Value = tr.Currency.ToString();
+                row.Cells[7].Value = tr.Rate;
+
+                if (tr.Currency == Currency.dolares)
                 {
-                    row.Cells[8].Value = tr.Monto / tr.MontoTipoCambio;
+                    row.Cells[8].Value = tr.ForenignAmount;
                 }
                 else
                 {
@@ -142,7 +167,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async Task LoadAccountingPeriodList()
         {
-            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.Compañia.Codigo);
+            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.company.Code);
             lstMesesAbiertos.DataSource = lst;
 
 
@@ -174,18 +199,18 @@ namespace CapaPresentacion.FrameCuentas
             lstTipoCambio.SelectedIndex = 0;
             lstTipoCambio.Enabled = true;
         }
-        private void ConfigExchangeController(TipoMonedaCompañia tipoMoneda)
+        private void ConfigExchangeController(CurrencyTypeCompany tipoMoneda)
         {
 
             switch (tipoMoneda)
             {
-                case TipoMonedaCompañia.Dolares_y_Colones:
+                case CurrencyTypeCompany.Dolares_y_Colones:
                     CaseColonsAndDolarsConfig();
                     break;
-                case TipoMonedaCompañia.Solo_Colones:
+                case CurrencyTypeCompany.Solo_Colones:
                     CaseOnlyDolarsConfig();
                     break;
-                case TipoMonedaCompañia.Solo_Dolares:
+                case CurrencyTypeCompany.Solo_Dolares:
                     CaseOnlyColonsConfig();
                     break;
                 default:
@@ -200,17 +225,17 @@ namespace CapaPresentacion.FrameCuentas
             //}
 
         }
-        private async Task<IEnumerable<Asiento>> ConfigAsientoBorrador(IEnumerable<Asiento> asientos)
+        private async Task<IEnumerable<JournalEntryDTO>> ConfigAsientoBorrador(IEnumerable<JournalEntryDTO> asientos)
         {
-            var newEntryNum = await _asientoCL.GetPreEntryAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id);
-            List<Asiento> newList = asientos.ToList();
+            var newEntryNum = await _asientoCL.GetPreEntryAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id);
+            List<JournalEntryDTO> newList = asientos.ToList();
             newList.Insert(0, newEntryNum);
 
             return newList;
         }
-        private FechaTransaccion GetFechTransaccionEnUso()
+        private IPostingPeriod GetFechTransaccionEnUso()
         {
-            return (FechaTransaccion)lstMesesAbiertos.SelectedItem;
+            return (IPostingPeriod)lstMesesAbiertos.SelectedItem;
         }
         private async void LstMesesAbiertosSelectedIndexChanged(object sender, EventArgs e)
         {
@@ -218,7 +243,7 @@ namespace CapaPresentacion.FrameCuentas
             {
                 try
                 {
-                    IEnumerable<Asiento> lst = await _asientoCL.GetAllAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id);
+                    IEnumerable<JournalEntryDTO> lst = await _asientoCL.GetAllAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id);
                     lstNumeroAsientos.DataSource = await ConfigAsientoBorrador(lst);
                 }
                 catch (Exception ex)
@@ -262,12 +287,12 @@ namespace CapaPresentacion.FrameCuentas
 
 
         }
-        public bool TransferirCuenta(Cuenta cuenta)
+        public bool TransferirCuenta(AccountDTO cuenta)
         {
-            if (cuenta.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
+            if (cuenta.AccountType == AccountType.Cuenta_Auxiliar)
             {
                 this.txtBoxNombreCuenta.Tag = cuenta;
-                this.txtBoxNombreCuenta.Text = cuenta.Nombre;
+                this.txtBoxNombreCuenta.Text = cuenta.Name;
                 this.rDebitos.Focus();
                 return true;
             }
@@ -280,47 +305,46 @@ namespace CapaPresentacion.FrameCuentas
         #endregion
 
         #region CRUD Transaccion
-        public Transaccion GetNewTransaction()
-        {
-            var tr = new Transaccion();
-            tr.CuentaDeAsiento = (txtBoxNombreCuenta.Tag != null) ? (Cuenta)txtBoxNombreCuenta.Tag : null;
-            tr.Referencia = txtBoxReferencia.Text;
-            tr.Detalle = txtBoxDetalle.Text;
-            tr.FechaFactura = DateTime.Parse(txtBoxFechaFactura.Text);
 
-            if (lstTipoCambio.SelectedIndex == 0)
+
+
+        public JournalEntryLineDTO GetNewTransaction()
+        {
+            var tr = new JournalEntryLineDTO(); 
+
+            tr.AccountId = AccountInTxtBoxNombreCuenta.Id;
+            tr.Reference = txtBoxReferencia.Text;
+            tr.Memo = txtBoxDetalle.Text;
+            tr.Date = DateTime.Parse(txtBoxFechaFactura.Text);
+
+            if (lstTipoCambio.SelectedIndex == lstTipoCambio.Items.IndexOf(Currency.colones))
             {
-                tr.TipoCambio = TipoCambio.Colones;
-                tr.MontoTipoCambio = 1.00m;
-                tr.Monto = Convert.ToDecimal(TxtMontoTotalTransaccion.Text);
+                tr.Currency = Currency.colones;
+                tr.Rate = 1.00m;
+                tr.Amount = Convert.ToDecimal(TxtMontoTotalTransaccion.Text);
             }
-            else
+            else if (lstTipoCambio.SelectedIndex == lstTipoCambio.Items.IndexOf(Currency.dolares))
             {
-                tr.TipoCambio = TipoCambio.Dolares;
-                tr.MontoTipoCambio = Convert.ToDecimal(txtTipoCambio.Text);
-                tr.Monto = Convert.ToDecimal(TxtMontoTotalTransaccion.Text) * tr.MontoTipoCambio; ///pasamos los dolares a colones
+                tr.Currency = Currency.dolares;
+                tr.Rate = Convert.ToDecimal(txtTipoCambio.Text);
+                tr.ForenignAmount = Convert.ToDecimal(TxtMontoTotalTransaccion.Text);
+                tr.Amount = tr.ForenignAmount * tr.Rate;
             }
-            if (rDebitos.Checked)
-            {
-                tr.ComportamientoCuenta = Comportamiento.Debito;
-            }
-            else if (rCreditos.Checked)
-            {
-                tr.ComportamientoCuenta = Comportamiento.Credito;
-            }
+
+            tr.DebOCred = (rDebitos.Checked) ? DebOCred.Debito : DebOCred.Credito;
 
             var monto = Convert.ToDecimal(TxtMontoTotalTransaccion.Text) * Convert.ToDecimal(txtTipoCambio.Text);
-
             return tr;
+
         }
-        private IEnumerable<Transaccion> GetSelectedItemsFromGrid()
+        private IEnumerable<JournalEntryLineDTO> GetSelectedItemsFromGrid()
         {
-            var retorno = new List<Transaccion>();
+            var retorno = new List<JournalEntryLineDTO>();
             var lstTrns = this.GridDatos.SelectedRows;
 
             for (int i = 0; i < lstTrns.Count; i++)
             {
-                retorno.Add((Transaccion)lstTrns[i].Tag);
+                retorno.Add((JournalEntryLineDTO)lstTrns[i].Tag);
             }
             return retorno;
         }
@@ -335,10 +359,10 @@ namespace CapaPresentacion.FrameCuentas
                 try
                 {
                     var newTransaction = GetNewTransaction();
-                    var asiento = await ValidateBookEntryForInsert(_asiento);
+                    var asiento = await ValidateBookEntryForInsert(journalEntry);
                     var newTrans = await ExecuteInsertTransactionAsync(newTransaction, asiento);
-                    _asiento.Transaccions.Add(newTrans);
-                    _asiento.Id = asiento.Id; 
+                    journalEntry.JournalEntryLines.Add(newTrans);
+                    journalEntry.Id = asiento.Id;
                     UpdateView();
                     LimpiarPanelDatosAsiento();
                     await VerificarAsientoCuadrado();
@@ -389,14 +413,14 @@ namespace CapaPresentacion.FrameCuentas
                 //do nothing 
             }
         }
-        private void ReplaceTransactionInList(Transaccion newTransaction)
+        private void ReplaceTransactionInList(JournalEntryLineDTO newTransaction)
         {
-            var tran = _asiento.Transaccions.First(x => x.Id == newTransaction.Id);
-            var index = _asiento.Transaccions.IndexOf(tran);
+            var tran = journalEntry.JournalEntryLines.First(x => x.Id == newTransaction.Id);
+            var index = journalEntry.JournalEntryLines.IndexOf(tran);
 
             if (index != -1)
             {
-                _asiento.Transaccions[index] = newTransaction;
+                journalEntry.JournalEntryLines[index] = newTransaction;
             }
         }
         private async void BtbEliminar_Click(object sender, EventArgs e)
@@ -424,31 +448,30 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async Task VerificarAsientoCuadrado()
         {
-            if (_asiento.Cuadrado)
+            if (journalEntry.EqualDebitAndCredit)
             {
-                _asiento.Estado = EstadoAsiento.Aprobado;//se cambia a proceso dentro del if. 
-                await _asientoCL.UpdateAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id, _asiento);
+                journalEntry.JournalEntryStatus = JournalEntryStatus.Aprobado;//se cambia a proceso dentro del if. 
+                await _asientoCL.UpdateAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id, journalEntry);
             }
             else
             {
-                _asiento.Estado = EstadoAsiento.Proceso;//se cambia a proceso dentro del if. 
-                await _asientoCL.UpdateAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id, _asiento);
+                journalEntry.JournalEntryStatus = JournalEntryStatus.Proceso;//se cambia a proceso dentro del if. 
+                await _asientoCL.UpdateAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id, journalEntry);
             }
         }
-        private async Task<Transaccion> ExecuteInsertTransactionAsync(Transaccion newTransaction, Asiento asiento)
+        private async Task<JournalEntryLineDTO> ExecuteInsertTransactionAsync(JournalEntryLineDTO newTransaction, JournalEntryDTO asiento)
         => await _transaccionCL.InsertAsync(newTransaction, asiento.Id);
-        private async Task ExecuteDeleteTransactionAsync(IEnumerable<Transaccion> transacciones)
+        private async Task ExecuteDeleteTransactionAsync(IEnumerable<JournalEntryLineDTO> transacciones)
         {
             foreach (var trns in transacciones)
             {
-                var _trans = (Transaccion)trns;
-                await _transaccionCL.DeleteAsync(_trans.Id, _asiento.Id);
-                _asiento.Transaccions.Remove(_trans);
-
+                var _trans = (JournalEntryLineDTO)trns;
+                await _transaccionCL.DeleteAsync(_trans.Id, journalEntry.Id);
+                journalEntry.JournalEntryLines.Remove(_trans);
             }
         }
-        private async Task ExecuteUpdateTransactionAsync(Transaccion newTransaction)
-                    => await _transaccionCL.UpdateAsync(newTransaction, _asiento.Id);
+        private async Task ExecuteUpdateTransactionAsync(JournalEntryLineDTO newTransaction)
+                    => await _transaccionCL.UpdateAsync(newTransaction, journalEntry.Id);
         private void BuildUpdateButtons(bool availableInsertButton, bool availableUpdateButton)
         {
             btnAgregarTransa.Visible = availableInsertButton;
@@ -464,7 +487,7 @@ namespace CapaPresentacion.FrameCuentas
             }
             else
             {
-                TransaccionOnEdit = (Transaccion)this.GridDatos.SelectedRows[0].Tag;
+                TransaccionOnEdit = (JournalEntryLineDTO)this.GridDatos.SelectedRows[0].Tag;
                 CargarDatosPanelTransaction(TransaccionOnEdit);
                 BuildUpdateButtons(
                     availableInsertButton: false,
@@ -479,7 +502,7 @@ namespace CapaPresentacion.FrameCuentas
         #endregion
 
         #region CRUD Asientos
-        private async Task<Asiento> ValidateBookEntryForInsert(Asiento asiento)
+        private async Task<JournalEntryDTO> ValidateBookEntryForInsert(JournalEntryDTO asiento)
         {
             if (asiento.Id == 0)
             {
@@ -490,11 +513,11 @@ namespace CapaPresentacion.FrameCuentas
                 return asiento;
             }
         }
-        private async Task<Asiento> ExecuteInserBookEntryAsync(Asiento asiento)
-            => await _asientoCL.InsertAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id, asiento);
+        private async Task<JournalEntryDTO> ExecuteInserBookEntryAsync(JournalEntryDTO asiento)
+            => await _asientoCL.InsertAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id, asiento);
         private async void BtnEliminarAsientoClick(object sender, EventArgs e)
         {
-            if (_asiento.Id == 0)
+            if (journalEntry.Id == 0)
             {
                 MessageBox.Show("No se puede eliminar este asiento porque aun no ha sido registrado", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
@@ -502,9 +525,9 @@ namespace CapaPresentacion.FrameCuentas
             {
                 try
                 {
-                    await _asientoCL.DeleteAsync(GlobalConfig.Compañia.Codigo, GetFechTransaccionEnUso().Id, _asiento.Id);
+                    await _asientoCL.DeleteAsync(GlobalConfig.company.Code, GetFechTransaccionEnUso().Id, journalEntry.Id);
                     MessageBox.Show("Asiento eliminado correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    _asiento.Id = 0;
+                    journalEntry.Id = 0;
                     FrameAsientos_Load(sender, e);
                 }
                 catch (Exception ex)
@@ -518,11 +541,11 @@ namespace CapaPresentacion.FrameCuentas
             ///Nos aseguramos que el asiento que este seleccionado sea el ultimo
             lstNumeroAsientos.SelectedIndex = 0;
 
-            if (_asiento.Id == 0)
+            if (journalEntry.Id == 0)
             {
                 try
                 {
-                    _asiento = await ExecuteInserBookEntryAsync(_asiento);
+                    journalEntry = await ExecuteInserBookEntryAsync(journalEntry);
                 }
                 catch (Exception ex)
                 {
@@ -536,9 +559,9 @@ namespace CapaPresentacion.FrameCuentas
         {
             if (VerificarAsiento())
             {
-                _asiento = (Asiento)lstNumeroAsientos.SelectedItem;
-                var lst = await _transaccionCL.GetALlAsync(_asiento.Id);
-                _asiento.Transaccions = lst.ToList();
+                journalEntry = (JournalEntryDTO)lstNumeroAsientos.SelectedItem;
+                var lst = await _transaccionCL.GetALlAsync(journalEntry.Id);
+                journalEntry.JournalEntryLines = lst.ToList();
                 UpdateView();
             }
 
@@ -556,13 +579,13 @@ namespace CapaPresentacion.FrameCuentas
                 this.txtBoxReferencia.Clear();
                 this.txtBoxFechaFactura.Clear();
                 this.txtBoxDetalle.Clear();
-                ConfigExchangeController(GlobalConfig.Compañia.TipoMoneda);
+                ConfigExchangeController(GlobalConfig.company.CurrencyType);
                 this.TxtMontoTotalTransaccion.Clear();
                 lstNumeroAsientos.SelectedIndex = 0;
                 txtBoxNombreCuenta.Text = "";
                 txtBoxNombreCuenta.Tag = null;
                 btnAgregarTransa.Text = "Agregar";
-                if (_asiento.Id != 0)
+                if (journalEntry.Id != 0)
                 {
                     BtnNuevoAsiento_Click(null, null);
                 }
@@ -573,7 +596,8 @@ namespace CapaPresentacion.FrameCuentas
         }
         private Boolean VerificarAsiento()
         {
-            if (_asiento != null && _asiento.Id != 0 && !_asiento.Cuadrado)
+
+            if (journalEntry != null && journalEntry.Id != 0 && !journalEntry.EqualDebitAndCredit)
             {
                 this.WindowState = FormWindowState.Normal;
                 MessageBox.Show("Este asiento se encuentra descuadrado, cuadre el asiento antes de salir", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -592,7 +616,7 @@ namespace CapaPresentacion.FrameCuentas
                 n.MdiParent = this.MdiParent;
                 foreach (var item in lstMesesAbiertos.Items)
                 {
-                    n.fechaTransaccions.Add((FechaTransaccion)item);
+                    n.fechaTransaccions.Add((IPostingPeriod)item);
                 }
                 n.Commit();
                 n.Show();
@@ -637,7 +661,7 @@ namespace CapaPresentacion.FrameCuentas
             if (GridDatos.SelectedRows.Count > 0)
             {
 
-                txtPathCuenta.Text = $"Ruta: {((Transaccion)this.GridDatos.SelectedRows[0].Tag).CuentaDeAsiento.PathDirection}";
+                txtPathCuenta.Text = $"Ruta: {((JournalEntryLineDTO)this.GridDatos.SelectedRows[0].Tag).AccountPath}";
             }
             else
             {
@@ -820,7 +844,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private bool ValidateAccount()
         {
-            return (txtBoxNombreCuenta.Tag is Cuenta) ? true : false;
+            return (txtBoxNombreCuenta.Tag is AccountDTO) ? true : false;
         }
         private void SetErrorMessage(Control control, string message, ref CancelEventArgs e, bool cancel)
         {

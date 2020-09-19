@@ -224,7 +224,7 @@
             // 
             this.PermisosDeIUserToolStripMenuItem.Name = "PermisosDeIUserToolStripMenuItem";
             this.PermisosDeIUserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.PermisosDeIUserToolStripMenuItem.Text = "Permisos de IUser";
+            this.PermisosDeIUserToolStripMenuItem.Text = "Permisos de UserDTO";
             this.PermisosDeIUserToolStripMenuItem.Click += new System.EventHandler(this.gestorDeVentanasToolStripMenuItem_Click);
             // 
             // gestionDeCorreosToolStripMenuItem
@@ -272,7 +272,7 @@
             this.txtIUser.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.txtIUser.Name = "txtIUser";
             this.txtIUser.Size = new System.Drawing.Size(59, 22);
-            this.txtIUser.Text = "IUser ";
+            this.txtIUser.Text = "UserDTO ";
             // 
             // toolStripButton2
             // 

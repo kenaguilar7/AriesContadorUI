@@ -1,6 +1,5 @@
-﻿using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Reportes;
+﻿using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.PostingPeriods;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace CapaPresentacion.Reportes
 
         FechaTransaccionCL fechaTransaccionCL = new FechaTransaccionCL();
         CuentaCL cuentaCL = new CuentaCL();
-        private List<FechaTransaccion> fechaTransaccions = new List<FechaTransaccion>();
+        private List<IPostingPeriod> fechaTransaccions = new List<IPostingPeriod>();
 
         public FrameReporteAuxiliares()
         {
@@ -29,14 +28,14 @@ namespace CapaPresentacion.Reportes
         private async void CargarDatos()
         {
 
-            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.Compañia.Codigo);
+            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             fechaTransaccions = lstMeses.ToList();
             this.lstMesInicio.DataSource = lstMeses;
         }
 
         private void lstMesInicio_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var meses = (from n in fechaTransaccions where n.Fecha >= ((FechaTransaccion)lstMesInicio.SelectedItem).Fecha select n).ToList<FechaTransaccion>();
+            var meses = (from n in fechaTransaccions where n.Date >= ((IPostingPeriod)lstMesInicio.SelectedItem).Date select n).ToList<IPostingPeriod>();
 
             lstMesFinal.DataSource = meses;
         }
@@ -47,22 +46,22 @@ namespace CapaPresentacion.Reportes
             {
 
 
-                var lstCuentas = new Dictionary<FechaTransaccion, List<Cuenta>>();
-                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.Compañia.Codigo);
+                var lstCuentas = new Dictionary<IPostingPeriod, List<AccountDTO>>();
+                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.company.Code);
 
                 //cuentaCL.LLenarConSaldoB(((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, ((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, cuentas, GlobalConfig.Compañia); 
                 foreach (var item in fechaTransaccions)
                 {
-                    if (item.Fecha >= ((FechaTransaccion)lstMesInicio.SelectedItem).Fecha && item.Fecha <= ((FechaTransaccion)lstMesFinal.SelectedItem).Fecha)
+                    if (item.Date >= ((IPostingPeriod)lstMesInicio.SelectedItem).Date && item.Date <= ((IPostingPeriod)lstMesFinal.SelectedItem).Date)
                     {
-                        var cuentasClonadas = new List<Cuenta>(cuentas.Count);
+                        var cuentasClonadas = new List<AccountDTO>(cuentas.Count());
 
-                        cuentas.ForEach((Cuenta) =>
-                        {
-                            cuentasClonadas.Add(Cuenta.DeepCopy());
-                        });
+                        //cuentas.ForEach((Cuenta) =>
+                        //{
+                        //    cuentasClonadas.Add(Cuenta.DeepCopy());
+                        //});
 
-                        new CuentaCL().LLenarConSaldos(item.Fecha, item.Fecha, cuentasClonadas, GlobalConfig.Compañia);
+                        //new CuentaCL().LLenarConSaldos(item.Date, item.Date, cuentasClonadas, GlobalConfig.company);
 
                         cuentasClonadas = cuentaCL.QuitarCuentasSinSaldos(cuentasClonadas);
 
@@ -70,11 +69,11 @@ namespace CapaPresentacion.Reportes
                     }
                 }
 
-                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", Title = "Reporte auxiliares", FileName = $"REPORTE DE AUXILIARES {GlobalConfig.Compañia.ToString()} - {GlobalConfig.Compañia.NumeroCedula}" })
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", Title = "Reporte auxiliares", FileName = $"REPORTE DE AUXILIARES {GlobalConfig.company.ToString()} - {GlobalConfig.company.IdNumber}" })
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        ReporteAuxiliares.GenerarReporte(lstCuentas, GlobalConfig.Compañia, GlobalConfig.IUser, GlobalConfig.Compañia.TipoMoneda, sfd.FileName);
+                        //ReporteAuxiliares.GenerarReporte(lstCuentas, GlobalConfig.company, GlobalConfig.UserDTO, GlobalConfig.company.TipoMoneda, sfd.FileName);
                     }
                 }
 

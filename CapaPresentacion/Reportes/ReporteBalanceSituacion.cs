@@ -1,19 +1,16 @@
-﻿using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Entidades.Cuentas;
-using System.Collections.Generic;
-using CapaEntidad.Enumeradores;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using CapaEntidad.Textos;
 using System.Data;
 using System.Linq;
 using CapaLogica;
 using System;
-using CapaEntidad.Reportes;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using FastMember;
+using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.PostingPeriods;
 
 namespace CapaPresentacion.Reportes
 {
@@ -21,11 +18,11 @@ namespace CapaPresentacion.Reportes
     {
         private CuentaCL CuentaCL { get; } = new CuentaCL();
         private FechaTransaccionCL FechaTransaccionCL { get; } = new FechaTransaccionCL();
-        private IEnumerable<Cuenta> ListaCuentas { get; set; }
-        private IEnumerable<Cuenta> ListaCuentasBalancePerdida { get; set; }
-        private IEnumerable<Cuenta> ListaCuentasBalanceSitucion { get; set; }
-        private FechaTransaccion _StartPostingPeriod { get => StartPostingPeriod.SelectedItem as FechaTransaccion; }
-        private FechaTransaccion _EndPostingPeriod { get => EndPostingPeriod.SelectedItem as FechaTransaccion; }
+        private IEnumerable<AccountDTO> ListaCuentas { get; set; }
+        private IEnumerable<AccountDTO> ListaCuentasBalancePerdida { get; set; }
+        private IEnumerable<AccountDTO> ListaCuentasBalanceSitucion { get; set; }
+        private IPostingPeriod _StartPostingPeriod { get => StartPostingPeriod.SelectedItem as IPostingPeriod; }
+        private IPostingPeriod _EndPostingPeriod { get => EndPostingPeriod.SelectedItem as IPostingPeriod; }
 
         public ReporteBalanceSituacion()
         {
@@ -40,25 +37,25 @@ namespace CapaPresentacion.Reportes
         }
         private async Task LoadAccounts()
         {
-            var lst = await CuentaCL.GetAllAsync(GlobalConfig.Compañia.Codigo);
-            ListaCuentas = from c in lst where c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Ingreso || c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Egreso || c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Costo_Venta select c;
+            var lst = await CuentaCL.GetAllAsync(GlobalConfig.company.Code);
+            ListaCuentas = from c in lst where c.AccountTag == AccountTag.Ingreso || c.AccountTag == AccountTag.Egreso || c.AccountTag == AccountTag.Costo_Venta select c;
         }
 
         private async Task LoadPostingPeriods()
         {
-            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.Compañia.Codigo);
+            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             FillDropDownLists(lstFechas);
         }
 
-        private void FillDropDownLists(IEnumerable<FechaTransaccion> lstFechas)
+        private void FillDropDownLists(IEnumerable<IPostingPeriod> lstFechas)
         {
             EndPostingPeriod.DataSource = lstFechas;
             StartPostingPeriod.DataSource = CreateDefaulListForStartPostingPeriod(lstFechas);
         }
 
-        private static List<FechaTransaccion> CreateDefaulListForStartPostingPeriod(IEnumerable<FechaTransaccion> lstFechas)
+        private static List<IPostingPeriod> CreateDefaulListForStartPostingPeriod(IEnumerable<IPostingPeriod> lstFechas)
         {
-            return new List<FechaTransaccion> { (from c1 in lstFechas select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
+            return new List<IPostingPeriod> { (from c1 in lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
         }
         //private async void CargarDatos()
         //{
@@ -68,7 +65,7 @@ namespace CapaPresentacion.Reportes
         //    EndPostingPeriod.DataSource = lstDts;
 
 
-        //    var lstBfchFnl = new List<FechaTransaccion> { (from c1 in lstDts select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
+        //    var lstBfchFnl = new List<IPostingPeriod> { (from c1 in lstDts select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
         //    StartPostingPeriod.DataSource = lstBfchFnl;
 
         //    SetCuentasEnLista();
@@ -78,37 +75,21 @@ namespace CapaPresentacion.Reportes
 
         private void SetCuentasEnLista()
         {
-            ListaCuentasBalancePerdida = from c in ListaCuentas where c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Ingreso || c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Egreso || c.TipoCuenta.TipoCuenta == NombreTipoCuenta.Costo_Venta select c;
-            ListaCuentasBalanceSitucion = from c in ListaCuentas where c.TipoCuenta.TipoCuenta != NombreTipoCuenta.Ingreso && c.TipoCuenta.TipoCuenta != NombreTipoCuenta.Egreso && c.TipoCuenta.TipoCuenta != NombreTipoCuenta.Costo_Venta select c;
+            ListaCuentasBalancePerdida = from c in ListaCuentas where c.AccountTag == AccountTag.Ingreso || c.AccountTag == AccountTag.Egreso || c.AccountTag == AccountTag.Costo_Venta select c;
+            ListaCuentasBalanceSitucion = from c in ListaCuentas where c.AccountTag != AccountTag.Ingreso && c.AccountTag != AccountTag.Egreso && c.AccountTag != AccountTag.Costo_Venta select c;
 
         }
         private async void BtnCalcular(object sender, EventArgs e)
         {
-            var fch1 = (FechaTransaccion)StartPostingPeriod.SelectedItem;
-            var fch2 = (FechaTransaccion)EndPostingPeriod.SelectedItem;
+            var fch1 = (IPostingPeriod)StartPostingPeriod.SelectedItem;
+            var fch2 = (IPostingPeriod)EndPostingPeriod.SelectedItem;
 
 
-            var kst = await CuentaCL.GetAllAccountBalanceWithJournalEntriesRangeAsync(GlobalConfig.Compañia.Codigo, fch1.Id, fch2.Id);
+            var kst = await CuentaCL.GetAllAccountBalanceWithJournalEntriesRangeAsync(GlobalConfig.company.Code, fch1.Id, fch2.Id);
 
             ListaCuentas = kst.ToList();
             SetCuentasEnLista();
             CargarFormulario();
-
-        }
-
-        private void BornBaby() {
-
-
-            foreach (Cuenta cuenta in ListaCuentasBalanceSitucion)
-            {
-
-
-
-            }
-
-
-
-
 
         }
 
@@ -118,23 +99,23 @@ namespace CapaPresentacion.Reportes
 
             foreach (var cuenta in ListaCuentasBalanceSitucion)
             {
-                if (cuenta.Indicador == IndicadorCuenta.Cuenta_Titulo)
+                if (cuenta.AccountType == AccountType.Cuenta_Titulo)
                 {
 
                     foreach (var cntAux in ListaCuentas)
                     {
-                        if (cntAux.Indicador != IndicadorCuenta.Cuenta_Titulo && cntAux.TipoCuenta.TipoCuenta == cuenta.TipoCuenta.TipoCuenta)
+                        if (cntAux.AccountType != AccountType.Cuenta_Titulo && cntAux.AccountTag == cuenta.AccountTag)
                         {
-                            DataGridViewRow row = new DataGridViewRow();
-                            row.CreateCells(GridDatos);
-                            var name = cntAux.GetNombreParaExcel(ListaCuentas.ToList());
-                            row.Cells[name.Length - 1].Value = name.Last();
-                            row.Cells[GridDatos.Columns.Count - (name.Length)].Value = cntAux.SaldoActualColones;
-                            GridDatos.Rows.Add(row);
+                            //DataGridViewRow row = new DataGridViewRow();
+                            //row.CreateCells(GridDatos);
+                            //var name = cntAux.GetNombreParaExcel(ListaCuentas.ToList());
+                            //row.Cells[name.Length - 1].Value = name.Last();
+                            //row.Cells[GridDatos.Columns.Count - (name.Length)].Value = cntAux.SaldoActualColones;
+                            //GridDatos.Rows.Add(row);
                         }
                     }
 
-                    if (cuenta.TipoCuenta.TipoCuenta == NombreTipoCuenta.Patrimonio)
+                    if (cuenta.AccountTag == AccountTag.Patrimonio)
                     {
 
                         DataGridViewRow rowTotalPerdida = new DataGridViewRow();
@@ -150,30 +131,30 @@ namespace CapaPresentacion.Reportes
                         //patrimonio
 
 
-                        DataGridViewRow rowTotalpatrimonio = new DataGridViewRow();
-                        rowTotalpatrimonio.CreateCells(GridDatos);
-                        var nameTotal = cuenta.GetNombreParaExcel(ListaCuentas.ToList());
-                        rowTotalpatrimonio.Cells[nameTotal.Length - 1].Value = $"TOTAL {nameTotal.Last()}";
-                        rowTotalpatrimonio.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        rowTotalpatrimonio.Cells[GridDatos.Columns.Count - (nameTotal.Length)].Value = TotalPerdida + cuenta.SaldoActualColones;
+                        //DataGridViewRow rowTotalpatrimonio = new DataGridViewRow();
+                        //rowTotalpatrimonio.CreateCells(GridDatos);
+                        //var nameTotal = cuenta.GetNombreParaExcel(ListaCuentas.ToList());
+                        //rowTotalpatrimonio.Cells[nameTotal.Length - 1].Value = $"TOTAL {nameTotal.Last()}";
+                        //rowTotalpatrimonio.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                        //rowTotalpatrimonio.Cells[GridDatos.Columns.Count - (nameTotal.Length)].Value = TotalPerdida + cuenta.SaldoActualColones;
 
-                        //GridDatos.Rows.Add(Perdida);
-                        GridDatos.Rows.Add(rowTotalpatrimonio);
+                        
+                        //GridDatos.Rows.Add(rowTotalpatrimonio);
 
 
                     }
                     else
                     {
 
-                        DataGridViewRow rowTotal = new DataGridViewRow();
-                        rowTotal.CreateCells(GridDatos);
-                        var nameTotal = cuenta.GetNombreParaExcel(ListaCuentas.ToList());
-                        rowTotal.Cells[nameTotal.Length - 1].Value = $"TOTAL {nameTotal.Last()}";
-                        rowTotal.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        rowTotal.Cells[GridDatos.Columns.Count - (nameTotal.Length)].Value = cuenta.SaldoActualColones;
+                        //DataGridViewRow rowTotal = new DataGridViewRow();
+                        //rowTotal.CreateCells(GridDatos);
+                        //var nameTotal = cuenta.GetNombreParaExcel(ListaCuentas.ToList());
+                        //rowTotal.Cells[nameTotal.Length - 1].Value = $"TOTAL {nameTotal.Last()}";
+                        //rowTotal.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                        //rowTotal.Cells[GridDatos.Columns.Count - (nameTotal.Length)].Value = cuenta.SaldoActualColones;
 
-                        //GridDatos.Rows.Add(Perdida);
-                        GridDatos.Rows.Add(rowTotal);
+                        
+                        //GridDatos.Rows.Add(rowTotal);
                     }
                 }
             }
@@ -191,7 +172,8 @@ namespace CapaPresentacion.Reportes
         private void CrearColumnasParaNombre()
         {
 
-            var maxValue = (from c in ListaCuentas orderby c.GetNombreParaExcel(ListaCuentasBalanceSitucion.ToList()).Length select new { top = c.GetNombreParaExcel(ListaCuentas.ToList()).Length }).LastOrDefault();
+            //var maxValue = (from c in ListaCuentas orderby c.GetNombreParaExcel(ListaCuentasBalanceSitucion.ToList()).Length select new { top = c.GetNombreParaExcel(ListaCuentas.ToList()).Length }).LastOrDefault();
+            var maxValue = new { top = 0}; 
 
             for (int i = 0; i < maxValue.top * 2; i++)
             {
@@ -235,12 +217,12 @@ namespace CapaPresentacion.Reportes
         {
             try
             {
-                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"REPORTE BALANCE DE SITUACIÓN {GlobalConfig.Compañia.ToString()}" })
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"REPORTE BALANCE DE SITUACIÓN {GlobalConfig.company.ToString()}" })
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        ReporteExcel.ReporteUtilidadPerdida(ConverRowsToExcel(), Encabezado(), sfd.FileName);
-                        // CapaEntidad.Reportes.ReporteBalanceSituacion.GenerarReporte(sfd.FileName, ListaCuentasBalanceSitucion.ToList(),TotalPerdida,TotalSituacion,  GlobalConfig.Compañia, GlobalConfig.IUser);
+                        //ReporteExcel.ReporteUtilidadPerdida(ConverRowsToExcel(), Encabezado(), sfd.FileName);
+                      
                     }
                 }
             }
@@ -256,22 +238,22 @@ namespace CapaPresentacion.Reportes
             get
             {
                 ///Situcion
-                //var activo = ListaCuentas.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == TipoCuenta.Activo);
-                var pasivo = ListaCuentas.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == NombreTipoCuenta.Pasivo);
-                var patrimonio = ListaCuentas.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == NombreTipoCuenta.Patrimonio);
+                //var activo = ListaCuentas.ToList().Find(x => x.AccountTag == AccountTag.Cuenta_Titulo && x.AccountTag == TipoCuenta.Activo);
+                var pasivo = ListaCuentas.ToList().Find(x => x.AccountType == AccountType.Cuenta_Titulo && x.AccountTag == AccountTag.Pasivo);
+                var patrimonio = ListaCuentas.ToList().Find(x => x.AccountType == AccountType.Cuenta_Titulo && x.AccountTag == AccountTag.Patrimonio);
 
-                return Decimal.Add(pasivo.SaldoActualColones, patrimonio.SaldoActualColones);
+                return Decimal.Add(pasivo.CurrentBalance, patrimonio.CurrentBalance);
             }
         }
         private decimal TotalPerdida
         {
             get
             {
-                var ingreso = ListaCuentasBalancePerdida.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == NombreTipoCuenta.Ingreso);
-                var Egreso = ListaCuentasBalancePerdida.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == NombreTipoCuenta.Egreso);
-                var costoVenta = ListaCuentasBalancePerdida.ToList().Find(x => x.Indicador == IndicadorCuenta.Cuenta_Titulo && x.TipoCuenta.TipoCuenta == NombreTipoCuenta.Costo_Venta);
+                var ingreso = ListaCuentasBalancePerdida.ToList().Find(x => x.AccountType == AccountType.Cuenta_Titulo && x.AccountTag == AccountTag.Ingreso);
+                var Egreso = ListaCuentasBalancePerdida.ToList().Find(x => x.AccountType == AccountType.Cuenta_Titulo && x.AccountTag == AccountTag.Egreso);
+                var costoVenta = ListaCuentasBalancePerdida.ToList().Find(x => x.AccountType == AccountType.Cuenta_Titulo && x.AccountTag == AccountTag.Costo_Venta);
 
-                return ingreso.SaldoActualColones - costoVenta.SaldoActualColones - Egreso.SaldoActualColones;
+                return ingreso.CurrentBalance - costoVenta.CurrentBalance - Egreso.CurrentBalance;
 
 
             }
@@ -305,9 +287,9 @@ namespace CapaPresentacion.Reportes
 
             return new string[]{
 
-                $"{GlobalConfig.Compañia}",
-                $"BALANCE DE SITUACION AL MES {(((FechaTransaccion)EndPostingPeriod.SelectedItem).ToString().ToUpper())}",
-                $"EMITIDO POR {GlobalConfig.IUser} ",
+                $"{GlobalConfig.company}",
+                $"BALANCE DE SITUACION AL MES {(((IPostingPeriod)EndPostingPeriod.SelectedItem).ToString().ToUpper())}",
+                $"EMITIDO POR {GlobalConfig.UserDTO} ",
             };
 
         }

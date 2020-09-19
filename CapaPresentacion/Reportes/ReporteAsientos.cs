@@ -1,8 +1,6 @@
-﻿using CapaEntidad.Entidades.Asientos;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Reportes;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Financial.JournalEntries;
+using AriesContador.Entities.Financial.PostingPeriods;
+using AriesContador.Entities.Utils;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -13,10 +11,10 @@ namespace CapaPresentacion.Reportes
 {
     public partial class ReporteAsientos : Form
     {
-        private List<Asiento> _listaDeAsientos;
-        public List<FechaTransaccion> fechaTransaccions { get; set; } = new List<FechaTransaccion>(); 
+        private List<JournalEntryDTO> _listaDeAsientos;
+        public List<IPostingPeriod> fechaTransaccions { get; set; } = new List<IPostingPeriod>(); 
         public void Commit(){ lstMesesAbiertos.DataSource = fechaTransaccions; } 
-        private List<Asiento> ListaDeAsientos
+        private List<JournalEntryDTO> ListaDeAsientos
         {
             get { return _listaDeAsientos; }
             set { _listaDeAsientos = value; }
@@ -27,7 +25,7 @@ namespace CapaPresentacion.Reportes
         {
             InitializeComponent();
 
-            if (GlobalConfig.Compañia.TipoMoneda == TipoMonedaCompañia.Solo_Colones)
+            if (GlobalConfig.company.CurrencyType == CurrencyTypeCompany.Solo_Colones)
             {
                 money_chance.Visible = false;
                 balance_usd.Visible = false;
@@ -38,8 +36,8 @@ namespace CapaPresentacion.Reportes
 
         //private async Task CargarDatos()
         //{
-        //    lstMesesAbiertos.DataSource = await Task.Run(() => _fechaTransaccion.GetAllActive(GlobalConfig.Compañia, GlobalConfig.IUser));
-        //    //lstMesesAbiertos.DataSource = _fechaTransaccion.GetAllActive(GlobalConfig.Compañia, GlobalConfig.IUser);
+        //    lstMesesAbiertos.DataSource = await Task.Run(() => _fechaTransaccion.GetAllActive(GlobalConfig.Compañia, GlobalConfig.UserDTO));
+        //    //lstMesesAbiertos.DataSource = _fechaTransaccion.GetAllActive(GlobalConfig.Compañia, GlobalConfig.UserDTO);
         //}
         private void CerrarVentana(object sender, EventArgs e)
         {
@@ -49,7 +47,7 @@ namespace CapaPresentacion.Reportes
         private void lstMesesAbiertos_SelectedIndexChanged(object sender, EventArgs e)
         {
             
-            GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, false);
+            //GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, false);
             
         }
 
@@ -60,22 +58,22 @@ namespace CapaPresentacion.Reportes
             foreach (var c in ListaDeAsientos)
             {
                 
-                foreach (var item in c.Transaccions)
+                foreach (var item in c.JournalEntryLines)
                 {
                     DataGridViewRow row = new DataGridViewRow();
                     row.CreateCells(GridDatos);
 
-                    row.Cells[0].Value = c.FechaAsiento;
-                    row.Cells[1].Value = c.NumeroAsiento;
-                    row.Cells[2].Value = item.CuentaDeAsiento;
-                    row.Cells[3].Value = item.Referencia;
-                    row.Cells[4].Value = item.Detalle;
-                    row.Cells[5].Value = item.FechaFactura;
-                    row.Cells[6].Value = (item.ComportamientoCuenta == Comportamiento.Debito) ? item.Monto : 0.00m;
-                    row.Cells[7].Value = (item.ComportamientoCuenta == Comportamiento.Credito) ? item.Monto : 0.00m;
-                    row.Cells[8].Value = item.TipoCambio;
-                    row.Cells[9].Value = item.MontoTipoCambio;
-                    row.Cells[10].Value = (item.TipoCambio == CapaEntidad.Enumeradores.TipoCambio.Dolares) ? item.Monto / item.MontoTipoCambio : 0.00m;
+                    //row.Cells[0].Value = c.FechaAsiento;
+                    //row.Cells[1].Value = c.NumeroAsiento;
+                    //row.Cells[2].Value = item.CuentaDeAsiento;
+                    //row.Cells[3].Value = item.Referencia;
+                    //row.Cells[4].Value = item.Detalle;
+                    //row.Cells[5].Value = item.FechaFactura;
+                    //row.Cells[6].Value = (item.ComportamientoCuenta == Comportamiento.Debito) ? item.Monto : 0.00m;
+                    //row.Cells[7].Value = (item.ComportamientoCuenta == Comportamiento.Credito) ? item.Monto : 0.00m;
+                    //row.Cells[8].Value = item.TipoCambio;
+                    //row.Cells[9].Value = item.MontoTipoCambio;
+                    //row.Cells[10].Value = (item.TipoCambio == CapaEntidad.Enumeradores.TipoCambio.Dolares) ? item.Monto / item.MontoTipoCambio : 0.00m;
 
                     GridDatos.Rows.Add(row);
                 }
@@ -93,11 +91,11 @@ namespace CapaPresentacion.Reportes
                 //{
                 //    throw new Exception("La lista se encuentra vacia!");
                 //}
-                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"REPORTE DE ASIENTOS {GlobalConfig.Compañia.ToString()}" })
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"REPORTE DE ASIENTOS {GlobalConfig.company.ToString()}" })
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        ReporteAsiento.GenerarReporte(ListaDeAsientos, GlobalConfig.Compañia, GlobalConfig.IUser, GlobalConfig.Compañia.TipoMoneda, sfd.FileName, ((DataTable)GridDatos.DataSource));
+                        //ReporteAsiento.GenerarReporte(ListaDeAsientos, GlobalConfig.Compañia, GlobalConfig.UserDTO, GlobalConfig.Compañia.TipoMoneda, sfd.FileName, ((DataTable)GridDatos.DataSource));
                         Convert(); 
                     }
                 }
@@ -111,16 +109,16 @@ namespace CapaPresentacion.Reportes
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
-            {
-                lstMesesAbiertos.Enabled = false;
-                GridDatos.DataSource = GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, true);
-            }
-            else
-            {
-                lstMesesAbiertos.Enabled = true;
-                GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, false);
-            }
+            //if (checkBox1.Checked)
+            //{
+            //    lstMesesAbiertos.Enabled = false;
+            //    GridDatos.DataSource = GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, true);
+            //}
+            //else
+            //{
+            //    lstMesesAbiertos.Enabled = true;
+            //    GridDatos.DataSource = _asientoCL.ReporteAsientos(GlobalConfig.Compañia, (FechaTransaccion)lstMesesAbiertos.SelectedItem, false);
+            //}
             
         }
         private void Convert() {

@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtBoxBuscar = new GlobalTech.TextBoxControl.TextBoxUniversal();
+            this.txtBoxBuscar = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -67,22 +67,16 @@
             this.groupBox2.Size = new System.Drawing.Size(1096, 67);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "BUSCAR IUser";
+            this.groupBox2.Text = "BUSCAR UserDTO";
             // 
             // txtBoxBuscar
             // 
-            this.txtBoxBuscar.AcceptDecimal = false;
             this.txtBoxBuscar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBoxBuscar.Location = new System.Drawing.Point(889, 25);
             this.txtBoxBuscar.MaxLength = 20;
             this.txtBoxBuscar.Name = "txtBoxBuscar";
-            this.txtBoxBuscar.NumeroDecimales = ((short)(2));
             this.txtBoxBuscar.Size = new System.Drawing.Size(179, 25);
-            this.txtBoxBuscar.SombrearTexto = false;
             this.txtBoxBuscar.TabIndex = 7;
-            this.txtBoxBuscar.TipoControl = GlobalTech.TextBoxControl.TextBoxUniversal.TipoDato.AlfaNumerico;
-            this.txtBoxBuscar.WaterMarkColor = System.Drawing.Color.Gray;
-            this.txtBoxBuscar.WaterMarkText = "";
             this.txtBoxBuscar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Buscar_KeyPress);
             this.txtBoxBuscar.Leave += new System.EventHandler(this.BoxBuscar_Leave);
             // 
@@ -302,7 +296,7 @@
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Permisos de IUser";
+            this.Text = "Permisos de UserDTO";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -333,7 +327,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel1;
-        private GlobalTech.TextBoxControl.TextBoxUniversal txtBoxBuscar;
+        private System.Windows.Forms.TextBox txtBoxBuscar;
         private System.Windows.Forms.ComboBox lstIUsers;
     }
 }

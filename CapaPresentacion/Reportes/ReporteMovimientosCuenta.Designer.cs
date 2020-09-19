@@ -76,7 +76,7 @@
             this.btnSeleccionarCuenta.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.txtCuentaToolT.SetToolTip(this.btnSeleccionarCuenta, "CTRL + S");
             this.btnSeleccionarCuenta.UseVisualStyleBackColor = true;
-            this.btnSeleccionarCuenta.Click += new System.EventHandler(this.btnSeleccionarCuenta_Click);
+            
             // 
             // tbnSalir
             // 
@@ -95,7 +95,7 @@
             this.tbnSalir.Text = "&Cerrar";
             this.tbnSalir.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tbnSalir.UseVisualStyleBackColor = true;
-            this.tbnSalir.Click += new System.EventHandler(this.CerrarFormulario);
+            
             // 
             // btnExcel
             // 
@@ -109,7 +109,7 @@
             this.btnExcel.Text = "Exportar";
             this.btnExcel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnExcel.UseVisualStyleBackColor = true;
-            this.btnExcel.Click += new System.EventHandler(this.GenerarExcel);
+            
             // 
             // panel1
             // 
@@ -144,7 +144,7 @@
             this.chckBxMostarDolares.TabIndex = 3;
             this.chckBxMostarDolares.Text = "Mostar Dolares";
             this.chckBxMostarDolares.UseVisualStyleBackColor = true;
-            this.chckBxMostarDolares.CheckedChanged += new System.EventHandler(this.MostarDolares);
+            
             // 
             // labelSeleccioneLaCuenta
             // 
@@ -198,7 +198,7 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Reporte Movimientos de Cuentas";
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FrameReporteMovimientosCuenta_KeyPress);
+            
             this.groupBoxSeleccionCuenta.ResumeLayout(false);
             this.groupBoxSeleccionCuenta.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDatos)).EndInit();

@@ -67,8 +67,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AriesContador.Entities, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AriesContador.Entities.1.1.0\lib\netstandard2.0\AriesContador.Entities.dll</HintPath>
+    <Reference Include="AriesContador.Entities, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AriesContador.Entities.1.1.5\lib\netstandard2.0\AriesContador.Entities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -101,6 +101,7 @@
     <Compile Include="CompañiaCL.cs" />
     <Compile Include="CorreoCL.cs" />
     <Compile Include="CuentaCL.cs" />
+    <Compile Include="Extencions\PostingPeriodListExtencion.cs" />
     <Compile Include="FechaTransaccionCL.cs" />
     <Compile Include="PermisoCL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -108,10 +109,6 @@
     <Compile Include="RestClientService.cs" />
     <Compile Include="TransaccionCL.cs" />
     <Compile Include="UserCL.cs" />
-    <Compile Include="Validaciones\CuentaIsGoodFatherValidator.cs" />
-    <Compile Include="Validaciones\CuentaRegisterValidator.cs" />
-    <Compile Include="Validaciones\Validaciones de compania\CompanyRegisterValidator.cs" />
-    <Compile Include="Validaciones\Validaciones de compania\PersonaJuridicaRegisterValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -119,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RestService\" />
+    <Folder Include="Validaciones\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

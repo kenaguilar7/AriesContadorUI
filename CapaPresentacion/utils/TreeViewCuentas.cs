@@ -1,5 +1,4 @@
-﻿using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Enumeradores;
+﻿using AriesContador.Entities.Financial.Accounts;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,14 +12,14 @@ namespace CapaPresentacion.cods
     public class TreeViewCuentas
     {
 
-        public static TreeNode[] CrearTreeView(List<Cuenta> LstCuentas)
+        public static TreeNode[] CrearTreeView(List<AccountDTO> LstCuentas)
         {
 
             List<TreeNode> retorno = new List<TreeNode>();
 
-            foreach (Cuenta item in LstCuentas)
+            foreach (AccountDTO item in LstCuentas)
             {
-                if (item.Indicador == IndicadorCuenta.Cuenta_Titulo)
+                if (item.AccountType == AccountType.Cuenta_Titulo)
                 {
                     retorno.Add(CrearCuenta(item, LstCuentas));
                 }
@@ -28,21 +27,21 @@ namespace CapaPresentacion.cods
 
             return retorno.ToArray();
         }
-        private static TreeNode CrearCuenta(Cuenta cuenta, List<Cuenta> lst)
+        private static TreeNode CrearCuenta(AccountDTO cuenta, List<AccountDTO> lst)
         {
 
 
-            TreeNode retorno = new TreeNode(cuenta.Nombre);
+            TreeNode retorno = new TreeNode(cuenta.Name);
             retorno.Tag = cuenta;
 
-            var sql = from c in lst where c.Padre == cuenta.Id select c;
+            var sql = from c in lst where c.FatherAccount.Id == cuenta.Id select c;
 
-            var cueHijas = sql.ToArray<Cuenta>();
+            var cueHijas = sql.ToArray<AccountDTO>();
 
-            foreach (Cuenta item in cueHijas)
+            foreach (AccountDTO item in cueHijas)
             {
 
-                var l3 = (from c in lst where c.Padre == cuenta.Id select c).ToArray<Cuenta>();
+                var l3 = (from c in lst where c.FatherAccount.Id == cuenta.Id select c).ToArray<AccountDTO>();
 
                 if (l3.Length != 0)
                 {
@@ -93,10 +92,10 @@ namespace CapaPresentacion.cods
 
             return list;
         }
-        public static void CargarCuentaAlTreeView(Cuenta cuenta, ref TreeView treeCuentas, List<Cuenta> LstCuentas)
+        public static void CargarCuentaAlTreeView(AccountDTO cuenta, ref TreeView treeCuentas, List<AccountDTO> LstCuentas)
         {
 
-            TreeNode node = new TreeNode(cuenta.Nombre)
+            TreeNode node = new TreeNode(cuenta.Name)
             {
                 Tag = cuenta
             };
@@ -104,18 +103,18 @@ namespace CapaPresentacion.cods
             LstCuentas.Add(cuenta);
             BuscarCuentaPadre(cuenta);
 
-            void BuscarCuentaPadre(Cuenta cuentaHija)
+            void BuscarCuentaPadre(AccountDTO cuentaHija)
             {
                 if (LstCuentas.Count != 0)
                 {
-                    foreach (Cuenta item in LstCuentas)
+                    foreach (AccountDTO item in LstCuentas)
                     {
-                        if (item.Id == cuentaHija.Padre)
+                        if (item.Id == cuentaHija.FatherAccount.Id)
                         {
                             //item.SaldoAnteriorColones += cuenta.SaldoAnteriorColones;
-                            if (item.Indicador != IndicadorCuenta.Cuenta_Titulo)
+                            if (item.AccountType != AccountType.Cuenta_Titulo)
                             {
-                                item.Indicador = IndicadorCuenta.Cuenta_De_Mayor;
+                                item.AccountType = AccountType.Cuenta_De_Mayor;
                             }
                             BuscarCuentaPadre(item);
                             return;
@@ -125,18 +124,18 @@ namespace CapaPresentacion.cods
                 }
             }
         }
-        public static List<Cuenta> GetCuentasHijas(Cuenta cuentaPadre, List<Cuenta> cuentas)
+        public static List<AccountDTO> GetCuentasHijas(AccountDTO cuentaPadre, List<AccountDTO> cuentas)
         {
 
-            var retorno = new List<Cuenta>();
+            var retorno = new List<AccountDTO>();
             retorno.Add(cuentaPadre); 
             foreach (var item in cuentas)
             {
-                if (item.Padre == cuentaPadre.Id)
+                if (item.FatherAccount.Id == cuentaPadre.Id)
                 {
                     retorno.Add(item);
 
-                    var hijas = from cc in cuentas where item.Id == cc.Padre select cc;
+                    var hijas = from cc in cuentas where item.Id == cc.FatherAccount.Id select cc;
 
                     foreach (var hitem in hijas)
                     {

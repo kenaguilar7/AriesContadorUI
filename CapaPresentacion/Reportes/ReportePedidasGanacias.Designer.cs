@@ -74,7 +74,7 @@
             this.btnExcel.Text = "&Excel";
             this.btnExcel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnExcel.UseVisualStyleBackColor = true;
-            this.btnExcel.Click += new System.EventHandler(this.btnExcel_Click);
+            
             // 
             // label10
             // 
@@ -133,7 +133,7 @@
             this.tbnSalir.Text = "&Cerrar";
             this.tbnSalir.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tbnSalir.UseVisualStyleBackColor = true;
-            this.tbnSalir.Click += new System.EventHandler(this.tbnSalir_Click);
+            
             // 
             // btnCalcular
             // 
@@ -146,7 +146,7 @@
             this.btnCalcular.Text = "C&alcular";
             this.btnCalcular.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnCalcular.UseVisualStyleBackColor = true;
-            this.btnCalcular.Click += new System.EventHandler(this.BtnCalcular);
+            
             // 
             // groupBoxListado
             // 
@@ -212,7 +212,7 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Reporte Pedidas y Ganacias";
-            this.Load += new System.EventHandler(this.ReportePedidasGanacias_Load);
+            
             this.groupBoxSeleccionCuenta.ResumeLayout(false);
             this.groupBoxSeleccionCuenta.PerformLayout();
             this.groupBoxListado.ResumeLayout(false);

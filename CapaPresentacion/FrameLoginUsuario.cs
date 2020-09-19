@@ -1,4 +1,5 @@
-﻿using CapaEntidad.Entidades.IUsers;
+﻿using AriesContador.Entities;
+using AriesContador.Entities.Administration.Users;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,13 @@ namespace CapaPresentacion
         {
             try
             {
-                var IUser = new IUserCL().Login(txtBoxIUser.Text,txtBoxClave.Text);
-                if (IUser != null)
+                //var UserDTO = new IUserCL().Login(txtBoxIUser.Text,txtBoxClave.Text);
+                var UserDTO = new UserDTO(); 
+                throw new NotImplementedException();
+
+                if (UserDTO != null)
                 {
-                    GlobalConfig.IUser = IUser;
+                    GlobalConfig.UserDTO = UserDTO;
                     this.Close();
                 }
             }

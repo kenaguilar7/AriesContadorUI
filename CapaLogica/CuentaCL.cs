@@ -1,28 +1,24 @@
-﻿using System;
+﻿using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.PostingPeriods;
+using CapaLogica.Extencions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CapaDatos.Daos;
-using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Entidades.IUsers;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Interfaces;
-using Newtonsoft.Json;
+
 
 namespace CapaLogica
 {
     public class CuentaCL
     {
-        public async Task<List<Cuenta>> GetAllAsync(string companyId)
-        {
-            var response = await RESTClient.TinyRestClient.GetRequest($"company/{companyId}/accounts").ExecuteAsHttpResponseMessageAsync();
+        public async Task<AccountDTO> GetAccountById(int accountId) {
+
+            var response = await RESTClient.TinyRestClient.GetRequest($"company/accounts/getbyid").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<List<Cuenta>>();
+                return await response.Content.ReadAsAsync<AccountDTO>();
             }
             else
             {
@@ -30,12 +26,25 @@ namespace CapaLogica
             }
         }
 
-        public async Task<Cuenta> InsertAsync(string companyId, Cuenta account)
+        public async Task<List<AccountDTO>> GetAllAsync(string companyId)
+        {
+            var response = await RESTClient.TinyRestClient.GetRequest($"company/{companyId}/accounts").ExecuteAsHttpResponseMessageAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<List<AccountDTO>>();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<AccountDTO> InsertAsync(string companyId, AccountDTO account)
         {
             var response = await RESTClient.TinyRestClient.PostRequest($"company/{companyId}/accounts/", account).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<Cuenta>();
+                return await response.Content.ReadAsAsync<AccountDTO>();
             }
             else
             {
@@ -57,7 +66,7 @@ namespace CapaLogica
             }
         }
 
-        public async Task UpdateAsyc(string companyId, Cuenta account)
+        public async Task UpdateAsyc(string companyId, AccountDTO account)
         {
             var urlString = $"company/{companyId}/accounts/{account.Id}";
 
@@ -72,20 +81,20 @@ namespace CapaLogica
             }
         }
 
-        public async Task<Cuenta> GetFullBalanceAsync(string companyId, Cuenta account)
+        public async Task<AccountDTO> GetFullBalanceAsync(string companyId, AccountDTO account)
         {
             var months = await new FechaTransaccionCL().GetAllAsync(companyId);
-            return await GetMonthlyBalanceAsync(companyId, account, months.GetOlderAccountPeriod(), months.GetNewerAccountPeriod()); 
+            return await GetMonthlyBalanceAsync(companyId, account, months.GetOlderAccountPeriod(), months.GetNewerAccountPeriod());
         }
-        
-        public async Task<Cuenta> GetMonthlyBalanceAsync(string companyId, Cuenta account, FechaTransaccion fromAccountPeriod, FechaTransaccion toAccountPeriod)
+
+        public async Task<AccountDTO> GetMonthlyBalanceAsync(string companyId, AccountDTO account, IPostingPeriod fromAccountPeriod, IPostingPeriod toAccountPeriod)
         {
             var urlString = $"company/{companyId}/accounts/GetFullBalanceWithDateRange/{account.Id}?fromAccountPeriodId={fromAccountPeriod.Id}&toAccountPeriodId={toAccountPeriod.Id}";
 
             var response = await RESTClient.TinyRestClient.GetRequest(urlString).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<Cuenta>();
+                return await response.Content.ReadAsAsync<AccountDTO>();
             }
             else
             {
@@ -93,14 +102,14 @@ namespace CapaLogica
             }
         }
 
-        public async Task<IEnumerable<Cuenta>> GetAllAccountBalanceWithJournalEntriesRangeAsync(string companyId, decimal fromJournalDateId, decimal toJournalDateId)
+        public async Task<IEnumerable<AccountDTO>> GetAllAccountBalanceWithJournalEntriesRangeAsync(string companyId, decimal fromJournalDateId, decimal toJournalDateId)
         {
             var urlString = $"company/{companyId}/accounts/GetAllAccountBalanceWithJournalEntriesRange?fromAccountPeriodId={fromJournalDateId}&toAccountPeriodId={toJournalDateId}";
 
             var response = await RESTClient.TinyRestClient.GetRequest(urlString).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<IEnumerable<Cuenta>>();
+                return await response.Content.ReadAsAsync<IEnumerable<AccountDTO>>();
             }
             else
             {
@@ -110,95 +119,13 @@ namespace CapaLogica
 
 
 
-
-
-
-        CuentaDao cuentaDao = new CuentaDao();
-        FechaTransaccionCL _fechaTransaccionCL = new FechaTransaccionCL();
-        
-        public DataTable GetInfoCompleta(Cuenta cuenta)
-        {
-            var retorno = new DataTable();
-            if (cuenta.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
-            {
-                retorno = cuentaDao.GetInfoCompletaCuentaAux(cuenta);
-            }
-            else
-            {
-                retorno = cuentaDao.GetInforCompletaCuentaMayor(cuenta);
-            }
-
-
-            //decimal acumulado = 0;
-
-            decimal lastSaldoActual = 0m;
-            foreach (DataRow item in retorno.Rows)
-            {
-                var rw = item["Saldo Actual"];
-                decimal debito = String.IsNullOrWhiteSpace(item["Debito"].ToString()) ? 0m : Convert.ToDecimal(item["Debito"]);
-                ITipoCuenta tpcnta = Cuenta.GenerarTipoCuenta(Convert.ToInt32(rw));
-                lastSaldoActual = tpcnta.SaldoActual(saldo: lastSaldoActual, debito: debito, credito: string.IsNullOrWhiteSpace(item["Credito"].ToString()) ? 0m : Convert.ToDecimal(item["Credito"]));
-                //acumulado += lastSaldoActual;
-
-                item["Saldo Actual"] = string.Format("{0:n}", lastSaldoActual);
-
-
-            }
-
-
-
-
-            return retorno;
-        }
-
-        public void LLenarConSaldos(DateTime fechaInicio, DateTime fechaFinal, List<Cuenta> lst, Compañia compañia)
-        {
-            lst.ForEach(delegate (Cuenta c)
-            {
-                //c.SaldoAnteriorColones = 0.00;
-                //c.SaldoAnteriorDolares = 0.00;
-                c.DebitosColones = 0.00m;
-                c.CreditosColones = 0.00m;
-                c.DebitosDolares = 0.00m;
-                c.CreditosDolares = 0.00m;
-            });
-
-            cuentaDao.CuentaConSaldos(lst, compañia, fechaInicio, fechaFinal);
-
-            ///Pasar este codigo a un metodo independiente
-
-            ///LLenamos tambien la cuenta padre
-            ///Como solo trae el saldo de las cuentas axiliares 
-            ///entonces llenamos el arbol de cuentas hacia arriba
-            foreach (var item in lst)
-            {
-                if (item.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
-                {
-
-                    var dummy = item;
-
-                    while ((dummy = BuscarCuentaPadre(lst, dummy)) != null)
-                    {
-                        //dummy.SaldoAnteriorColones += item.SaldoAnteriorColones;
-                        //dummy.SaldoAnteriorDolares += item.SaldoAnteriorDolares; 
-                        dummy.DebitosColones += item.DebitosColones;
-                        dummy.CreditosColones += item.CreditosColones;
-                        dummy.DebitosDolares += item.DebitosDolares;
-                        dummy.CreditosDolares += item.CreditosDolares;
-
-                    }
-                }
-            }
-
-
-        }
-        public Cuenta BuscarCuentaPadre(List<Cuenta> lst, Cuenta cuentaHija)
+        public AccountDTO BuscarCuentaPadre(List<AccountDTO> lst, AccountDTO cuentaHija)
         {
             if (lst.Count != 0)
             {
-                foreach (Cuenta item in lst)
+                foreach (AccountDTO item in lst)
                 {
-                    if (item.Id == cuentaHija.Padre)
+                    if (item.Id == cuentaHija.FatherAccount.Id)
                     {
                         return item;
                     }
@@ -211,18 +138,18 @@ namespace CapaLogica
                 return null;
             }
         }
-        public List<Cuenta> QuitarCuentasSinSaldos(List<Cuenta> lis)
+        public List<AccountDTO> QuitarCuentasSinSaldos(List<AccountDTO> lis)
         {
 
-            var retorno = new List<Cuenta>();
+            var retorno = new List<AccountDTO>();
 
-            foreach (var item in lis)
-            {
-                if (item.CuentaConMovientos() || !item.CuentaConMovientos() && item.Indicador == IndicadorCuenta.Cuenta_Titulo)
-                {
-                    retorno.Add(item.DeepCopy());
-                }
-            }
+            //foreach (var item in lis)
+            //{
+            //    if (item.JournalEntryLines.Count() > 0 || !item.CuentaConMovientos() && item.Indicador == IndicadorCuenta.Cuenta_Titulo)
+            //    {
+            //        retorno.Add(item.DeepCopy());
+            //    }
+            //}
 
             return retorno;
         }

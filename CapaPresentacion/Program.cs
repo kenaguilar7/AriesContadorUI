@@ -23,4 +23,4 @@ namespace CapaPresentacion
 
     }
 }
-//to do: la referencia de IUser en companies en la base de datos permmite insertar valores nulos corregir.
+//to do: la referencia de UserDTO en companies en la base de datos permmite insertar valores nulos corregir.

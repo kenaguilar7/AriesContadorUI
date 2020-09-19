@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.Seguridad;
-using CapaEntidad.Entidades.IUsers;
-using CapaEntidad.Entidades.Ventanas;
 using Squirrel;
+using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Administration.Companies;
+using AriesContador.Entities.Administration.Users;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace CapaPresentacion
 {
@@ -41,28 +40,28 @@ namespace CapaPresentacion
 
 
 
-        public static List<Modulo> Permisos = new List<Modulo>();
+        //public static List<Modulo> Permisos = new List<Modulo>();
 
 
 
-        public static bool GetPermiso(Ventana ventana, CRUDItem cRUDItem)
-        {
+        //public static bool GetPermiso(Ventana ventana, CRUDItem cRUDItem)
+        //{
             
             
-            return false;
-        }
+        //    return false;
+        //}
 
 
-        public static void SetModule(IUser IUser, Modulo modulo)
-        {
-            var permisos = IUser.Modulos;
+        //public static void SetModule(UserDTO UserDTO, Modulo modulo)
+        //{
+        //    var permisos = UserDTO.Modulos;
 
-        }
+        //}
 
-        public static List<Cuenta> Cuentas { get; set; } = new List<Cuenta>();
-        public static List<Compañia> Compañias { get; set; } = new List<Compañia>();
-        public static IUser IUser { get; set; }
-        public static Compañia Compañia { get; set; }
+        public static List<AccountDTO> Cuentas { get; set; } = new List<AccountDTO>();
+        public static List<CompanyDTO> Compañias { get; set; } = new List<CompanyDTO>();
+        public static UserDTO UserDTO { get; set; }
+        public static CompanyDTO company { get; set; }
 
 
     }

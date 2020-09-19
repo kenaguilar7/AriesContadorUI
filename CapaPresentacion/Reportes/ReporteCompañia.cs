@@ -1,6 +1,5 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Administration.Companies;
+using AriesContador.Entities.Utils;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -18,8 +17,8 @@ namespace CapaPresentacion.Reportes
     {
         CompañiaCL compañiaCL = new CompañiaCL();
 
-        List<Compañia> compañias = new List<Compañia>();
-        List<Compañia> actualList;
+        List<CompanyDTO> compañias = new List<CompanyDTO>();
+        List<CompanyDTO> actualList;
 
         public ReporteCompañia()
         {
@@ -33,7 +32,7 @@ namespace CapaPresentacion.Reportes
         private async Task CargarDatos()
         {
             lstIds.SelectedIndex = 0;
-            compañias = await Task.Run(()=>compañiaCL.GetAllAsync(GlobalConfig.IUser));
+            compañias = await Task.Run(()=>compañiaCL.GetAllAsync(GlobalConfig.UserDTO));
             RadiosbuttonChanceStatus(null, null);
         }
 
@@ -48,20 +47,20 @@ namespace CapaPresentacion.Reportes
                     if (lstIds.SelectedIndex == 0)
                     {
 
-                        this.LlenarLista((from c in compañias where c.TipoId != TipoID.CEDULA_JURIDICA select c).ToList<Compañia>());
+                        this.LlenarLista((from c in compañias where c.IdType != IdType.CEDULA_JURIDICA select c).ToList<CompanyDTO>());
 
                     }
                     else
                     {
                         //GridDatos.DataSource = compañiaCL.GetDataTable((TipoID)lstIds.SelectedIndex + 1);
-                        this.LlenarLista((from c in compañias where c.TipoId == ((TipoID)lstIds.SelectedIndex + 1) select c).ToList<Compañia>());
+                        this.LlenarLista((from c in compañias where c.IdType == ((IdType)lstIds.SelectedIndex + 1) select c).ToList<CompanyDTO>());
                     }
 
                 }
                 else
                 {
                     lstIds.Enabled = false;
-                    this.LlenarLista((from c in compañias where c.TipoId == TipoID.CEDULA_JURIDICA select c).ToList<Compañia>());
+                    this.LlenarLista((from c in compañias where c.IdType == IdType.CEDULA_JURIDICA select c).ToList<CompanyDTO>());
                 }
             }
             catch (Exception ex)
@@ -93,7 +92,7 @@ namespace CapaPresentacion.Reportes
                         // GridDatos.DataSource = this.Records;
                         
 
-                        CapaEntidad.Reportes.ReporteCompañia.GenerarReporte(actualList, sfd.FileName, GlobalConfig.IUser); 
+                        //CapaEntidad.Reportes.ReporteCompañia.GenerarReporte(actualList, sfd.FileName, GlobalConfig.UserDTO); 
                     }
                 }
             }
@@ -103,46 +102,45 @@ namespace CapaPresentacion.Reportes
             }
         }
 
-        private void LlenarLista(List<Compañia> lst)
+        private void LlenarLista(List<CompanyDTO> lst)
         {
             actualList = lst;
 
             GridDatos.Rows.Clear();
-            var list = new BindingList<Compañia>(lst);
+            var list = new BindingList<CompanyDTO>(lst);
 
-            foreach (Compañia comp in lst)
+            foreach (CompanyDTO comp in lst)
             {
 
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(GridDatos);
                 row.Tag = comp;
-                row.Cells[0].Value = comp.Codigo;
-                row.Cells[1].Value = comp.TipoId.ToString().Replace('_', ' '); ;
-                row.Cells[2].Value = comp.NumeroCedula;
-                row.Cells[3].Value = comp.Nombre;
-                if (comp is PersonaFisica)
-                {
-                    Column4.HeaderText = "Apellido Paterno";
-                    Column5.HeaderText = "Apellido Materno";
-                    row.Cells[4].Value = ((PersonaFisica)comp).MyApellidoMaterno;
-                    row.Cells[5].Value = ((PersonaFisica)comp).MyApellidoPaterno;
+                row.Cells[0].Value = comp.Code;
+                row.Cells[1].Value = comp.IdType.ToString().Replace('_', ' '); ;
+                row.Cells[2].Value = comp.IdNumber;
+                row.Cells[3].Value = comp.Name;
+                //if (comp is PersonaFisica)
+                //{
+                //    Column4.HeaderText = "Apellido Paterno";
+                //    Column5.HeaderText = "Apellido Materno";
+                //    row.Cells[4].Value = ((PersonaFisica)comp).MyApellidoMaterno;
+                //    row.Cells[5].Value = ((PersonaFisica)comp).MyApellidoPaterno;
 
-                }
-                else
-                {
-                    Column4.HeaderText = "Representante Legal";
-                    Column5.HeaderText = "ID Representante";
-                    row.Cells[4].Value = ((PersonaJuridica)comp).MyRepresentanteLegal;
-                    row.Cells[5].Value = ((PersonaJuridica)comp).MyIDRepresentanteLegal;
-                }
-                row.Cells[6].Value = comp.Direccion;
-                row.Cells[7].Value = comp.Web;
-                row.Cells[8].Value = comp.Correo;
-                row.Cells[9].Value = comp.Telefono[0];
-                row.Cells[10].Value = comp.Telefono[1];
-                row.Cells[11].Value = comp.Observaciones;
-                row.Cells[12].Value = comp.TipoMoneda.ToString().Replace('_', ' ');
-                row.Cells[13].Value = (comp.Activo) ? "Activa" : "Desactiva";
+                //}
+                //else
+                //{
+                //    Column4.HeaderText = "Representante Legal";
+                //    Column5.HeaderText = "ID Representante";
+                //    row.Cells[4].Value = ((PersonaJuridica)comp).MyRepresentanteLegal;
+                //    row.Cells[5].Value = ((PersonaJuridica)comp).MyIDRepresentanteLegal;
+                //}
+                row.Cells[6].Value = comp.Address;
+                row.Cells[8].Value = comp.Mail;
+                row.Cells[9].Value = comp.PhoneNumber1;
+                row.Cells[10].Value = comp.PhoneNumber2;
+                row.Cells[11].Value = comp.Memo;
+                row.Cells[12].Value = comp.CurrencyType.ToString().Replace('_', ' ');
+                row.Cells[13].Value = (comp.Delete) ? "Activa" : "Desactiva";
 
 
                 GridDatos.Rows.Add(row);

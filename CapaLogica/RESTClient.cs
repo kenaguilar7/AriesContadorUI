@@ -20,7 +20,7 @@ namespace CapaLogica
 
         public static void InitializeClient() {
 
-            TinyRestClient = new TinyRestClient(new HttpClient(), "https://localhost:44316/api");
+            TinyRestClient = new TinyRestClient(new HttpClient(), "https://localhost:44367/api");
 
             ApiClient = new HttpClient();
             ApiClient.BaseAddress = new Uri("http://localhost:5000/api/");

@@ -1,10 +1,4 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Seguridad;
-using CapaEntidad.Entidades.IUsers;
-using CapaEntidad.Entidades.Ventanas;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Textos;
-using CapaLogica;
+﻿using CapaLogica;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AriesContador.Entities.Administration.Users;
+using AriesContador.Entities.Administration.Companies;
+using AriesContador.Entities.Seguridad;
 
 namespace CapaPresentacion.Seguridad
 {
@@ -23,9 +20,9 @@ namespace CapaPresentacion.Seguridad
         IUserCL IUserCL = new IUserCL();
         CompañiaCL compañiaCL = new CompañiaCL();
         PermisoCL permisoCL = new PermisoCL();
-        private List<IUser> TodosLosIUsers = new List<IUser>();
-        private List<Compañia> CompañiasDelIUser = new List<Compañia>();
-        private List<Compañia> TodasLasCompañias = new List<Compañia>();
+        private List<UserDTO> TodosLosIUsers = new List<UserDTO>();
+        private List<CompanyDTO> CompañiasDelIUser = new List<CompanyDTO>();
+        private List<CompanyDTO> TodasLasCompañias = new List<CompanyDTO>();
         private List<Modulo> modulos = new List<Modulo>();
 
         public FormPermisoIUser()
@@ -37,7 +34,8 @@ namespace CapaPresentacion.Seguridad
         private async Task CargarDatos()
         {
             ///Cargamos los IUsers,
-            TodosLosIUsers = await  IUserCL.GetAllAsync();
+            //TodosLosIUsers = await  IUserCL.GetAllAsync();
+            var lst = await IUserCL.GetAllAsync();
             lstIUsers.DataSource = TodosLosIUsers;
             lstIUsers.SelectedIndex = -1;
         }
@@ -49,7 +47,7 @@ namespace CapaPresentacion.Seguridad
         /// <param name="e"></param>
         private void AgregarCompania_Click(object sender, EventArgs e)
         {
-            var lst = (listCompañiasSinAsignar.SelectedItems.Cast<Compañia>()).ToList();
+            var lst = (listCompañiasSinAsignar.SelectedItems.Cast<CompanyDTO>()).ToList();
             lst.ForEach((compañia) =>
             {
                 listCompañiasAsignadas.Items.Add(compañia);
@@ -64,7 +62,7 @@ namespace CapaPresentacion.Seguridad
         /// <param name="e"></param>
         private void RemoverCompañia_Click(object sender, EventArgs e)
         {
-            var lst = (listCompañiasAsignadas.SelectedItems.Cast<Compañia>()).ToList();
+            var lst = (listCompañiasAsignadas.SelectedItems.Cast<CompanyDTO>()).ToList();
             lst.ForEach((compañia) =>
             {
                 listCompañiasSinAsignar.Items.Add(compañia);
@@ -72,31 +70,31 @@ namespace CapaPresentacion.Seguridad
             });
         }
         /// <summary>
-        /// Cargar los datos del IUser seleccionado
+        /// Cargar los datos del UserDTO seleccionado
         /// </summary>
-        /// <param name="IUser"></param>
-        private async Task CargarIUserAsync(IUser IUser)
+        /// <param name="UserDTO"></param>
+        private async Task CargarIUserAsync(UserDTO UserDTO)
         {
 
-            ///Traigo todas las compañias que el IUser tenga asignado
+            ///Traigo todas las compañias que el UserDTO tenga asignado
             listCompañiasAsignadas.Items.Clear();
             listCompañiasSinAsignar.Items.Clear();
 
-            TodasLasCompañias = await compañiaCL.GetAllAsync(GlobalConfig.IUser);
-            CompañiasDelIUser = await compañiaCL.GetAllAsync(IUser);
+            TodasLasCompañias = await compañiaCL.GetAllAsync(GlobalConfig.UserDTO);
+            CompañiasDelIUser = await compañiaCL.GetAllAsync(UserDTO);
 
             ///Buscamos todas las compañias
-            TodasLasCompañias.ForEach((Compañia) =>
+            TodasLasCompañias.ForEach((CompanyDTO) =>
             {
-                if (CompañiasDelIUser.Find(x => x.Codigo == Compañia.Codigo) == null)
+                if (CompañiasDelIUser.Find(x => x.Code == CompanyDTO.Code) == null)
                 {
                     ///si la busqueda fue nula
-                    ///quiere decir que el IUser no tiene asginada la compañia
-                    listCompañiasSinAsignar.Items.Add(Compañia);
+                    ///quiere decir que el UserDTO no tiene asginada la compañia
+                    listCompañiasSinAsignar.Items.Add(CompanyDTO);
                 }
                 else
                 {
-                    listCompañiasAsignadas.Items.Add(Compañia);
+                    listCompañiasAsignadas.Items.Add(CompanyDTO);
                 }
 
             });
@@ -111,7 +109,7 @@ namespace CapaPresentacion.Seguridad
         {
             if (this.Visible)
             {
-                var user = (IUser)lstIUsers.SelectedItem;
+                var user = (UserDTO)lstIUsers.SelectedItem;
                 if (user != null)
                 {
                     CargarIUserAsync(user);
@@ -124,17 +122,20 @@ namespace CapaPresentacion.Seguridad
         }
         /// <summary>
         /// Carga los modulos disponible
-        /// y selecciona los asignados al IUser
+        /// y selecciona los asignados al UserDTO
         /// y los que no tiene asignados
         /// </summary>
         private void CargarModulos()
         {
             treeViewModulos.Nodes.Clear();
-            var user = (IUser)lstIUsers.SelectedItem;
-            ///El IUser admin puede tener acceso a todas las compañias??? si es asi entonces 
+            var user = (UserDTO)lstIUsers.SelectedItem;
+            ///El UserDTO admin puede tener acceso a todas las compañias??? si es asi entonces 
             ///no ponerlos en la lista
-            panelAsignacionModulos.Enabled = (user.TipoIUser == TipoIUser.Administrador) ? false : true;
-            modulos = permisoCL.GetAllModules(user);
+            panelAsignacionModulos.Enabled = (user.UserType == UserType.Administrador) ? false : true;
+
+
+            throw new NotImplementedException(); 
+            //modulos = permisoCL.GetAllModules(user);
 
             foreach (var item in modulos)
             {
@@ -157,7 +158,7 @@ namespace CapaPresentacion.Seguridad
         /// <param name="treeNode"></param>
         private void CargarVentanasAlNodo(Modulo modulo, ref TreeNode treeNode)
         {
-            foreach (var item in modulo.LstVentanas)
+            foreach (var item in modulo.Ventanas)
             {
                 var x = new TreeNode(item.NombreExterno)
                 {
@@ -183,22 +184,22 @@ namespace CapaPresentacion.Seguridad
         {
             ///Primero guarda las compañias 
 
-            var nuevas = (listCompañiasAsignadas.Items.Cast<Compañia>()).ToList();
-            var remover = (listCompañiasSinAsignar.Items.Cast<Compañia>()).ToList();
+            var nuevas = (listCompañiasAsignadas.Items.Cast<CompanyDTO>()).ToList();
+            var remover = (listCompañiasSinAsignar.Items.Cast<CompanyDTO>()).ToList();
 
-            var user = (IUser)lstIUsers.SelectedItem;
+            var user = (UserDTO)lstIUsers.SelectedItem;
             if (user != null)
             {
-
-                permisoCL.InsertCompany(nuevas, user, GlobalConfig.IUser);
-                permisoCL.RemoveCompany(remover, user, GlobalConfig.IUser);
-                permisoCL.UpdatePermisos(modulos, user, GlobalConfig.IUser);
+                throw new NotImplementedException(); 
+                //permisoCL.InsertCompany(nuevas, user, GlobalConfig.UserDTO);
+                //permisoCL.RemoveCompany(remover, user, GlobalConfig.UserDTO);
+                //permisoCL.UpdatePermisos(modulos, user, GlobalConfig.UserDTO);
                 var ss = modulos;
-                MessageBox.Show("IUser actulizado correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("UserDTO actulizado correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("Seleccione un IUser", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Seleccione un UserDTO", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
         }
@@ -210,7 +211,7 @@ namespace CapaPresentacion.Seguridad
         /// <param name="e"></param>
         private void TreeViewModulos_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            ((IPermiso)e.Node.Tag).TienePermiso = e.Node.Checked;
+            //((Permiso)e.Node.Tag).TienePermiso = e.Node.Checked;
         }
         /// <summary>
         /// Se sale de la venatana
@@ -224,7 +225,7 @@ namespace CapaPresentacion.Seguridad
         /// <summary>
         /// Evento que ocurre cuando se presiona un tecla en el cuadro de texto 
         /// de buscar IUsers 
-        /// es basicamente por si el IUser presiona enter poder hacer el tap
+        /// es basicamente por si el UserDTO presiona enter poder hacer el tap
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -255,7 +256,7 @@ namespace CapaPresentacion.Seguridad
                 }
                 else
                 {
-                    MessageBox.Show($"No se encontro ningun IUser con el IUser {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show($"No se encontro ningun UserDTO con el UserDTO {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }

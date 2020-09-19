@@ -1,5 +1,4 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Administration.Companies;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -30,8 +29,8 @@ namespace CapaPresentacion
         {
             try
             {
-                var lst = await _comñiaCL.GetAllAsync(GlobalConfig.IUser);
-                var _lstCompanies = (from c in lst where c.Activo == true orderby c.Nombre select c).ToList<Compañia>();
+                var lst = await _comñiaCL.GetAllAsync(GlobalConfig.UserDTO);
+                var _lstCompanies = (from c in lst where c.Delete == true orderby c.Name select c).ToList<CompanyDTO>();
                 lstCompanias.DataSource = _lstCompanies;
                 lstCompanias.SelectedIndex = -1;
                 this.lstCompanias.SelectedIndexChanged += new System.EventHandler(this.lstCompanias_SelectedIndexChanged);
@@ -46,13 +45,13 @@ namespace CapaPresentacion
         {
             try
             {
-                var c = (Compañia)btnAceptar.Tag;
+                var c = (CompanyDTO)btnAceptar.Tag;
                 if (c != null)
                 {
 
                     ///TODO si hay ventanas abiertas deberian de cerrarse
 
-                    GlobalConfig.Compañia = c;
+                    GlobalConfig.company = c;
                     fm.comParametro = true;
                     this.Close();
                 }
@@ -68,12 +67,12 @@ namespace CapaPresentacion
             }
         }
 
-        private void CargarCompaniaFormulario(Compañia compañia)
+        private void CargarCompaniaFormulario(CompanyDTO compañia)
         {
             // lstCompanias.SelectedIndex = -1;
             txtCompaniaBuscada.Text = compañia.ToString();
             txtCompaniaBuscada.Visible = true;
-            txtIdentificacion.Text = compañia.NumeroCedula;
+            txtIdentificacion.Text = compañia.IdNumber;
             txtIdentificacion.Visible = true;
             btnAceptar.Tag = compañia;
 
@@ -91,7 +90,7 @@ namespace CapaPresentacion
                     //Le decimos que me devuelva un String con el formto del parametro
                     var cod = "C" + num.ToString("000");
 
-                    List<Compañia> salida = (from c in (List<Compañia>)lstCompanias.DataSource where c.Codigo == cod select c).Take(1).ToList<Compañia>();
+                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == cod select c).Take(1).ToList<CompanyDTO>();
 
                     if (salida.Count != 0)
                     {
@@ -101,7 +100,7 @@ namespace CapaPresentacion
                 else
                 {
 
-                    List<Compañia> salida = (from c in (List<Compañia>)lstCompanias.DataSource where c.Codigo == txtBoxBuscar.Text select c).Take(1).ToList<Compañia>();
+                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == txtBoxBuscar.Text select c).Take(1).ToList<CompanyDTO>();
 
                     if (salida.Count != 0)
                     {
@@ -119,7 +118,7 @@ namespace CapaPresentacion
         private void lstCompanias_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.txtCompaniaBuscada.Visible = false;
-            var c = (Compañia)lstCompanias.SelectedItem;
+            var c = (CompanyDTO)lstCompanias.SelectedItem;
             CargarCompaniaFormulario(c);
         }
 

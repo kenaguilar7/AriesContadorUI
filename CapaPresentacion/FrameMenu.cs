@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using CapaEntidad.Entidades.Ventanas;
-using CapaEntidad.Textos;
 using CapaPresentacion.FrameCompañias;
 using CapaPresentacion.FrameCuentas;
 using CapaPresentacion.Seguridad;
 using CapaPresentacion.Reportes;
-using CapaEntidad.Entidades.Compañias;
-using CapaPresentacion.FrameIUsers;
+using AriesContador.Entities.Seguridad;
+using AriesContador.Entities.Administration.Users;
+using System.Linq; 
 
 namespace CapaPresentacion
 {
@@ -19,25 +18,25 @@ namespace CapaPresentacion
         {
             InitializeComponent();
 
-            FrameLoginIUser n = new FrameLoginIUser();
-            n.FormClosing += N_FormClosing;
+            //FrameLoginIUser n = new FrameLoginIUser();
+            //n.FormClosing += N_FormClosing;
 
-            n.ShowDialog();
-            void N_FormClosing(object sender, FormClosingEventArgs e)
-            {
-                if (GlobalConfig.IUser == null)
-                {
-                    Application.Exit();
-                }
-            }
+            //n.ShowDialog();
+            //void N_FormClosing(object sender, FormClosingEventArgs e)
+            //{
+            //    if (GlobalConfig.UserDTO == null)
+            //    {
+            //        Application.Exit();
+            //    }
+            //}
             CargarDatos();
 
         }
         private void CargarDatos()
         {
-            if (GlobalConfig.IUser != null)
+            if (GlobalConfig.UserDTO != null)
             {
-                this.txtIUser.Text = GlobalConfig.IUser.ToString();
+                this.txtIUser.Text = GlobalConfig.UserDTO.ToString();
                 HideOptions();
                 AddVersionNumber();
             }
@@ -51,7 +50,7 @@ namespace CapaPresentacion
         }
         private void CargarCompañia()
         {
-            this.txtCompaniaNombre.Text = GlobalConfig.Compañia.ToString();
+            this.txtCompaniaNombre.Text = GlobalConfig.company.ToString();
         }
         private void MaestroDeCompañiasToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -61,7 +60,7 @@ namespace CapaPresentacion
         }
         private void MaestroDeCuentasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalConfig.Compañia != null)
+            if (GlobalConfig.company != null)
             {
                 FrameMaestroCuenta n = new FrameMaestroCuenta();
                 n.MdiParent = this;
@@ -77,7 +76,7 @@ namespace CapaPresentacion
         {
             try
             {
-                if (GlobalConfig.Compañia != null)
+                if (GlobalConfig.company != null)
                 {
                     if (!CheckForDuplicate(VentanaInfo.FormAsientos))
                     {
@@ -99,7 +98,7 @@ namespace CapaPresentacion
         }
         private void MaestroDeUsaurio(object sender, EventArgs e)
         {
-            FrameMaestroIUser n = new FrameMaestroIUser();
+            FrameMaestroUsuario n = new FrameMaestroUsuario();
             n.MdiParent = this;
             n.Show();
         }
@@ -118,7 +117,7 @@ namespace CapaPresentacion
         private void MaestroDeMeses(object sender, EventArgs e)
         {
 
-            if (GlobalConfig.Compañia != null)
+            if (GlobalConfig.company != null)
             {
                 FrameAdministrarMeses n = new FrameAdministrarMeses();
                 n.MdiParent = this;
@@ -145,7 +144,7 @@ namespace CapaPresentacion
         {
             try
             {
-                if (GlobalConfig.Compañia != null)
+                if (GlobalConfig.company != null)
                 {
                     FrameReporteComprobacion n = new FrameReporteComprobacion();
                     n.MdiParent = this;
@@ -167,7 +166,7 @@ namespace CapaPresentacion
         {
             try
             {
-                if (GlobalConfig.Compañia != null)
+                if (GlobalConfig.company != null)
                 {
                     FrameReporteAuxiliares frame = new FrameReporteAuxiliares();
                     frame.MdiParent = this;
@@ -192,12 +191,12 @@ namespace CapaPresentacion
             ///
             //var mConta = ;
 
-            if (GlobalConfig.IUser.TipoIUser == CapaEntidad.Enumeradores.TipoIUser.IUser)
+            if (GlobalConfig.UserDTO.UserType == UserType.Usuario)
             {
 
 
 
-                if ((GlobalConfig.IUser.Modulos.Find(x => x.Codigo == 1) is var mConta) && mConta == null || !mConta.TienePermiso)
+                if ((GlobalConfig.UserDTO.Modules.FirstOrDefault(x => x.Codigo == 1) is var mConta) && mConta == null || !mConta.TienePermiso)
                 {
                     contableToolStripMenuItem.Enabled = false;
                     contableToolStripMenuItem.Visible = false;
@@ -205,40 +204,40 @@ namespace CapaPresentacion
                 else
                 {
                     ///Empezamos por ventanas
-                    maestroDeCuentasToolStripMenuItem.Visible = (mConta.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroCuenta)).TienePermiso;
-                    asientosContablesToolStripMenuItem.Visible = (mConta.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormAsientos)).TienePermiso;
-                    administrarMesesToolStripMenuItem.Visible = (mConta.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormAdminMeses)).TienePermiso;
+                    maestroDeCuentasToolStripMenuItem.Visible = (mConta.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroCuenta)).TienePermiso;
+                    asientosContablesToolStripMenuItem.Visible = (mConta.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormAsientos)).TienePermiso;
+                    administrarMesesToolStripMenuItem.Visible = (mConta.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormAdminMeses)).TienePermiso;
                 }
 
-                if ((GlobalConfig.IUser.Modulos.Find(x => x.Codigo == 2) is var MCompanias) && MCompanias == null || !MCompanias.TienePermiso)
+                if ((GlobalConfig.UserDTO.Modules.FirstOrDefault(x => x.Codigo == 2) is var MCompanias) && MCompanias == null || !MCompanias.TienePermiso)
                 {
                     maestroDeCompañiasToolStripMenuItem.Enabled = false;
                     //maestroDeCompañiasToolStripMenuItem = false;
                 }
                 else
                 {
-                    maestroDeCompañiasToolStripMenuItem.Enabled = (MCompanias.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroCompanias)).TienePermiso;
+                    maestroDeCompañiasToolStripMenuItem.Enabled = (MCompanias.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroCompanias)).TienePermiso;
                 }
 
-                if ((GlobalConfig.IUser.Modulos.Find(x => x.Codigo == 3) is var mSeguridad) && mSeguridad == null || !mSeguridad.TienePermiso)
+                if ((GlobalConfig.UserDTO.Modules.FirstOrDefault(x => x.Codigo == 3) is var mSeguridad) && mSeguridad == null || !mSeguridad.TienePermiso)
                 {
                     sistemaToolStripMenuItem.Enabled = false;
                     //maestroDeCompañiasToolStripMenuItem = false;
                 }
                 else
                 {
-                    PermisosDeIUserToolStripMenuItem.Enabled = (mSeguridad.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormPermisoIUser)).TienePermiso;
+                    PermisosDeIUserToolStripMenuItem.Enabled = (mSeguridad.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormPermisoUsuario)).TienePermiso;
 
                 }
 
-                if ((GlobalConfig.IUser.Modulos.Find(x => x.Codigo == 4) is var mIUser) && mIUser == null || !mIUser.TienePermiso)
+                if ((GlobalConfig.UserDTO.Modules.FirstOrDefault(x => x.Codigo == 4) is var mIUser) && mIUser == null || !mIUser.TienePermiso)
                 {
                     IUsersToolStripMenuItem.Enabled = false;
                     //maestroDeCompañiasToolStripMenuItem = false;
                 }
                 else
                 {
-                    MaestroDeIUsertoolStripMenuItem.Enabled = (mIUser.LstVentanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroIUser)).TienePermiso;
+                    MaestroDeIUsertoolStripMenuItem.Enabled = (mIUser.Ventanas.Find(x => x.VentanaInfo == VentanaInfo.FormMaestroUsuario)).TienePermiso;
 
                 }
 
@@ -256,7 +255,7 @@ namespace CapaPresentacion
         private void movimientosDeCuentaToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (GlobalConfig.Compañia != null)
+            if (GlobalConfig.company != null)
             {
                 ReporteMovimientosCuenta form = new ReporteMovimientosCuenta
                 {
@@ -272,7 +271,7 @@ namespace CapaPresentacion
         }
         private void perdiasYGananciasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalConfig.Compañia != null)
+            if (GlobalConfig.company != null)
             {
                 ReportePedidasGanacias form = new ReportePedidasGanacias
                 {
@@ -288,7 +287,7 @@ namespace CapaPresentacion
         private void balanceDeSituaciónToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (GlobalConfig.Compañia != null)
+            if (GlobalConfig.company != null)
             {
                 ReporteBalanceSituacion form = new ReporteBalanceSituacion
                 {
@@ -347,9 +346,9 @@ namespace CapaPresentacion
 
         private void gestionDeCorreosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Correo n = new Correo();
-            n.MdiParent = this;
-            n.Show(); 
+            //Correo n = new Correo();
+            //n.MdiParent = this;
+            //n.Show(); 
         }
 
         private void nbalanceDeComprobaciónToolStripMenuItem_Click(object sender, EventArgs e)

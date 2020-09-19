@@ -1,12 +1,9 @@
-﻿using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Interfaces;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.PostingPeriods;
 using CapaLogica;
-using CapaLogica.Validaciones;
 using CapaPresentacion.cods;
 using CapaPresentacion.Reportes;
+using CapaPresentacion.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,11 +19,11 @@ namespace CapaPresentacion.FrameCuentas
         #region WindowsProperties
         private CuentaCL _cuentaCL { get; } = new CuentaCL();
         private FechaTransaccionCL _fechaTransaccionCL { get; } = new FechaTransaccionCL();
-        private List<Cuenta> _lstCuentas { get; set; } = new List<Cuenta>();
-        private List<FechaTransaccion> _lstFechas { get; set; } = new List<FechaTransaccion>();
-        private Cuenta CuentaActual
+        private List<AccountDTO> _lstCuentas { get; set; } = new List<AccountDTO>();
+        private IEnumerable<IPostingPeriod> _lstFechas { get; set; } = new List<IPostingPeriod>();
+        private AccountDTO CuentaActual
         {
-            get => (treeCuentas.SelectedNode is null) ? null : treeCuentas.SelectedNode.Tag as Cuenta;
+            get => (treeCuentas.SelectedNode is null) ? null : treeCuentas.SelectedNode.Tag as AccountDTO;
             set => CuentaActual = value;
         }
         #endregion
@@ -42,16 +39,16 @@ namespace CapaPresentacion.FrameCuentas
         {
             try
             {
-                Cuenta cuenta = CuentaActual;
+                AccountDTO cuenta = CuentaActual;
                 var desicionHeredarSaldo = true;
 
 
-                if (cuenta.Indicador == IndicadorCuenta.Cuenta_Titulo)
+                if (cuenta.AccountType == AccountType.Cuenta_Titulo)
                 {
                     MessageBox.Show("No se pueden crear cuentas a este nivel", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     desicionHeredarSaldo = false;
                 }
-                else if (cuenta.Indicador == IndicadorCuenta.Cuenta_Auxiliar)
+                else if (cuenta.AccountType == AccountType.Cuenta_Auxiliar)
                 {
                     var cuentaConMovimiento = await ObtenerSaldoDeCuentaAsync(cuenta);
                     desicionHeredarSaldo = IUserAceptaHeredarSaldo(cuentaConMovimiento);
@@ -68,14 +65,14 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private bool IUserAceptaHeredarSaldo(Cuenta cuenta)
+        private bool IUserAceptaHeredarSaldo(AccountDTO cuenta)
         {
-            if (cuenta.CuentaConMovientos())
+            if (cuenta.JournalEntryLines.Count > 0)
             {
                 var message = $"Esta cuenta posee movimientos, si continua estos seran heredados a la nueva cuenta\n" +
-                              $"Saldo Anterior      {string.Format("{0:₡###,###,###,##0.00##}", cuenta.SaldoAnteriorColones)}\n" +
-                              $"Debitos             {string.Format("{0:₡###,###,###,##0.00##}", cuenta.DebitosColones)}\n" +
-                              $"Creditos            {string.Format("{0:₡###,###,###,##0.00##}", cuenta.CreditosColones)}\n" +
+                              $"Saldo Anterior      {string.Format("{0:₡###,###,###,##0.00##}", cuenta.PriorBalance)}\n" +
+                              $"Debitos             {string.Format("{0:₡###,###,###,##0.00##}", cuenta.GetDebitBalance())}\n" +
+                              $"Creditos            {string.Format("{0:₡###,###,###,##0.00##}", cuenta.GetCreditBalance())}\n" +
                               $"\n" +
                               $"¿Desea continuar y crear una cuenta nueva?";
 
@@ -88,25 +85,19 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private void AbrirVentanaNuevaCuenta(Cuenta cuenta)
+        private void AbrirVentanaNuevaCuenta(AccountDTO cuenta)
         {
             FrameNuevaCuenta nv = new FrameNuevaCuenta(this, cuenta);
             nv.Cuentas = _lstCuentas;
             nv.ShowDialog();
         }
 
-        private async Task<Cuenta> ObtenerSaldoDeCuentaAsync(Cuenta cuenta)
+        private async Task<AccountDTO> ObtenerSaldoDeCuentaAsync(AccountDTO cuenta)
         {
-            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.Compañia.Codigo, cuenta);
+            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.company.Code, cuenta);
         }
 
-        private void VerificarNuevaCuenta()
-        {
-
-
-        }
-
-        public bool TransferirCuenta(Cuenta cuenta)
+        public bool TransferirCuenta(AccountDTO cuenta)
         {
             if (cuenta != null)
             {
@@ -163,7 +154,7 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private void DeleteAccountFromList(Cuenta cuenta)
+        private void DeleteAccountFromList(AccountDTO cuenta)
         {
             _lstCuentas.Remove(cuenta);
             var padre = treeCuentas.SelectedNode.Parent;
@@ -171,37 +162,37 @@ namespace CapaPresentacion.FrameCuentas
             treeCuentas.SelectedNode = padre;
         }
 
-        private async Task ExecuteDeleteAsync() => await _cuentaCL.DeleteAsync(GlobalConfig.Compañia.Codigo, CuentaActual.Id);
+        private async Task ExecuteDeleteAsync() => await _cuentaCL.DeleteAsync(GlobalConfig.company.Code, CuentaActual.Id);
 
         #endregion
 
         #region Edit
         private async void UpdateAccount(object sender, EventArgs e)
         {
-            var nombreActualCuenta = CuentaActual.Nombre;
-            var detalleActualCuenta = CuentaActual.Detalle;
+            var nombreActualCuenta = CuentaActual.Name;
+            var detalleActualCuenta = CuentaActual.Memo;
 
             try
             {
                 if (ValidateChildren())
                 {
-                    CuentaActual.Detalle = txtBoxDetalle.Text;
-                    CuentaActual.Nombre = txtNombreInfo.Text;
+                    CuentaActual.Memo = txtBoxDetalle.Text;
+                    CuentaActual.Name = txtNombreInfo.Text;
                     await ExecuteUpdateAsync(CuentaActual);
                     DisableEditButtons();
-                    treeCuentas.SelectedNode.Text = CuentaActual.Nombre;
+                    treeCuentas.SelectedNode.Text = CuentaActual.Name;
                 }
             }
             catch (Exception ex)
             {
-                CuentaActual.Nombre = nombreActualCuenta;
-                CuentaActual.Detalle = detalleActualCuenta;
+                CuentaActual.Name = nombreActualCuenta;
+                CuentaActual.Memo = detalleActualCuenta;
                 MessageBox.Show(ex.Message, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private async Task ExecuteUpdateAsync(Cuenta cuenta)
-            => await _cuentaCL.UpdateAsyc(GlobalConfig.Compañia.Codigo, cuenta);
+        private async Task ExecuteUpdateAsync(AccountDTO cuenta)
+            => await _cuentaCL.UpdateAsyc(GlobalConfig.company.Code, cuenta);
 
 
         private void EditarCuenta(object sender, EventArgs e)
@@ -246,23 +237,23 @@ namespace CapaPresentacion.FrameCuentas
         #region Load Account Info To Grid
         private void BuildAccountGeneralInformationDashboard()
         {
-            txtNombreInfo.Text = CuentaActual.Nombre;
-            txtTipoInfo.Text = CuentaActual.TipoCuenta.TipoCuenta.ToString().Replace('_', ' ');
-            txtIndicadorInfo.Text = CuentaActual.Indicador.ToString().Replace('_', ' ');
-            txtBoxDetalle.Text = CuentaActual.Detalle;
+            txtNombreInfo.Text = CuentaActual.Name;
+            txtTipoInfo.Text = CuentaActual.AccountTag.ToString().Replace('_', ' ');
+            txtIndicadorInfo.Text = CuentaActual.AccountType.ToString().Replace('_', ' ');
+            txtBoxDetalle.Text = CuentaActual.Memo;
             infoPanel.Tag = CuentaActual;
         }
 
         private async Task BuildAccountBalanceInformationDashboard()
         {
-            FechaTransaccion startMonth = GetSelectedMonthInFechaInicio();
-            FechaTransaccion endMonth = GetSelectedMonthInFechaFinal();
+            IPostingPeriod startMonth = GetSelectedMonthInFechaInicio();
+            IPostingPeriod endMonth = GetSelectedMonthInFechaFinal();
 
             try
             {
                 if (startMonth != null && endMonth != null && CuentaActual != null)
                 {
-                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(GlobalConfig.Compañia.Codigo, CuentaActual, startMonth, endMonth);
+                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(GlobalConfig.company.Code, CuentaActual, startMonth, endMonth);
                     PrintBalanceInCurPanel(_account);
                 }
             }
@@ -273,7 +264,7 @@ namespace CapaPresentacion.FrameCuentas
 
         }
 
-        private void PrintBalanceInCurPanel(Cuenta account)
+        private void PrintBalanceInCurPanel(AccountDTO account)
         {
             DataGridViewRow row = BuildDataGridViewRow();
 
@@ -287,22 +278,22 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private void CargarGridA(DataGridViewRow row, Cuenta cuenta)
+        private void CargarGridA(DataGridViewRow row, AccountDTO cuenta)
         {
             row.CreateCells(gridDatosA);
-            row.Cells[0].Value = cuenta.SaldoAnteriorColones;
-            row.Cells[1].Value = cuenta.DebitosColones;
-            row.Cells[2].Value = cuenta.CreditosColones;
-            row.Cells[3].Value = cuenta.SaldoActualColones;
+            row.Cells[0].Value = cuenta.PriorBalance;
+            row.Cells[1].Value = cuenta.GetDebitBalance();
+            row.Cells[2].Value = cuenta.GetCreditBalance();
+            row.Cells[3].Value = cuenta.CurrentBalance;
             gridDatosA.Rows.Add(row);
         }
 
-        private void CargarGridB(DataGridViewRow row, Cuenta cuenta)
+        private void CargarGridB(DataGridViewRow row, AccountDTO cuenta)
         {
             row.CreateCells(gridDatosB);
-            row.Cells[0].Value = cuenta.DebitosColones;
-            row.Cells[1].Value = cuenta.CreditosColones;
-            row.Cells[2].Value = cuenta.SaldoMensualColones;
+            row.Cells[0].Value = cuenta.GetDebitBalance();
+            row.Cells[1].Value = cuenta.GetCreditBalance();
+            row.Cells[2].Value = cuenta.MontlyBalance;
             gridDatosB.Rows.Add(row);
         }
 
@@ -314,15 +305,15 @@ namespace CapaPresentacion.FrameCuentas
             return row;
         }
 
-        private FechaTransaccion GetSelectedMonthInFechaFinal()
+        private IPostingPeriod GetSelectedMonthInFechaFinal()
         {
             if (gridDatosA.Visible)
             {
-                return AFechaFinal.SelectedItem as FechaTransaccion;
+                return AFechaFinal.SelectedItem as IPostingPeriod;
             }
             else if (gridDatosB.Visible)
             {
-                return BFechaFinal.SelectedItem as FechaTransaccion;
+                return BFechaFinal.SelectedItem as IPostingPeriod;
             }
             else
             {
@@ -330,15 +321,15 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private FechaTransaccion GetSelectedMonthInFechaInicio()
+        private IPostingPeriod GetSelectedMonthInFechaInicio()
         {
             if (gridDatosA.Visible)
             {
-                return AFechaInicio.SelectedItem as FechaTransaccion ?? null;
+                return AFechaInicio.SelectedItem as IPostingPeriod ?? null;
             }
             else if (gridDatosB.Visible)
             {
-                return BFechaInicio.SelectedItem as FechaTransaccion ?? null;
+                return BFechaInicio.SelectedItem as IPostingPeriod ?? null;
             }
             else
             {
@@ -358,19 +349,19 @@ namespace CapaPresentacion.FrameCuentas
             EnableComboBoxDatesEvents();
         }
 
-        private void LoadDatesAsync()
+        private async Task LoadDatesAsync()
         {
-            _lstFechas = _fechaTransaccionCL.GetAllActive(GlobalConfig.Compañia, GlobalConfig.IUser);
+            _lstFechas = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             ///Se añaden interfaces / copias (las interfaces no son copias) 
             ///la idea con eso es que cada item y de cada combo box tenga diferente hash
-            var lstBfechasFnl = new List<FechaTransaccion> { (from c1 in _lstFechas select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
+            var lstBfechasFnl = new List<IPostingPeriod> { (from c1 in _lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
 
             AFechaInicio.DataSource = lstBfechasFnl;
             AFechaFinal.DataSource = (from c1 in _lstFechas select c1).ToList();
             AFechaFinal.SelectedIndex = -1;
 
             BFechaInicio.DataSource = (from c1 in _lstFechas select c1).ToList();
-            BFechaFinal.DataSource = (from c1 in _lstFechas where c1.Fecha >= ((FechaTransaccion)BFechaInicio.SelectedItem).Fecha select c1).ToList();
+            BFechaFinal.DataSource = (from c1 in _lstFechas where c1.Date >= ((IPostingPeriod)BFechaInicio.SelectedItem).Date select c1).ToList();
             BFechaFinal.SelectedIndex = -1;
         }
 
@@ -380,7 +371,7 @@ namespace CapaPresentacion.FrameCuentas
 
             try
             {
-                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.Compañia.Codigo);
+                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code);
                 //cargar las cuentas al arbol
                 treeCuentas.Nodes.AddRange(TreeViewCuentas.CrearTreeView(_lstCuentas));
             }
@@ -407,7 +398,7 @@ namespace CapaPresentacion.FrameCuentas
         #region Open Windows
         private void OpenAccountReports(object sender, EventArgs e)
         {
-            ReporteCuenta reporte = new ReporteCuenta(GlobalConfig.Compañia, GlobalConfig.IUser)
+            ReporteCuenta reporte = new ReporteCuenta(GlobalConfig.company, GlobalConfig.UserDTO)
             {
                 MdiParent = this.MdiParent
             };
@@ -416,16 +407,16 @@ namespace CapaPresentacion.FrameCuentas
 
         private void OpenAccountActivityReport(object sender, EventArgs e)
         {
-            ReporteMovimientosCuenta frame = new ReporteMovimientosCuenta();
-            if (frame.TransferirCuenta(CuentaActual))
-            {
-                frame.MdiParent = this.MdiParent;
-                frame.Show();
-            }
-            else
-            {
-                MessageBox.Show("Seleccione una cuenta valida", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            }
+            //ReporteMovimientosCuenta frame = new ReporteMovimientosCuenta();
+            //if (frame.TransferirCuenta(CuentaActual))
+            //{
+            //    frame.MdiParent = this.MdiParent;
+            //    frame.Show();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Seleccione una cuenta valida", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            //}
         }
 
         #endregion
@@ -484,7 +475,7 @@ namespace CapaPresentacion.FrameCuentas
             if (tabControlGeneral.SelectedIndex == 1)
             {
 
-                BFechaFinal.DataSource = (from n in _lstFechas where n.Fecha >= ((FechaTransaccion)BFechaInicio.SelectedItem).Fecha select n).ToList<FechaTransaccion>();
+                BFechaFinal.DataSource = (from n in _lstFechas where n.Date >= ((IPostingPeriod)BFechaInicio.SelectedItem).Date select n).ToList<IPostingPeriod>();
             }
         }
         #endregion
@@ -500,7 +491,7 @@ namespace CapaPresentacion.FrameCuentas
                 SetErrorMessage(txtNombreInfo, mensaje, ref e, true);
 
             }
-            else if (txtNombre != CuentaActual.Nombre && NameExist(txtNombre, CuentaActual.TipoCuenta))
+            else if (txtNombre != CuentaActual.Name && NameExist(txtNombre, CuentaActual.AccountTag))
             {
                 var mensaje = "Nombre en uso!";
                 SetErrorMessage(txtNombreInfo, mensaje, ref e, true);
@@ -511,9 +502,9 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private bool NameExist(string txtNombre, ITipoCuenta tipoCuenta)
+        private bool NameExist(string txtNombre, AccountTag tipoCuenta)
         {
-            return _lstCuentas.All(x => x.TipoCuenta == tipoCuenta && x.Nombre == txtNombre);
+            return _lstCuentas.All(x => x.AccountTag == tipoCuenta && x.Name == txtNombre);
         }
 
         private void SetErrorMessage(Control control, string message, ref CancelEventArgs e, bool cancel)

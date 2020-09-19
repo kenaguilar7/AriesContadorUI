@@ -1,10 +1,7 @@
-﻿using CapaEntidad.Entidades.Compañias;
-using CapaEntidad.Entidades.Cuentas;
-using CapaEntidad.Entidades.FechaTransacciones;
-using CapaEntidad.Entidades.IUsers;
-using CapaEntidad.Enumeradores;
-using CapaEntidad.Reportes;
-using CapaEntidad.Textos;
+﻿using AriesContador.Entities.Administration.Companies;
+using AriesContador.Entities.Administration.Users;
+using AriesContador.Entities.Financial.Accounts;
+using AriesContador.Entities.Financial.PostingPeriods;
 using CapaLogica;
 using System;
 using System.Collections.Generic;
@@ -17,19 +14,19 @@ namespace CapaPresentacion.Reportes
     public partial class ReporteCuenta : Form
     {
 
-        private Compañia _compania;
-        private IUser _IUser = new IUser();
-        private List<Cuenta> _lstCuentas = new List<Cuenta>();
-        private List<Cuenta> _lstCuentasFiltradas = new List<Cuenta>();
+        private CompanyDTO _compania;
+        private UserDTO _IUser; 
+        private List<AccountDTO> _lstCuentas = new List<AccountDTO>();
+        private List<AccountDTO> _lstCuentasFiltradas = new List<AccountDTO>();
         private FechaTransaccionCL _fechaTransaccion = new FechaTransaccionCL();
-        private List<FechaTransaccion> lstFechas = new List<FechaTransaccion>();
+        private IEnumerable<IPostingPeriod> lstFechas = new List<IPostingPeriod>();
         private CuentaCL _cuentaCL = new CuentaCL();
         int cont = 0;
         private Boolean ConSaldo { set { LlenarTabla(value); } }
-        public ReporteCuenta(Compañia compañia, IUser IUser)
+        public ReporteCuenta(CompanyDTO compañia, UserDTO UserDTO)
         {
             InitializeComponent();
-            CargarDatos(compañia, IUser);
+            CargarDatos(compañia, UserDTO);
             
         }
 
@@ -38,13 +35,14 @@ namespace CapaPresentacion.Reportes
         /// </summary>
         /// <param name="lst"></param>
         /// <param name="compañia"></param>
-        /// <param name="IUser"></param>
-        private async void CargarDatos(Compañia compañia, IUser IUser)
+        /// <param name="UserDTO"></param>
+        private async void CargarDatos(CompanyDTO compañia, UserDTO UserDTO)
         {
             _compania = compañia;
-            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.Compañia.Codigo); 
-            _IUser = IUser;
-            lstFechas = _fechaTransaccion.GetAllActive(compañia, null);
+            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code); 
+            _IUser = UserDTO;
+            lstFechas = await  _fechaTransaccion.GetAllAsync(compañia.Code);
+
             this.lstMesesAbiertos.DataSource = lstFechas;
             LlenarTabla(false);
         }
@@ -60,8 +58,8 @@ namespace CapaPresentacion.Reportes
 
 
             // _lstCuentas = ReporteadorCuenta.Ordernar(_lstCuentas);
-            _lstCuentasFiltradas = new List<Cuenta>();
-            _lstCuentas.ForEach((Cuenta => _lstCuentasFiltradas.Add(Cuenta.DeepCopy())));
+            _lstCuentasFiltradas = new List<AccountDTO>();
+            //_lstCuentas.ForEach((AccountDTO => _lstCuentasFiltradas.Add(AccountDTO.DeepCopy())));
 
 
             if (!checkCuentasConSaldo.Checked)
@@ -74,29 +72,29 @@ namespace CapaPresentacion.Reportes
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(GridDatos);
 
-                var name = c.GetNombreParaExcel(_lstCuentas);
+                //var name = c.GetNombreParaExcel(_lstCuentas);
 
-                row.Cells[name.Length - 1].Value = name.Last();
+                //row.Cells[name.Length - 1].Value = name.Last();
 
 
-                if (ConSaldo)
-                {
-                    row.Cells[cont ].Value = c.SaldoAnteriorColones;
-                    row.Cells[cont + 1].Value = c.DebitosColones;
-                    row.Cells[cont + 2].Value = c.CreditosColones;
-                    row.Cells[cont + 3].Value = c.SaldoActualColones;
+                //if (ConSaldo)
+                //{
+                //    row.Cells[cont ].Value = c.SaldoAnteriorColones;
+                //    row.Cells[cont + 1].Value = c.DebitosColones;
+                //    row.Cells[cont + 2].Value = c.CreditosColones;
+                //    row.Cells[cont + 3].Value = c.SaldoActualColones;
 
-                    GridDatos.Rows.Add(row);
-                }
-                else
-                {
-                    GridDatos.Rows.Add(row);
-                    c.SaldoAnteriorColones = 0.00m;
-                    c.DebitosColones = 0.00m;
-                    c.CreditosColones = 0.00m;
-                    c.DebitosDolares = 0.00m;
-                    c.CreditosDolares = 0.00m;
-                }
+                //    GridDatos.Rows.Add(row);
+                //}
+                //else
+                //{
+                //    GridDatos.Rows.Add(row);
+                //    c.SaldoAnteriorColones = 0.00m;
+                //    c.DebitosColones = 0.00m;
+                //    c.CreditosColones = 0.00m;
+                //    c.DebitosDolares = 0.00m;
+                //    c.CreditosDolares = 0.00m;
+                //}
 
 
 
@@ -118,25 +116,25 @@ namespace CapaPresentacion.Reportes
             ///Esta varibable se va a utilizar para al final del ciclo saber si se deben eliminar columnas o no
             var intrCont = 1;
 
-            _lstCuentasFiltradas.ForEach((Cuenta) =>
+            _lstCuentasFiltradas.ForEach((AccountDTO) =>
             {
 
-                var cnt = Cuenta.GetNombreParaExcel(_lstCuentasFiltradas).Length;
+                //var cnt = AccountDTO.GetNombreParaExcel(_lstCuentasFiltradas).Length;
 
-                intrCont = (cnt > intrCont) ? cnt : intrCont;
+                //intrCont = (cnt > intrCont) ? cnt : intrCont;
 
-                if (cnt > cont)
-                {
-                    DataGridViewTextBoxColumn column1P = new DataGridViewTextBoxColumn
-                    {
-                        HeaderText = "",
-                        Name = $"columnN{cont}",
-                        ReadOnly = true
-                    };
-                    GridDatos.Columns.Insert(cont, column1P);
+                //if (cnt > cont)
+                //{
+                //    DataGridViewTextBoxColumn column1P = new DataGridViewTextBoxColumn
+                //    {
+                //        HeaderText = "",
+                //        Name = $"columnN{cont}",
+                //        ReadOnly = true
+                //    };
+                //    GridDatos.Columns.Insert(cont, column1P);
 
-                    cont = cnt;
-                }
+                //    cont = cnt;
+                //}
 
             });
 
@@ -157,7 +155,7 @@ namespace CapaPresentacion.Reportes
 
             foreach (var item in _lstCuentas)
             {
-                var pp = item.GetNombreParaExcel(_lstCuentas);
+                //var pp = item.GetNombreParaExcel(_lstCuentas);
             }
 
             try
@@ -167,11 +165,11 @@ namespace CapaPresentacion.Reportes
                 {
                     throw new Exception("La lista se encuentra vacia!");
                 }
-                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"MAESTRO DE CUENTAS DE {GlobalConfig.Compañia.ToString()}"  })
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel|*.xlsx", FileName = $"MAESTRO DE CUENTAS DE {GlobalConfig.company.ToString()}"  })
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        ReporteMaestroCuenta.GenerarReporte(_lstCuentasFiltradas, sfd.FileName, GlobalConfig.Compañia, GlobalConfig.IUser,  (FechaTransaccion)lstMesesAbiertos.SelectedItem, checkImprimirSaldo.Checked);
+                        //ReporteMaestroCuenta.GenerarReporte(_lstCuentasFiltradas, sfd.FileName, GlobalConfig.company, GlobalConfig.UserDTO,  (IPostingPeriod)lstMesesAbiertos.SelectedItem, checkImprimirSaldo.Checked);
 
 
                     }
@@ -197,14 +195,14 @@ namespace CapaPresentacion.Reportes
         private void Imprimir_Saldo(object sender, EventArgs e)
         {
             ///Obtenemos el seleccionado
-            var mes = (FechaTransaccion)lstMesesAbiertos.SelectedItem;
+            var mes = (IPostingPeriod)lstMesesAbiertos.SelectedItem;
             // _lstCuentas = ReporteadorCuenta.CuentasActualizadasPorRango(mes, _compania, checkImprimirSaldo.Checked);
             ///Buscamos el mes mams viejo 
             ///
 
-            var mesFinal = lstFechas.OrderBy(x => x.Fecha).ToList()[0];
+            var mesFinal = lstFechas.OrderBy(x => x.Date).ToList()[0];
 
-            _cuentaCL.LLenarConSaldos(mesFinal.Fecha, mes.Fecha, _lstCuentas, GlobalConfig.Compañia);
+            //_cuentaCL.LLenarConSaldos(mesFinal.Date, mes.Date, _lstCuentas, GlobalConfig.company);
 
             LlenarTabla(ConSaldo: true);
         }
