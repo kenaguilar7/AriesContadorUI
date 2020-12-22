@@ -80,8 +80,8 @@ namespace CapaPresentacion.Seguridad
             listCompañiasAsignadas.Items.Clear();
             listCompañiasSinAsignar.Items.Clear();
 
-            TodasLasCompañias = await compañiaCL.GetAllAsync(GlobalConfig.UserDTO);
-            CompañiasDelIUser = await compañiaCL.GetAllAsync(UserDTO);
+            TodasLasCompañias = await compañiaCL.GetAllAsync();
+            CompañiasDelIUser = await compañiaCL.GetAllAsync();
 
             ///Buscamos todas las compañias
             TodasLasCompañias.ForEach((CompanyDTO) =>

@@ -12,13 +12,13 @@ namespace CapaLogica
 {
     public class FechaTransaccionCL
     {
-        public async Task<IEnumerable<IPostingPeriod>> GetAllAsync(string companyid)
+        public async Task<IEnumerable<PostingPeriodDTO>> GetAllAsync(int companyid)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"companies/{companyid}/AccountingPeriod").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.GetRequest($"PostingPeriods/GetAllByCompanyId/{companyid}").ExecuteAsHttpResponseMessageAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<IEnumerable<IPostingPeriod>>();
+                return await response.Content.ReadAsAsync<IEnumerable<PostingPeriodDTO>>();
             }
             else
             {
@@ -26,13 +26,15 @@ namespace CapaLogica
             }
         }
 
-        public async Task<IPostingPeriod> InsertAsync(IPostingPeriod IPostingPeriod, string companyid)
+        public async Task<PostingPeriodDTO> InsertAsync(PostingPeriodDTO PostingPeriodDTO, int companyid)
         {
-            var response = await RESTClient.TinyRestClient.PostRequest($"companies/{companyid}/AccountingPeriod", IPostingPeriod).ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient
+                .PostRequest($"companies/{companyid}/AccountingPeriod", PostingPeriodDTO)
+                .ExecuteAsHttpResponseMessageAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<IPostingPeriod>();
+                return await response.Content.ReadAsAsync<PostingPeriodDTO>();
             }
             else
             {
@@ -40,9 +42,11 @@ namespace CapaLogica
             }
         }
 
-        public async Task<DataTable> GetDataTableAsync(string companyid)
+        public async Task<DataTable> GetDataTableAsync(int companyid)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"companies/{companyid}/AccountingPeriod/GetDataTable").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient
+                .GetRequest($"companies/{companyid}/AccountingPeriod/GetDataTable")
+                .ExecuteAsHttpResponseMessageAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -54,12 +58,15 @@ namespace CapaLogica
             }
         }
 
-        public async Task<IEnumerable<IPostingPeriod>> GetAvailableMonthsAsync(string companyid)
+        public async Task<IEnumerable<PostingPeriodDTO>> GetAvailableMonthsAsync(int companyid)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"companies/{companyid}/AccountingPeriod/GetAvailableMonths").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient
+                .GetRequest($"AccountingPeriod/GetAllOpen/{companyid}")
+                .ExecuteAsHttpResponseMessageAsync();
+            
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<IEnumerable<IPostingPeriod>>();
+                return await response.Content.ReadAsAsync<IEnumerable<PostingPeriodDTO>>();
             }
             else
             {
@@ -67,10 +74,11 @@ namespace CapaLogica
             }
         }
 
-
-        public async Task CloseMonthAsync(string companyid, IPostingPeriod IPostingPeriod)
+        public async Task CloseMonthAsync(int companyid, PostingPeriodDTO PostingPeriodDTO)
         {
-            var response = await RESTClient.TinyRestClient.PutRequest($"companies/{companyid}/AccountingPeriod", IPostingPeriod).ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient
+                .PutRequest($"AccountingPeriod/GetAllClose/{companyid}", PostingPeriodDTO)
+                .ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 ///nothing to do

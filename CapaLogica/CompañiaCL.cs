@@ -16,7 +16,7 @@ namespace CapaLogica
     {
         public async Task<string> CreateNewCodeAsync()
         {
-            var response = await RESTClient.TinyRestClient.GetRequest("companies/getnewcode").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.GetRequest("companies/GetConsecutive").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<string>();
@@ -26,10 +26,9 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task<CompanyDTO> InsertAsync(CompanyDTO company, string copyFrom)
+        public async Task<CompanyDTO> InsertAsync(CompanyDTO company)
         {
             var response = await RESTClient.TinyRestClient.PostRequest("companies", company)
-                                                .AddHeader("copyfromid", copyFrom)
                                                 .ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
@@ -40,6 +39,7 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
+
         public async Task UpdateAsync(CompanyDTO company, UserDTO UserDTO)
         {
             var response = await RESTClient.
@@ -54,7 +54,23 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task<List<CompanyDTO>> GetAllAsync(UserDTO UserDTO)
+        public async Task DeleteAsync(CompanyDTO company)
+        {
+            var response = await RESTClient.
+                            TinyRestClient.DeleteRequest($"companies")
+                            .AddContent(company)
+                            .ExecuteAsHttpResponseMessageAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                ///nothing to do
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<List<CompanyDTO>> GetAllAsync()
         {
             var response = await RESTClient.TinyRestClient.GetRequest("companies").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)

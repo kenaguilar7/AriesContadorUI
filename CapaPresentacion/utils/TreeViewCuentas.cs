@@ -12,16 +12,21 @@ namespace CapaPresentacion.cods
     public class TreeViewCuentas
     {
 
-        public static TreeNode[] CrearTreeView(List<AccountDTO> LstCuentas)
+        public static TreeNode[] CrearTreeView(List<AccountDTO> lstCuentas)
         {
 
             List<TreeNode> retorno = new List<TreeNode>();
-
-            foreach (AccountDTO item in LstCuentas)
+            
+            foreach (AccountDTO item in lstCuentas)
             {
                 if (item.AccountType == AccountType.Cuenta_Titulo)
                 {
-                    retorno.Add(CrearCuenta(item, LstCuentas));
+                    TreeNode node = new TreeNode(item.Name)
+                    {
+                        Tag = item
+                    };
+                    //retorno.Add(CrearCuenta(item, lstCuentas));
+                    retorno.Add(node);
                 }
             }
 
@@ -31,17 +36,19 @@ namespace CapaPresentacion.cods
         {
 
 
-            TreeNode retorno = new TreeNode(cuenta.Name);
-            retorno.Tag = cuenta;
+            TreeNode retorno = new TreeNode(cuenta.Name)
+            {
+                Tag = cuenta
+            };
 
-            var sql = from c in lst where c.FatherAccount.Id == cuenta.Id select c;
+            var sql = from c in lst where c.FatherAccount == cuenta.Id select c;
 
             var cueHijas = sql.ToArray<AccountDTO>();
 
             foreach (AccountDTO item in cueHijas)
             {
 
-                var l3 = (from c in lst where c.FatherAccount.Id == cuenta.Id select c).ToArray<AccountDTO>();
+                var l3 = (from c in lst where c.FatherAccount == cuenta.Id select c).ToArray<AccountDTO>();
 
                 if (l3.Length != 0)
                 {
@@ -109,7 +116,7 @@ namespace CapaPresentacion.cods
                 {
                     foreach (AccountDTO item in LstCuentas)
                     {
-                        if (item.Id == cuentaHija.FatherAccount.Id)
+                        if (item.Id == cuentaHija.FatherAccount)
                         {
                             //item.SaldoAnteriorColones += cuenta.SaldoAnteriorColones;
                             if (item.AccountType != AccountType.Cuenta_Titulo)
@@ -131,11 +138,11 @@ namespace CapaPresentacion.cods
             retorno.Add(cuentaPadre); 
             foreach (var item in cuentas)
             {
-                if (item.FatherAccount.Id == cuentaPadre.Id)
+                if (item.FatherAccount == cuentaPadre.Id)
                 {
                     retorno.Add(item);
 
-                    var hijas = from cc in cuentas where item.Id == cc.FatherAccount.Id select cc;
+                    var hijas = from cc in cuentas where item.Id == cc.FatherAccount select cc;
 
                     foreach (var hitem in hijas)
                     {

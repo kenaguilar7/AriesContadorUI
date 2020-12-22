@@ -12,7 +12,7 @@ namespace CapaPresentacion.Reportes
     public partial class ReporteAsientos : Form
     {
         private List<JournalEntryDTO> _listaDeAsientos;
-        public List<IPostingPeriod> fechaTransaccions { get; set; } = new List<IPostingPeriod>(); 
+        public List<PostingPeriodDTO> fechaTransaccions { get; set; } = new List<PostingPeriodDTO>(); 
         public void Commit(){ lstMesesAbiertos.DataSource = fechaTransaccions; } 
         private List<JournalEntryDTO> ListaDeAsientos
         {

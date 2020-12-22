@@ -21,8 +21,8 @@ namespace CapaPresentacion.Reportes
         private IEnumerable<AccountDTO> ListaCuentas { get; set; }
         private IEnumerable<AccountDTO> ListaCuentasBalancePerdida { get; set; }
         private IEnumerable<AccountDTO> ListaCuentasBalanceSitucion { get; set; }
-        private IPostingPeriod _StartPostingPeriod { get => StartPostingPeriod.SelectedItem as IPostingPeriod; }
-        private IPostingPeriod _EndPostingPeriod { get => EndPostingPeriod.SelectedItem as IPostingPeriod; }
+        private PostingPeriodDTO _StartPostingPeriod { get => StartPostingPeriod.SelectedItem as PostingPeriodDTO; }
+        private PostingPeriodDTO _EndPostingPeriod { get => EndPostingPeriod.SelectedItem as PostingPeriodDTO; }
 
         public ReporteBalanceSituacion()
         {
@@ -37,25 +37,25 @@ namespace CapaPresentacion.Reportes
         }
         private async Task LoadAccounts()
         {
-            var lst = await CuentaCL.GetAllAsync(GlobalConfig.company.Code);
+            var lst = await CuentaCL.GetAllAsync(GlobalConfig.company.Id);
             ListaCuentas = from c in lst where c.AccountTag == AccountTag.Ingreso || c.AccountTag == AccountTag.Egreso || c.AccountTag == AccountTag.Costo_Venta select c;
         }
 
         private async Task LoadPostingPeriods()
         {
-            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
+            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
             FillDropDownLists(lstFechas);
         }
 
-        private void FillDropDownLists(IEnumerable<IPostingPeriod> lstFechas)
+        private void FillDropDownLists(IEnumerable<PostingPeriodDTO> lstFechas)
         {
             EndPostingPeriod.DataSource = lstFechas;
             StartPostingPeriod.DataSource = CreateDefaulListForStartPostingPeriod(lstFechas);
         }
 
-        private static List<IPostingPeriod> CreateDefaulListForStartPostingPeriod(IEnumerable<IPostingPeriod> lstFechas)
+        private static List<PostingPeriodDTO> CreateDefaulListForStartPostingPeriod(IEnumerable<PostingPeriodDTO> lstFechas)
         {
-            return new List<IPostingPeriod> { (from c1 in lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
+            return new List<PostingPeriodDTO> { (from c1 in lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
         }
         //private async void CargarDatos()
         //{
@@ -65,7 +65,7 @@ namespace CapaPresentacion.Reportes
         //    EndPostingPeriod.DataSource = lstDts;
 
 
-        //    var lstBfchFnl = new List<IPostingPeriod> { (from c1 in lstDts select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
+        //    var lstBfchFnl = new List<PostingPeriodDTO> { (from c1 in lstDts select c1).OrderByDescending(x => x.Fecha).LastOrDefault() };
         //    StartPostingPeriod.DataSource = lstBfchFnl;
 
         //    SetCuentasEnLista();
@@ -81,8 +81,8 @@ namespace CapaPresentacion.Reportes
         }
         private async void BtnCalcular(object sender, EventArgs e)
         {
-            var fch1 = (IPostingPeriod)StartPostingPeriod.SelectedItem;
-            var fch2 = (IPostingPeriod)EndPostingPeriod.SelectedItem;
+            var fch1 = (PostingPeriodDTO)StartPostingPeriod.SelectedItem;
+            var fch2 = (PostingPeriodDTO)EndPostingPeriod.SelectedItem;
 
 
             var kst = await CuentaCL.GetAllAccountBalanceWithJournalEntriesRangeAsync(GlobalConfig.company.Code, fch1.Id, fch2.Id);
@@ -288,7 +288,7 @@ namespace CapaPresentacion.Reportes
             return new string[]{
 
                 $"{GlobalConfig.company}",
-                $"BALANCE DE SITUACION AL MES {(((IPostingPeriod)EndPostingPeriod.SelectedItem).ToString().ToUpper())}",
+                $"BALANCE DE SITUACION AL MES {(((PostingPeriodDTO)EndPostingPeriod.SelectedItem).ToString().ToUpper())}",
                 $"EMITIDO POR {GlobalConfig.UserDTO} ",
             };
 

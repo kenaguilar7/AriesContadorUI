@@ -29,8 +29,8 @@ namespace CapaPresentacion
         {
             try
             {
-                var lst = await _comñiaCL.GetAllAsync(GlobalConfig.UserDTO);
-                var _lstCompanies = (from c in lst where c.Delete == true orderby c.Name select c).ToList<CompanyDTO>();
+                var lst = await _comñiaCL.GetAllAsync();
+                var _lstCompanies = lst; 
                 lstCompanias.DataSource = _lstCompanies;
                 lstCompanias.SelectedIndex = -1;
                 this.lstCompanias.SelectedIndexChanged += new System.EventHandler(this.lstCompanias_SelectedIndexChanged);

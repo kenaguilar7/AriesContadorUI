@@ -22,12 +22,12 @@ namespace CapaPresentacion.Reportes
             InitializeComponent();
             CargarDatos();
         }
-        public FrameReporteComprobacion(IEnumerable<AccountDTO> cuentas, IPostingPeriod fechaTransaccion)
+        public FrameReporteComprobacion(IEnumerable<AccountDTO> cuentas, PostingPeriodDTO fechaTransaccion)
         {
             InitializeComponent();
             _lstCuentas = cuentas.ToList();
             lstMesesAbiertos.SelectedIndexChanged -= LstMesesAbiertos_SelectedIndexChanged;
-            var lst = new List<IPostingPeriod>() { fechaTransaccion }; 
+            var lst = new List<PostingPeriodDTO>() { fechaTransaccion }; 
             lstMesesAbiertos.DataSource = lst;
             CargarDatosFormulario(_lstCuentas);
             this.Text += $"- Cierre de periodo al mes { fechaTransaccion.ToString() }";
@@ -38,8 +38,8 @@ namespace CapaPresentacion.Reportes
         /// </summary>
         private async void CargarDatos()
         {
-            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code);
-            this.lstMesesAbiertos.DataSource = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
+            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id);
+            this.lstMesesAbiertos.DataSource = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
         }
         /// <summary>
         /// Actualiza la vista del grid
@@ -295,7 +295,7 @@ namespace CapaPresentacion.Reportes
                 {
                     foreach (AccountDTO item in list)
                     {
-                        if (item.Id == cuentaHija.FatherAccount.Id)
+                        if (item.Id == cuentaHija.FatherAccount)
                         {
                             return item;
                         }

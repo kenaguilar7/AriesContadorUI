@@ -32,7 +32,7 @@ namespace CapaPresentacion.Reportes
         private async Task CargarDatos()
         {
             lstIds.SelectedIndex = 0;
-            compañias = await Task.Run(()=>compañiaCL.GetAllAsync(GlobalConfig.UserDTO));
+            compañias = await Task.Run(()=>compañiaCL.GetAllAsync());
             RadiosbuttonChanceStatus(null, null);
         }
 
@@ -140,7 +140,7 @@ namespace CapaPresentacion.Reportes
                 row.Cells[10].Value = comp.PhoneNumber2;
                 row.Cells[11].Value = comp.Memo;
                 row.Cells[12].Value = comp.CurrencyType.ToString().Replace('_', ' ');
-                row.Cells[13].Value = (comp.Delete) ? "Activa" : "Desactiva";
+                row.Cells[13].Value = (comp.Active) ? "Activa" : "Desactiva";
 
 
                 GridDatos.Rows.Add(row);

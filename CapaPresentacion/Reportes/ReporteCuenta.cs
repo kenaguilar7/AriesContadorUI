@@ -19,7 +19,7 @@ namespace CapaPresentacion.Reportes
         private List<AccountDTO> _lstCuentas = new List<AccountDTO>();
         private List<AccountDTO> _lstCuentasFiltradas = new List<AccountDTO>();
         private FechaTransaccionCL _fechaTransaccion = new FechaTransaccionCL();
-        private IEnumerable<IPostingPeriod> lstFechas = new List<IPostingPeriod>();
+        private IEnumerable<PostingPeriodDTO> lstFechas = new List<PostingPeriodDTO>();
         private CuentaCL _cuentaCL = new CuentaCL();
         int cont = 0;
         private Boolean ConSaldo { set { LlenarTabla(value); } }
@@ -39,9 +39,9 @@ namespace CapaPresentacion.Reportes
         private async void CargarDatos(CompanyDTO compañia, UserDTO UserDTO)
         {
             _compania = compañia;
-            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code); 
+            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id); 
             _IUser = UserDTO;
-            lstFechas = await  _fechaTransaccion.GetAllAsync(compañia.Code);
+            lstFechas = await  _fechaTransaccion.GetAllAsync(compañia.Id);
 
             this.lstMesesAbiertos.DataSource = lstFechas;
             LlenarTabla(false);
@@ -169,7 +169,7 @@ namespace CapaPresentacion.Reportes
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        //ReporteMaestroCuenta.GenerarReporte(_lstCuentasFiltradas, sfd.FileName, GlobalConfig.company, GlobalConfig.UserDTO,  (IPostingPeriod)lstMesesAbiertos.SelectedItem, checkImprimirSaldo.Checked);
+                        //ReporteMaestroCuenta.GenerarReporte(_lstCuentasFiltradas, sfd.FileName, GlobalConfig.company, GlobalConfig.UserDTO,  (PostingPeriodDTO)lstMesesAbiertos.SelectedItem, checkImprimirSaldo.Checked);
 
 
                     }
@@ -195,7 +195,7 @@ namespace CapaPresentacion.Reportes
         private void Imprimir_Saldo(object sender, EventArgs e)
         {
             ///Obtenemos el seleccionado
-            var mes = (IPostingPeriod)lstMesesAbiertos.SelectedItem;
+            var mes = (PostingPeriodDTO)lstMesesAbiertos.SelectedItem;
             // _lstCuentas = ReporteadorCuenta.CuentasActualizadasPorRango(mes, _compania, checkImprimirSaldo.Checked);
             ///Buscamos el mes mams viejo 
             ///

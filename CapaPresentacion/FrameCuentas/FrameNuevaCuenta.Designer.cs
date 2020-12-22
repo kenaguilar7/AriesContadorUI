@@ -64,7 +64,6 @@
             // 
             // txtBoxDetalle
             // 
-            this.txtBoxDetalle.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtBoxDetalle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBoxDetalle.Location = new System.Drawing.Point(179, 131);
             this.txtBoxDetalle.MaxLength = 45;
@@ -95,7 +94,6 @@
             // 
             // txtBoxNombre
             // 
-            this.txtBoxNombre.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtBoxNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBoxNombre.Location = new System.Drawing.Point(179, 81);
             this.txtBoxNombre.MaxLength = 45;

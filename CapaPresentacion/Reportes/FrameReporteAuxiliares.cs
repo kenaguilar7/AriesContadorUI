@@ -18,7 +18,7 @@ namespace CapaPresentacion.Reportes
 
         FechaTransaccionCL fechaTransaccionCL = new FechaTransaccionCL();
         CuentaCL cuentaCL = new CuentaCL();
-        private List<IPostingPeriod> fechaTransaccions = new List<IPostingPeriod>();
+        private List<PostingPeriodDTO> fechaTransaccions = new List<PostingPeriodDTO>();
 
         public FrameReporteAuxiliares()
         {
@@ -28,14 +28,14 @@ namespace CapaPresentacion.Reportes
         private async void CargarDatos()
         {
 
-            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
+            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
             fechaTransaccions = lstMeses.ToList();
             this.lstMesInicio.DataSource = lstMeses;
         }
 
         private void lstMesInicio_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var meses = (from n in fechaTransaccions where n.Date >= ((IPostingPeriod)lstMesInicio.SelectedItem).Date select n).ToList<IPostingPeriod>();
+            var meses = (from n in fechaTransaccions where n.Date >= ((PostingPeriodDTO)lstMesInicio.SelectedItem).Date select n).ToList<PostingPeriodDTO>();
 
             lstMesFinal.DataSource = meses;
         }
@@ -46,13 +46,13 @@ namespace CapaPresentacion.Reportes
             {
 
 
-                var lstCuentas = new Dictionary<IPostingPeriod, List<AccountDTO>>();
-                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.company.Code);
+                var lstCuentas = new Dictionary<PostingPeriodDTO, List<AccountDTO>>();
+                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.company.Id);
 
                 //cuentaCL.LLenarConSaldoB(((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, ((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, cuentas, GlobalConfig.Compañia); 
                 foreach (var item in fechaTransaccions)
                 {
-                    if (item.Date >= ((IPostingPeriod)lstMesInicio.SelectedItem).Date && item.Date <= ((IPostingPeriod)lstMesFinal.SelectedItem).Date)
+                    if (item.Date >= ((PostingPeriodDTO)lstMesInicio.SelectedItem).Date && item.Date <= ((PostingPeriodDTO)lstMesFinal.SelectedItem).Date)
                     {
                         var cuentasClonadas = new List<AccountDTO>(cuentas.Count());
 

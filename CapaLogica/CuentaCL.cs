@@ -1,19 +1,20 @@
 ﻿using AriesContador.Entities.Financial.Accounts;
 using AriesContador.Entities.Financial.PostingPeriods;
-using CapaLogica.Extencions;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using AriesContador.Entities.Utils;
+using System.Text;
 
 namespace CapaLogica
 {
     public class CuentaCL
     {
-        public async Task<AccountDTO> GetAccountById(int accountId) {
+        public async Task<AccountDTO> GetAccountById(int accountId)
+        {
 
             var response = await RESTClient.TinyRestClient.GetRequest($"company/accounts/getbyid").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
@@ -26,9 +27,9 @@ namespace CapaLogica
             }
         }
 
-        public async Task<List<AccountDTO>> GetAllAsync(string companyId)
+        public async Task<List<AccountDTO>> GetAllAsync(int companyId)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"company/{companyId}/accounts").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.GetRequest($"accounts/{companyId}").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<List<AccountDTO>>();
@@ -39,9 +40,10 @@ namespace CapaLogica
             }
         }
 
-        public async Task<AccountDTO> InsertAsync(string companyId, AccountDTO account)
+        public async Task<AccountDTO> InsertAsync(AccountDTO account)
         {
-            var response = await RESTClient.TinyRestClient.PostRequest($"company/{companyId}/accounts/", account).ExecuteAsHttpResponseMessageAsync();
+
+            var response = await RESTClient.TinyRestClient.PostRequest($"accounts/", account).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<AccountDTO>();
@@ -81,13 +83,14 @@ namespace CapaLogica
             }
         }
 
-        public async Task<AccountDTO> GetFullBalanceAsync(string companyId, AccountDTO account)
+        public async Task<AccountDTO> GetFullBalanceAsync(int companyId, AccountDTO account)
         {
             var months = await new FechaTransaccionCL().GetAllAsync(companyId);
+
             return await GetMonthlyBalanceAsync(companyId, account, months.GetOlderAccountPeriod(), months.GetNewerAccountPeriod());
         }
 
-        public async Task<AccountDTO> GetMonthlyBalanceAsync(string companyId, AccountDTO account, IPostingPeriod fromAccountPeriod, IPostingPeriod toAccountPeriod)
+        public async Task<AccountDTO> GetMonthlyBalanceAsync(int companyId, AccountDTO account, PostingPeriodDTO fromAccountPeriod, PostingPeriodDTO toAccountPeriod)
         {
             var urlString = $"company/{companyId}/accounts/GetFullBalanceWithDateRange/{account.Id}?fromAccountPeriodId={fromAccountPeriod.Id}&toAccountPeriodId={toAccountPeriod.Id}";
 
@@ -117,15 +120,13 @@ namespace CapaLogica
             }
         }
 
-
-
         public AccountDTO BuscarCuentaPadre(List<AccountDTO> lst, AccountDTO cuentaHija)
         {
             if (lst.Count != 0)
             {
                 foreach (AccountDTO item in lst)
                 {
-                    if (item.Id == cuentaHija.FatherAccount.Id)
+                    if (item.Id == cuentaHija.FatherAccount)
                     {
                         return item;
                     }
@@ -138,6 +139,7 @@ namespace CapaLogica
                 return null;
             }
         }
+        
         public List<AccountDTO> QuitarCuentasSinSaldos(List<AccountDTO> lis)
         {
 

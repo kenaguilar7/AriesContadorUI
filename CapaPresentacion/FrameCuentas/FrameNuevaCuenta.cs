@@ -35,15 +35,17 @@ namespace CapaPresentacion.FrameCuentas
 
         private AccountDTO CrearEntidad()
         {
-            var account = new AccountDTO(); 
+            var account = new AccountDTO();
             account.Name = txtBoxNombre.Text;
             account.AccountType = AccountType.Cuenta_Auxiliar;
             account.CompanyId = CuentaPadre.CompanyId;
             account.AccountTag = CuentaPadre.AccountTag;
             account.Memo = txtBoxDetalle.Text;
-            account.FatherAccount = CuentaPadre;
+            account.FatherAccount = CuentaPadre.Id;
             account.Editable = true;
-            return account; 
+            
+
+            return account;
         }
 
         public void SetUpTransfferpipe(AccountDTO cuenta)
@@ -65,7 +67,8 @@ namespace CapaPresentacion.FrameCuentas
                 try
                 {
                     this.btnGuardar.Click -= new System.EventHandler(this.CrearCuenta);
-                    var newEntidad = await cuentaCL.InsertAsync(GlobalConfig.company.Code, CrearEntidad());
+                    var newAccount = CrearEntidad(); 
+                    var newEntidad = await cuentaCL.InsertAsync(CrearEntidad());
                     SetUpTransfferpipe(newEntidad);
                     this.Close();
 
@@ -100,7 +103,7 @@ namespace CapaPresentacion.FrameCuentas
             }
             else
             {
-                SetErrorMessage(txtBoxNombre, string.Empty, ref e, true);
+                SetErrorMessage(txtBoxNombre, string.Empty, ref e, false);
 
             }
 

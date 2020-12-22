@@ -167,7 +167,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async Task LoadAccountingPeriodList()
         {
-            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.company.Code);
+            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.company.Id);
             lstMesesAbiertos.DataSource = lst;
 
 
@@ -233,9 +233,9 @@ namespace CapaPresentacion.FrameCuentas
 
             return newList;
         }
-        private IPostingPeriod GetFechTransaccionEnUso()
+        private PostingPeriodDTO GetFechTransaccionEnUso()
         {
-            return (IPostingPeriod)lstMesesAbiertos.SelectedItem;
+            return (PostingPeriodDTO)lstMesesAbiertos.SelectedItem;
         }
         private async void LstMesesAbiertosSelectedIndexChanged(object sender, EventArgs e)
         {
@@ -616,7 +616,7 @@ namespace CapaPresentacion.FrameCuentas
                 n.MdiParent = this.MdiParent;
                 foreach (var item in lstMesesAbiertos.Items)
                 {
-                    n.fechaTransaccions.Add((IPostingPeriod)item);
+                    n.fechaTransaccions.Add((PostingPeriodDTO)item);
                 }
                 n.Commit();
                 n.Show();

@@ -199,7 +199,7 @@ namespace CapaPresentacion.Seguridad
             this.txtBoxTelefono.Text = _userInDashboard.PhoneNumber;
             this.txtBoxMail.Text = _userInDashboard.Mail;
             this.txtBoxObservaciones.Text = _userInDashboard.Memo;
-            this.estado.Checked = _userInDashboard.Delete;
+            this.estado.Checked = _userInDashboard.Active;
             this.rdbIUserAdmin.Checked = (_userInDashboard.UserType == UserType.Administrador) ? true : false;
             this.rdbIUserNormal.Checked = (_userInDashboard.UserType == UserType.Usuario) ? true : false;
             this.txtBoxCLave.Text = _userInDashboard.Password;

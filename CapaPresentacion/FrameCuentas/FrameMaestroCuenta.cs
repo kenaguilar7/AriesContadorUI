@@ -20,7 +20,7 @@ namespace CapaPresentacion.FrameCuentas
         private CuentaCL _cuentaCL { get; } = new CuentaCL();
         private FechaTransaccionCL _fechaTransaccionCL { get; } = new FechaTransaccionCL();
         private List<AccountDTO> _lstCuentas { get; set; } = new List<AccountDTO>();
-        private IEnumerable<IPostingPeriod> _lstFechas { get; set; } = new List<IPostingPeriod>();
+        private IEnumerable<PostingPeriodDTO> _lstFechas { get; set; } = new List<PostingPeriodDTO>();
         private AccountDTO CuentaActual
         {
             get => (treeCuentas.SelectedNode is null) ? null : treeCuentas.SelectedNode.Tag as AccountDTO;
@@ -43,7 +43,7 @@ namespace CapaPresentacion.FrameCuentas
                 var desicionHeredarSaldo = true;
 
 
-                if (cuenta.AccountType == AccountType.Cuenta_Titulo)
+                if (cuenta.AccountType != AccountType.Cuenta_Titulo)
                 {
                     MessageBox.Show("No se pueden crear cuentas a este nivel", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     desicionHeredarSaldo = false;
@@ -94,7 +94,7 @@ namespace CapaPresentacion.FrameCuentas
 
         private async Task<AccountDTO> ObtenerSaldoDeCuentaAsync(AccountDTO cuenta)
         {
-            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.company.Code, cuenta);
+            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.company.Id, cuenta);
         }
 
         public bool TransferirCuenta(AccountDTO cuenta)
@@ -246,14 +246,14 @@ namespace CapaPresentacion.FrameCuentas
 
         private async Task BuildAccountBalanceInformationDashboard()
         {
-            IPostingPeriod startMonth = GetSelectedMonthInFechaInicio();
-            IPostingPeriod endMonth = GetSelectedMonthInFechaFinal();
+            PostingPeriodDTO startMonth = GetSelectedMonthInFechaInicio();
+            PostingPeriodDTO endMonth = GetSelectedMonthInFechaFinal();
 
             try
             {
                 if (startMonth != null && endMonth != null && CuentaActual != null)
                 {
-                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(GlobalConfig.company.Code, CuentaActual, startMonth, endMonth);
+                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(GlobalConfig.company.Id, CuentaActual, startMonth, endMonth);
                     PrintBalanceInCurPanel(_account);
                 }
             }
@@ -305,15 +305,15 @@ namespace CapaPresentacion.FrameCuentas
             return row;
         }
 
-        private IPostingPeriod GetSelectedMonthInFechaFinal()
+        private PostingPeriodDTO GetSelectedMonthInFechaFinal()
         {
             if (gridDatosA.Visible)
             {
-                return AFechaFinal.SelectedItem as IPostingPeriod;
+                return AFechaFinal.SelectedItem as PostingPeriodDTO;
             }
             else if (gridDatosB.Visible)
             {
-                return BFechaFinal.SelectedItem as IPostingPeriod;
+                return BFechaFinal.SelectedItem as PostingPeriodDTO;
             }
             else
             {
@@ -321,15 +321,15 @@ namespace CapaPresentacion.FrameCuentas
             }
         }
 
-        private IPostingPeriod GetSelectedMonthInFechaInicio()
+        private PostingPeriodDTO GetSelectedMonthInFechaInicio()
         {
             if (gridDatosA.Visible)
             {
-                return AFechaInicio.SelectedItem as IPostingPeriod ?? null;
+                return AFechaInicio.SelectedItem as PostingPeriodDTO ?? null;
             }
             else if (gridDatosB.Visible)
             {
-                return BFechaInicio.SelectedItem as IPostingPeriod ?? null;
+                return BFechaInicio.SelectedItem as PostingPeriodDTO ?? null;
             }
             else
             {
@@ -345,23 +345,23 @@ namespace CapaPresentacion.FrameCuentas
             await LoadAccountsAsync();
             ExpandirArbol(null, null);
             DisableComboBoxDatesEvents();
-            LoadDatesAsync();
+            await LoadDatesAsync();
             EnableComboBoxDatesEvents();
         }
 
         private async Task LoadDatesAsync()
         {
-            _lstFechas = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
+            _lstFechas = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
             ///Se añaden interfaces / copias (las interfaces no son copias) 
             ///la idea con eso es que cada item y de cada combo box tenga diferente hash
-            var lstBfechasFnl = new List<IPostingPeriod> { (from c1 in _lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
+            var lstBfechasFnl = new List<PostingPeriodDTO> { (from c1 in _lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
 
             AFechaInicio.DataSource = lstBfechasFnl;
             AFechaFinal.DataSource = (from c1 in _lstFechas select c1).ToList();
             AFechaFinal.SelectedIndex = -1;
 
             BFechaInicio.DataSource = (from c1 in _lstFechas select c1).ToList();
-            BFechaFinal.DataSource = (from c1 in _lstFechas where c1.Date >= ((IPostingPeriod)BFechaInicio.SelectedItem).Date select c1).ToList();
+            BFechaFinal.DataSource = (from c1 in _lstFechas where c1.Date >= ((PostingPeriodDTO)BFechaInicio.SelectedItem).Date select c1).ToList();
             BFechaFinal.SelectedIndex = -1;
         }
 
@@ -371,9 +371,10 @@ namespace CapaPresentacion.FrameCuentas
 
             try
             {
-                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code);
+                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id);
                 //cargar las cuentas al arbol
-                treeCuentas.Nodes.AddRange(TreeViewCuentas.CrearTreeView(_lstCuentas));
+                var accounts = TreeViewCuentas.CrearTreeView(_lstCuentas); 
+                treeCuentas.Nodes.AddRange(accounts);
             }
             catch (Exception ex)
             {
@@ -475,7 +476,7 @@ namespace CapaPresentacion.FrameCuentas
             if (tabControlGeneral.SelectedIndex == 1)
             {
 
-                BFechaFinal.DataSource = (from n in _lstFechas where n.Date >= ((IPostingPeriod)BFechaInicio.SelectedItem).Date select n).ToList<IPostingPeriod>();
+                BFechaFinal.DataSource = (from n in _lstFechas where n.Date >= ((PostingPeriodDTO)BFechaInicio.SelectedItem).Date select n).ToList<PostingPeriodDTO>();
             }
         }
         #endregion

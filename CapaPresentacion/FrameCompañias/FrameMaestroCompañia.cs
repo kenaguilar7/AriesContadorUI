@@ -11,6 +11,7 @@ using AriesContador.Entities.Administration.Companies;
 using AriesContador.Entities;
 using AriesContador.Entities.Utils;
 using DocumentFormat.OpenXml.Drawing;
+using AriesContador.Entities.Financial.Accounts;
 
 namespace CapaPresentacion.FrameCompañias
 {
@@ -18,90 +19,45 @@ namespace CapaPresentacion.FrameCompañias
     {
         private CompañiaCL _companyCL { get; } = new CompañiaCL();
         private List<CompanyDTO> _lstCompanies { get; set; } = new List<CompanyDTO>();
+        private CompanyDTO CompanyDTOOnUpdated { get; set; }
         public FrameMaestroCompañia()
         {
             InitializeComponent();
-
         }
 
         private CompanyDTO BuilCompany()
         {
 
-            throw new NotImplementedException();  
-            //CompanyDTO company = Factory.CreateCompany();
-
-            ////mas uno porque porque no tenemos cero como valor en el tipo id
-            //company. = (TipoID)lstTipoId.SelectedIndex + 1;
-            //company.Code = ttCodigo.Text; 
-            //company.IdNumber = txtBoxID.Text;
-            //company.Name = txtBoxNombre.Text;
-
-            //company.Address = txtBoxDireccion.Text;
-            //company.Mail = txtBoxMail.Text;
-            //company.Memo = txtBoxObservaciones.Text;
-            //company.PhoneNumber1 = txtBoxTelefono1.Text;
-            //company.PhoneNumber2 = txtBoxTelefono2.Text;
-            //company.Delete = chekActive.Checked;
-            //company.CurrencyType = (CurrencyTypeCompany)lstMovimientosRegistro.SelectedIndex + 1; 
-            
-
-
-            //if (lstTipoId.SelectedIndex == 0)
-            //{
-            //    company = new PersonaJuridica(
-            //        codigo: ttCodigo.Text,
-            //        numeroId: txtBoxID.Text,
-            //        tipoID: _tipoId,
-            //        nombre: txtBoxNombre.Text,
-            //        TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
-            //        representanteLegal: txtBoxOp1.Text,
-            //        IDRepresentante: txtBoxOp2.Text,
-            //        //direccion: txtBoxDireccion.Text,
-            //        //web: txtBoxWeb.Text,
-            //        //correo: txtBoxMail.Text,
-            //        //observaciones: txtBoxObservaciones.Text,
-            //        //telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
-            //        //activo: chekActive.Checked);
-            //}
-            //else
-            //{
-            //    company = new PersonaFisica(
-            //        codigo: ttCodigo.Text,
-            //        numeroId: txtBoxID.Text,
-            //        tipoID: _tipoId,
-            //        nombre: txtBoxNombre.Text,
-            //        TipoMoneda: (TipoMonedaCompañia)lstMovimientosRegistro.SelectedIndex + 1,
-            //        apellidoPaterno: txtBoxOp1.Text,
-            //        apellidoMaterno: txtBoxOp2.Text,
-            //        direccion: txtBoxDireccion.Text,
-            //        web: txtBoxWeb.Text,
-            //        correo: txtBoxMail.Text,
-            //        observaciones: txtBoxObservaciones.Text,
-            //        telefono: new string[] { this.txtBoxTelefono1.Text, this.txtBoxTelefono2.Text },
-            //        activo: chekActive.Checked);
-            //}
-
-            //return company;
-        }
-        private string GetCopyFrom()
-        {
-            string copiarde = (string)lstCopiarMaestroCuentas.SelectedItem;
-            if (copiarde == null)
+            CompanyDTO company = new CompanyDTO
             {
-                copiarde = (string)lstCopiarMaestroCuentas.Items[0];
-            }
-            return copiarde;
+                IdType = (IdType)lstTipoId.SelectedIndex + 1,
+                Code = txtCodigoCia.Text,
+                IdNumber = txtBoxID.Text,
+                Name = txtBoxNombre.Text,
+                Address = txtBoxDireccion.Text,
+                Mail = txtBoxMail.Text,
+                Memo = txtBoxObservaciones.Text,
+                PhoneNumber1 = txtBoxTelefono1.Text,
+                PhoneNumber2 = txtBoxTelefono2.Text,
+                CurrencyType = (CurrencyTypeCompany)lstMovimientosRegistro.SelectedIndex + 1,
+                Op1 = txtBoxOp1.Text,
+                Op2 = txtBoxOp2.Text,
+                UpdatedBy = 1
+                //Account = BuildAccounts() 
+            };
+
+
+            return company;
         }
 
         #region Create
         private async Task ExecutePostAsync()
         {
             var newCompany = BuilCompany();
-            var copyFromId = GetCopyFrom();
 
             try
             {
-                var companyResoulse = await _companyCL.InsertAsync(newCompany, copyFromId);
+                var companyResoulse = await _companyCL.InsertAsync(newCompany);
                 var mensaje = $"Compañia creada exitosamente con el código {companyResoulse.Code}";
                 MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LimpiarFormulario();
@@ -131,7 +87,9 @@ namespace CapaPresentacion.FrameCompañias
         {
             try
             {
-                await _companyCL.UpdateAsync(BuilCompany(), GlobalConfig.UserDTO);
+                var company = BuilCompany();
+                company.Code = CompanyDTOOnUpdated.Code;
+                await _companyCL.UpdateAsync(company, GlobalConfig.UserDTO);
                 var mensaje = "Compañia actualizada correctamente";
                 MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -155,8 +113,12 @@ namespace CapaPresentacion.FrameCompañias
         {
             ///load companies
             ///Remove index change event momentarily
+
+            this.lstTipoId.DataSource = Enum.GetValues(typeof(IdType));
+
+
             this.lstCompanias.SelectedIndexChanged -= new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
-            var companyListFromApi = await _companyCL.GetAllAsync(GlobalConfig.UserDTO);
+            var companyListFromApi = await _companyCL.GetAllAsync();
             _lstCompanies = (from cmp in companyListFromApi orderby cmp.Code descending select cmp).ToList<CompanyDTO>();
             lstCompanias.DataSource = _lstCompanies;
             lstCompanias.SelectedIndex = -1;
@@ -169,7 +131,7 @@ namespace CapaPresentacion.FrameCompañias
             companyNameList.CopyTo(lstMCuentas, 1);
             lstCopiarMaestroCuentas.DataSource = lstMCuentas;
             lstCopiarMaestroCuentas.SelectedIndex = 0;
-            ///set some index
+
             txtCodigoCia.Text = await _companyCL.CreateNewCodeAsync();
             lstTipoId.SelectedIndex = 0;
             this.lstMovimientosRegistro.SelectedIndex = 0;
@@ -181,60 +143,53 @@ namespace CapaPresentacion.FrameCompañias
              * los unum de tipo id tiene como primer indice 1
              * en este caso le restamos 1 
              */
-            //lstTipoId.SelectedIndex = Convert.ToInt16(compania.TipoId) - 1;
-            //lstCopiarMaestroCuentas.SelectedIndex = -1;
-            //lstCopiarMaestroCuentas.Enabled = false;
-            //btnActualizar.Tag = compania;
-            //this.txtBoxID.Text = compania.NumeroCedula;
-            //this.txtBoxID.ReadOnly = true;
-            //this.txtBoxNombre.Text = compania.Nombre;
-            //this.txtBoxDireccion.Text = compania.Direccion;
-            //this.txtBoxTelefono1.Text = compania.Telefono[0];
-            //this.txtBoxTelefono2.Text = compania.Telefono[1];
-            //this.ttCodigo.Text = compania.Codigo;
-            //this.groupCodigo.Visible = true;
+            lstTipoId.SelectedIndex = Convert.ToInt16(compania.IdType) - 1;
+            lstCopiarMaestroCuentas.SelectedIndex = -1;
+            lstCopiarMaestroCuentas.Enabled = false;
+            CompanyDTOOnUpdated = compania;
+            this.txtBoxID.Text = compania.IdNumber;
+            this.txtBoxID.ReadOnly = true;
+            this.txtBoxNombre.Text = compania.Name;
+            this.txtBoxDireccion.Text = compania.Address;
+            this.txtBoxTelefono1.Text = compania.PhoneNumber1;
+            this.txtBoxTelefono2.Text = compania.PhoneNumber2;
+            this.ttCodigo.Text = compania.Code;
+            this.groupCodigo.Visible = true;
             //this.txtBoxWeb.Text = compania.Web;
-            //this.txtBoxMail.Text = compania.Correo;
-            //this.txtBoxObservaciones.Text = compania.Observaciones;
-            //this.chekActive.Enabled = true;
-            //this.chekActive.Checked = compania.Activo;
-            //if (compania is PersonaFisica)
-            //{
-            //    txtBoxOp1.Text = ((PersonaFisica)compania).MyApellidoPaterno;
-            //    txtBoxOp2.Text = ((PersonaFisica)compania).MyApellidoMaterno;
-            //}
-            //if (compania is PersonaJuridica)
-            //{
+            this.txtBoxMail.Text = compania.Mail;
+            this.txtBoxObservaciones.Text = compania.Memo;
+            this.btnDelete.Enabled = true;
+            this.btnDelete.Visible = true;
 
-            //    txtBoxOp1.Text = ((PersonaJuridica)compania).MyRepresentanteLegal;
-            //    txtBoxOp2.Text = ((PersonaJuridica)compania).MyIDRepresentanteLegal;
+            if (compania.IdType == IdType.CEDULA_JURIDICA/* is PersonaFisica*/)
+            {
+                txtBoxOp1.Text = compania.Op1; /*((PersonaJuridica)compania).MyRepresentanteLegal;*/
+                txtBoxOp2.Text = compania.Op2; /*((PersonaJuridica)compania).MyIDRepresentanteLegal;*/
+            }
+            else
+            {
+                txtBoxOp1.Text = compania.Op1;  /*((PersonaFisica)compania).MyApellidoPaterno;*/
+                txtBoxOp2.Text = compania.Op2; /*((PersonaFisica)compania).MyApellidoMaterno;*/
+            }
 
-            //}
-            //this.lstMovimientosRegistro.SelectedIndex = Convert.ToInt32(compania.TipoMoneda) - 1;
+            this.lstMovimientosRegistro.SelectedIndex = Convert.ToInt32(compania.CurrencyType) - 1;
 
-            //if (compania.TipoMoneda == TipoMonedaCompañia.Solo_Colones)
-            //{
-            //    lstMovimientosRegistro.Enabled = false;
-            //}
-            //this.btnActualizar.Visible = true;
-            //this.btnActualizar.Enabled = true;
-            //this.btnGuardar.Enabled = false;
-            //this.btnGuardar.Visible = false;
-            //this.lstTipoId.Enabled = false;
+            if (compania.CurrencyType == CurrencyTypeCompany.Solo_Colones)
+            {
+                lstMovimientosRegistro.Enabled = false;
+            }
+            this.btnActualizar.Visible = true;
+            this.btnActualizar.Enabled = true;
+            this.btnGuardar.Enabled = false;
+            this.btnGuardar.Visible = false;
+            this.lstTipoId.Enabled = false;
 
 
         }
         #endregion
 
         #region Events
-        public IEnumerable<Control> GetAllControl(Control control, Type type)
-        {
-            var controls = control.Controls.Cast<Control>();
 
-            return controls.SelectMany(ctrl => GetAllControl(ctrl, type))
-                                      .Concat(controls)
-                                      .Where(c => c.GetType() == type);
-        }
         private void LimpiarFormulario()
         {
             this.lstTipoId.Enabled = true;
@@ -255,15 +210,24 @@ namespace CapaPresentacion.FrameCompañias
             this.btnActualizar.Tag = null;
             this.txtBoxID.ReadOnly = false;
             this.groupCodigo.Visible = false;
-            this.chekActive.Enabled = false;
+            this.btnDelete.Enabled = false;
+            this.btnDelete.Visible = false;
             this.txtBoxBuscar.Clear();
             this.lstMovimientosRegistro.Enabled = true;
             this.lstMovimientosRegistro.SelectedIndex = 0;
             this.lstCopiarMaestroCuentas.Enabled = true;
-            this.lstCopiarMaestroCuentas.SelectedIndex = 0;
-            this.lstCompanias.SelectedIndex = -1;
+            this.lstCopiarMaestroCuentas.SelectedIndex = -1;
+            ClearLstCompaniesBox();
             this.ttC.Text = string.Empty;
         }
+
+        private void ClearLstCompaniesBox()
+        {
+            this.lstCompanias.SelectedIndexChanged -= this.LstCompaniasSelectedIndexChanged;
+            this.lstCompanias.SelectedIndex = -1;
+            this.lstCompanias.SelectedIndexChanged += this.LstCompaniasSelectedIndexChanged;
+        }
+
         private void TipoIdSelectedIndexChanged(object sender, EventArgs e)
         {
             //if (Convert.ToString((((DataRowView)lstTipoId.SelectedItem).Row.ItemArray)[0]) == "CEDULA JURIDICA")
@@ -281,21 +245,19 @@ namespace CapaPresentacion.FrameCompañias
 
 
             txtBoxID.Enabled = true;
-            //txtBoxID.Mask = VerificaString.MascaraIdentificacion((IdType)lstTipoId.SelectedIndex + 1);
+
+
+
+            // txtBoxID.Mask = VerificaString.MascaraIdentificacion((IdType)lstTipoId.SelectedIndex + 1);
 
         }
+
         private void LstCompaniasSelectedIndexChanged(object sender, EventArgs e)
         {
-            try
-            {
-                CargarCompaniaFormulario((CompanyDTO)this.lstCompanias.SelectedItem);
-                // btnActualizar.Tag = (Compañia)this.lstCompanias.SelectedItem;
-            }
-            catch (Exception)
-            {
-
-            }
+            var company = (CompanyDTO)this.lstCompanias.SelectedItem;
+            CargarCompaniaFormulario(company);
         }
+
         private void BtnLimpiar(object sender, EventArgs e)
         {
             this.LimpiarFormulario();
@@ -382,7 +344,7 @@ namespace CapaPresentacion.FrameCompañias
         }
         private void TxtBoxIdValidating(object sender, CancelEventArgs e)
         {
-            
+
             if (txtBoxID.ReadOnly)
             {
                 SetErrorMessage(txtBoxID, string.Empty, ref e, false);
@@ -412,9 +374,21 @@ namespace CapaPresentacion.FrameCompañias
             e.Cancel = cancel;
             errorProviderApp.SetError(control, message);
         }
+
+
         #endregion
 
-
-
+        private async void btnDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await _companyCL.DeleteAsync(CompanyDTOOnUpdated);
+                MessageBox.Show("Compañia eliminada correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

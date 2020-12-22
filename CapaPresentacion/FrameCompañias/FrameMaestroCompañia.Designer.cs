@@ -56,7 +56,6 @@
             this.txtBoxTelefono2 = new System.Windows.Forms.MaskedTextBox();
             this.txtBoxTelefono1 = new System.Windows.Forms.MaskedTextBox();
             this.txtBoxOp1 = new System.Windows.Forms.TextBox();
-            this.chekActive = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.txtBoxMail = new System.Windows.Forms.TextBox();
@@ -78,6 +77,7 @@
             this.btnActualizar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
             this.errorProviderApp = new System.Windows.Forms.ErrorProvider(this.components);
+            this.btnDelete = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.maestro.SuspendLayout();
             this.groupCodigo.SuspendLayout();
@@ -189,7 +189,6 @@
             this.maestro.Controls.Add(this.txtBoxTelefono2);
             this.maestro.Controls.Add(this.txtBoxTelefono1);
             this.maestro.Controls.Add(this.txtBoxOp1);
-            this.maestro.Controls.Add(this.chekActive);
             this.maestro.Controls.Add(this.label1);
             this.maestro.Controls.Add(this.label16);
             this.maestro.Controls.Add(this.txtBoxMail);
@@ -259,11 +258,6 @@
             this.lstTipoId.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstTipoId.ForeColor = System.Drawing.SystemColors.WindowText;
             this.lstTipoId.FormattingEnabled = true;
-            this.lstTipoId.Items.AddRange(new object[] {
-            "Cédula Juridica",
-            "Cédula Nacional",
-            "Dimex",
-            "Nite"});
             this.lstTipoId.Location = new System.Drawing.Point(179, 25);
             this.lstTipoId.Name = "lstTipoId";
             this.lstTipoId.Size = new System.Drawing.Size(139, 25);
@@ -426,18 +420,6 @@
             this.txtBoxOp1.Size = new System.Drawing.Size(351, 22);
             this.txtBoxOp1.TabIndex = 3;
             this.txtBoxOp1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SiguienteEnter);
-            // 
-            // chekActive
-            // 
-            this.chekActive.AutoSize = true;
-            this.chekActive.Checked = true;
-            this.chekActive.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chekActive.Location = new System.Drawing.Point(719, 219);
-            this.chekActive.Name = "chekActive";
-            this.chekActive.Size = new System.Drawing.Size(129, 21);
-            this.chekActive.TabIndex = 12;
-            this.chekActive.Text = "Compañia Activa";
-            this.chekActive.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -603,6 +585,7 @@
             this.flowLayoutPanel1.Controls.Add(this.btnActualizar);
             this.flowLayoutPanel1.Controls.Add(this.btnLimpiar);
             this.flowLayoutPanel1.Controls.Add(this.btnListado);
+            this.flowLayoutPanel1.Controls.Add(this.btnDelete);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
@@ -681,6 +664,21 @@
             // 
             this.errorProviderApp.ContainerControl = this;
             // 
+            // btnDelete
+            // 
+            this.btnDelete.FlatAppearance.BorderSize = 0;
+            this.btnDelete.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDelete.Image = global::CapaPresentacion.Properties.Resources.icons8_lista_de_ingredientes_25;
+            this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnDelete.Location = new System.Drawing.Point(532, 3);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(90, 30);
+            this.btnDelete.TabIndex = 12;
+            this.btnDelete.Text = "&Eliminar";
+            this.btnDelete.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
             // FrameMaestroCompañia
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -754,7 +752,6 @@
         private System.Windows.Forms.Button tbnSalir;
         private System.Windows.Forms.MaskedTextBox txtBoxTelefono2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox chekActive;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.ComboBox lstMovimientosRegistro;
         private System.Windows.Forms.Label label4;
@@ -764,5 +761,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtBoxObservaciones;
         private System.Windows.Forms.ErrorProvider errorProviderApp;
+        private System.Windows.Forms.Button btnDelete;
     }
 }
