@@ -14,7 +14,7 @@ namespace CapaPresentacion.Seguridad
     public partial class FrameMaestroUsuario : Form
     {
         #region Class properties
-        private IUserCL _userCL { get; set; } = new IUserCL();
+        private UserCL _userCL { get; set; } = new UserCL();
         private List<UserDTO> _userList { get; set; } = new List<UserDTO>();
         private UserDTO _userInDashboard { get; set; } = new UserDTO();
         #endregion

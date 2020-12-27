@@ -7,7 +7,7 @@ using AriesContador.Entities.Administration.Companies;
 
 namespace CapaLogica
 {
-    public class IUserCL
+    public class UserCL
     {
         public async Task<UserDTO> InsertAsync(UserDTO user)
         {

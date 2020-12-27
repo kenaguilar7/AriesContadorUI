@@ -17,7 +17,7 @@ namespace CapaPresentacion.Seguridad
     public partial class FormPermisoIUser : Form
     {
 
-        IUserCL IUserCL = new IUserCL();
+        UserCL IUserCL = new UserCL();
         CompañiaCL compañiaCL = new CompañiaCL();
         PermisoCL permisoCL = new PermisoCL();
         private List<UserDTO> TodosLosIUsers = new List<UserDTO>();
