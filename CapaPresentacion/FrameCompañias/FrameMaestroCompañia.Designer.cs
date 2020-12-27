@@ -76,8 +76,8 @@
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnActualizar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
-            this.errorProviderApp = new System.Windows.Forms.ErrorProvider(this.components);
             this.btnDelete = new System.Windows.Forms.Button();
+            this.errorProviderApp = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBox2.SuspendLayout();
             this.maestro.SuspendLayout();
             this.groupCodigo.SuspendLayout();
@@ -361,10 +361,6 @@
             this.lstMovimientosRegistro.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.lstMovimientosRegistro.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstMovimientosRegistro.FormattingEnabled = true;
-            this.lstMovimientosRegistro.Items.AddRange(new object[] {
-            "Colones y Dolares",
-            "Solo Colones",
-            "Solo Dolares"});
             this.lstMovimientosRegistro.Location = new System.Drawing.Point(179, 187);
             this.lstMovimientosRegistro.Name = "lstMovimientosRegistro";
             this.lstMovimientosRegistro.Size = new System.Drawing.Size(246, 24);
@@ -660,10 +656,6 @@
             this.btnLimpiar.UseVisualStyleBackColor = true;
             this.btnLimpiar.Click += new System.EventHandler(this.BtnLimpiar);
             // 
-            // errorProviderApp
-            // 
-            this.errorProviderApp.ContainerControl = this;
-            // 
             // btnDelete
             // 
             this.btnDelete.FlatAppearance.BorderSize = 0;
@@ -677,7 +669,11 @@
             this.btnDelete.Text = "&Eliminar";
             this.btnDelete.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
+            // 
+            // errorProviderApp
+            // 
+            this.errorProviderApp.ContainerControl = this;
             // 
             // FrameMaestroCompañia
             // 

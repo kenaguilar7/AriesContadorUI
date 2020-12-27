@@ -30,7 +30,7 @@ namespace CapaPresentacion.FrameCompañias
 
             CompanyDTO company = new CompanyDTO
             {
-                IdType = (IdType)lstTipoId.SelectedIndex + 1,
+                IdType = (IdType)lstTipoId.SelectedItem,
                 Code = txtCodigoCia.Text,
                 IdNumber = txtBoxID.Text,
                 Name = txtBoxNombre.Text,
@@ -39,7 +39,7 @@ namespace CapaPresentacion.FrameCompañias
                 Memo = txtBoxObservaciones.Text,
                 PhoneNumber1 = txtBoxTelefono1.Text,
                 PhoneNumber2 = txtBoxTelefono2.Text,
-                CurrencyType = (CurrencyTypeCompany)lstMovimientosRegistro.SelectedIndex + 1,
+                CurrencyType = (CurrencyTypeCompany)lstMovimientosRegistro.SelectedItem,
                 Op1 = txtBoxOp1.Text,
                 Op2 = txtBoxOp2.Text,
                 UpdatedBy = 1
@@ -115,7 +115,7 @@ namespace CapaPresentacion.FrameCompañias
             ///Remove index change event momentarily
 
             this.lstTipoId.DataSource = Enum.GetValues(typeof(IdType));
-
+            this.lstMovimientosRegistro.DataSource = Enum.GetValues(typeof(CurrencyTypeCompany)); 
 
             this.lstCompanias.SelectedIndexChanged -= new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
             var companyListFromApi = await _companyCL.GetAllAsync();
@@ -138,12 +138,8 @@ namespace CapaPresentacion.FrameCompañias
         }
         private void CargarCompaniaFormulario(CompanyDTO compania)
         {
-            /**
-             * la lista lstTipoId tiene como primer indice 0; mientras que 
-             * los unum de tipo id tiene como primer indice 1
-             * en este caso le restamos 1 
-             */
-            lstTipoId.SelectedIndex = Convert.ToInt16(compania.IdType) - 1;
+
+            lstTipoId.SelectedItem = compania.IdType; 
             lstCopiarMaestroCuentas.SelectedIndex = -1;
             lstCopiarMaestroCuentas.Enabled = false;
             CompanyDTOOnUpdated = compania;
@@ -172,7 +168,7 @@ namespace CapaPresentacion.FrameCompañias
                 txtBoxOp2.Text = compania.Op2; /*((PersonaFisica)compania).MyApellidoMaterno;*/
             }
 
-            this.lstMovimientosRegistro.SelectedIndex = Convert.ToInt32(compania.CurrencyType) - 1;
+            this.lstMovimientosRegistro.SelectedItem = compania.CurrencyType; 
 
             if (compania.CurrencyType == CurrencyTypeCompany.Solo_Colones)
             {
@@ -214,7 +210,6 @@ namespace CapaPresentacion.FrameCompañias
             this.btnDelete.Visible = false;
             this.txtBoxBuscar.Clear();
             this.lstMovimientosRegistro.Enabled = true;
-            this.lstMovimientosRegistro.SelectedIndex = 0;
             this.lstCopiarMaestroCuentas.Enabled = true;
             this.lstCopiarMaestroCuentas.SelectedIndex = -1;
             ClearLstCompaniesBox();
@@ -230,9 +225,17 @@ namespace CapaPresentacion.FrameCompañias
 
         private void TipoIdSelectedIndexChanged(object sender, EventArgs e)
         {
-            //if (Convert.ToString((((DataRowView)lstTipoId.SelectedItem).Row.ItemArray)[0]) == "CEDULA JURIDICA")
             this.LimpiarFormulario();
-            if (lstTipoId.SelectedIndex != 0)
+            SetOpsTextMask();
+            txtBoxID.Enabled = true;
+
+            IdType _idType = (IdType)lstTipoId.SelectedItem;
+            txtBoxID.Mask = BuildIDMask(_idType);
+        }
+
+        private void SetOpsTextMask()
+        {
+            if ((IdType)lstTipoId.SelectedItem == IdType.CEDULA_NACIONAL)
             {
                 txtOp1.Text = "Primer Apellido:";
                 txtOp2.Text = "Segundo Apellido:";
@@ -242,14 +245,19 @@ namespace CapaPresentacion.FrameCompañias
                 txtOp1.Text = "Representante Legal:";
                 txtOp2.Text = "ID Representante Legal:";
             }
+        }
 
+        private string BuildIDMask(IdType idType)
+        {
+            switch (idType)
+            {
+                case IdType.CEDULA_JURIDICA: return "3-000-000000";
+                case IdType.CEDULA_NACIONAL: return "0-0000-0000";
+                case IdType.DIMEX: return "000000000000";
+                case IdType.NITE: return "0000000000";
+                default: return "null";
 
-            txtBoxID.Enabled = true;
-
-
-
-            // txtBoxID.Mask = VerificaString.MascaraIdentificacion((IdType)lstTipoId.SelectedIndex + 1);
-
+            }
         }
 
         private void LstCompaniasSelectedIndexChanged(object sender, EventArgs e)
@@ -262,6 +270,7 @@ namespace CapaPresentacion.FrameCompañias
         {
             this.LimpiarFormulario();
         }
+        
         private void Reporte(object sender, EventArgs e)
         {
             ReporteCompañia c = new ReporteCompañia();
@@ -269,46 +278,68 @@ namespace CapaPresentacion.FrameCompañias
             c.Show();
 
         }
+        
         private void SiguienteEnter(object sender, KeyPressEventArgs e)
         {
-
             if (e.KeyChar == (char)(Keys.Enter))
             {
                 e.Handled = true;
                 SendKeys.Send("{TAB}");
             }
-
-
         }
+
         private void Salir(object sender, EventArgs e)
         {
             this.Close();
         }
+        
         private void TxtBoxBuscarLeave(object sender, EventArgs e)
+        {
+            string _code = CreateCodeFromTypingString();
+            CompanyDTO searchedCompany = FindEntity(_code);
+
+            if (searchedCompany != null)
+            {
+                CargarCompaniaFormulario(searchedCompany);
+            }
+            else if(string.IsNullOrEmpty(_code) == false)
+            {
+                MessageBox.Show($"No se encontró compañias con el codigo {_code}",
+                                StaticInfoString.NombreApp,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
+            }
+
+        }
+
+        private CompanyDTO FindEntity(string _code)
+        {
+            var dataSource = (List<CompanyDTO>)lstCompanias.DataSource;
+            if (dataSource != null)
+            {
+                var searchedCompany = (from c in dataSource where c.Code == _code select c).FirstOrDefault();
+                return searchedCompany;
+            }
+            else
+            {
+                return null; 
+            }
+
+        }
+
+        private string CreateCodeFromTypingString()
+        {
+            var xx = int.TryParse(txtBoxBuscar.Text, out int num);
+            var _code = (xx) ? "C" + num.ToString("000") : txtBoxBuscar.Text;
+            return _code;
+        }
+       
+        private async void BtnDelete_Click(object sender, EventArgs e)
         {
             try
             {
-
-                if (int.TryParse(txtBoxBuscar.Text, out int num))
-                {
-                    //Le decimos que me devuelva un String con el formto del parametro
-                    var cod = "C" + num.ToString("000");
-
-                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == cod select c).Take(1).ToList<CompanyDTO>();
-
-                    if (salida.Count != 0)
-                    {
-                        CargarCompaniaFormulario(salida[0]);
-                    }
-                }
-                else
-                {
-                    List<CompanyDTO> salida = (from c in (List<CompanyDTO>)lstCompanias.DataSource where c.Code == txtBoxBuscar.Text select c).Take(1).ToList<CompanyDTO>();
-                    if (salida.Count != 0)
-                    {
-                        CargarCompaniaFormulario(salida[0]);
-                    }
-                }
+                await _companyCL.DeleteAsync(CompanyDTOOnUpdated);
+                MessageBox.Show("Compañia eliminada correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -378,17 +409,6 @@ namespace CapaPresentacion.FrameCompañias
 
         #endregion
 
-        private async void btnDelete_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                await _companyCL.DeleteAsync(CompanyDTOOnUpdated);
-                MessageBox.Show("Compañia eliminada correctamente", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
     }
 }

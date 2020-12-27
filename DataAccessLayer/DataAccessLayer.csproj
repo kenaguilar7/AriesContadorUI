@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AriesContador.Entities" Version="1.1.0" />
+    <PackageReference Include="AriesContador.Entities" Version="1.1.10" />
     <PackageReference Include="Tiny.RestClient" Version="1.7.1" />
   </ItemGroup>
 
