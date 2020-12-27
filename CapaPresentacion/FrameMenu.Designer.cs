@@ -33,7 +33,7 @@
             this.compañiasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maestroDeCompañiasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.seleccionarParaTrabajarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.IUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MaestroDeIUsertoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maestroDeCuentasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,7 +67,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compañiasToolStripMenuItem,
-            this.IUsersToolStripMenuItem,
+            this.UsersToolStripMenuItem,
             this.contableToolStripMenuItem,
             this.reportesToolStripMenuItem,
             this.sistemaToolStripMenuItem});
@@ -100,19 +100,19 @@
             this.seleccionarParaTrabajarToolStripMenuItem.Text = "Seleccionar para Trabajar";
             this.seleccionarParaTrabajarToolStripMenuItem.Click += new System.EventHandler(this.MaestroDeCompañia);
             // 
-            // IUsersToolStripMenuItem
+            // UsersToolStripMenuItem
             // 
-            this.IUsersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UsersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MaestroDeIUsertoolStripMenuItem});
-            this.IUsersToolStripMenuItem.Name = "IUsersToolStripMenuItem";
-            this.IUsersToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.IUsersToolStripMenuItem.Text = "&IUsers";
+            this.UsersToolStripMenuItem.Name = "UsersToolStripMenuItem";
+            this.UsersToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+            this.UsersToolStripMenuItem.Text = "&Usuarios";
             // 
             // MaestroDeIUsertoolStripMenuItem
             // 
             this.MaestroDeIUsertoolStripMenuItem.Name = "MaestroDeIUsertoolStripMenuItem";
-            this.MaestroDeIUsertoolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.MaestroDeIUsertoolStripMenuItem.Text = "&Maestro de IUsers";
+            this.MaestroDeIUsertoolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.MaestroDeIUsertoolStripMenuItem.Text = "&Maestro de usuarios";
             this.MaestroDeIUsertoolStripMenuItem.Click += new System.EventHandler(this.MaestroDeUsaurio);
             // 
             // contableToolStripMenuItem
@@ -223,21 +223,21 @@
             // PermisosDeIUserToolStripMenuItem
             // 
             this.PermisosDeIUserToolStripMenuItem.Name = "PermisosDeIUserToolStripMenuItem";
-            this.PermisosDeIUserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.PermisosDeIUserToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.PermisosDeIUserToolStripMenuItem.Text = "Permisos de UserDTO";
             this.PermisosDeIUserToolStripMenuItem.Click += new System.EventHandler(this.gestorDeVentanasToolStripMenuItem_Click);
             // 
             // gestionDeCorreosToolStripMenuItem
             // 
             this.gestionDeCorreosToolStripMenuItem.Name = "gestionDeCorreosToolStripMenuItem";
-            this.gestionDeCorreosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gestionDeCorreosToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.gestionDeCorreosToolStripMenuItem.Text = "Gestion de correos";
             this.gestionDeCorreosToolStripMenuItem.Click += new System.EventHandler(this.gestionDeCorreosToolStripMenuItem_Click);
             // 
             // salirToolStripMenuItem
             // 
             this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.salirToolStripMenuItem.Text = "Salir";
             this.salirToolStripMenuItem.Click += new System.EventHandler(this.SalirToolStripMenuItem_Click);
             // 
@@ -271,7 +271,7 @@
             // 
             this.txtIUser.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.txtIUser.Name = "txtIUser";
-            this.txtIUser.Size = new System.Drawing.Size(59, 22);
+            this.txtIUser.Size = new System.Drawing.Size(54, 22);
             this.txtIUser.Text = "UserDTO ";
             // 
             // toolStripButton2
@@ -336,7 +336,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem compañiasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maestroDeCompañiasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem IUsersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem UsersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MaestroDeIUsertoolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem contableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maestroDeCuentasToolStripMenuItem;

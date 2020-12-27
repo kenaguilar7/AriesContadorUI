@@ -45,7 +45,7 @@
             this.rdbIUserNormal = new System.Windows.Forms.RadioButton();
             this.rdbIUserAdmin = new System.Windows.Forms.RadioButton();
             this.txtBoxUserName = new System.Windows.Forms.TextBox();
-            this.estado = new System.Windows.Forms.CheckBox();
+            this.ActiveUser = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
@@ -188,7 +188,7 @@
             this.groupBox5.Controls.Add(this.rdbIUserNormal);
             this.groupBox5.Controls.Add(this.rdbIUserAdmin);
             this.groupBox5.Controls.Add(this.txtBoxUserName);
-            this.groupBox5.Controls.Add(this.estado);
+            this.groupBox5.Controls.Add(this.ActiveUser);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label24);
             this.groupBox5.Controls.Add(this.label23);
@@ -212,7 +212,7 @@
             this.groupBox5.Size = new System.Drawing.Size(944, 254);
             this.groupBox5.TabIndex = 2;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Nuevo UserDTO";
+            this.groupBox5.Text = "Nuevo usuario";
             // 
             // panel2
             // 
@@ -241,9 +241,9 @@
             this.label7.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(437, 156);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(121, 17);
+            this.label7.Size = new System.Drawing.Size(120, 17);
             this.label7.TabIndex = 71;
-            this.label7.Text = "Estado de UserDTO:";
+            this.label7.Text = "Estado de usuario:";
             // 
             // label6
             // 
@@ -262,9 +262,9 @@
             this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(437, 124);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(106, 17);
+            this.label4.Size = new System.Drawing.Size(105, 17);
             this.label4.TabIndex = 67;
-            this.label4.Text = "Tipo de UserDTO:";
+            this.label4.Text = "Tipo de usuario:";
             // 
             // rdbIUserNormal
             // 
@@ -275,7 +275,7 @@
             this.rdbIUserNormal.Size = new System.Drawing.Size(76, 21);
             this.rdbIUserNormal.TabIndex = 8;
             this.rdbIUserNormal.TabStop = true;
-            this.rdbIUserNormal.Text = "UserDTO ";
+            this.rdbIUserNormal.Text = "Usuario ";
             this.rdbIUserNormal.UseVisualStyleBackColor = true;
             // 
             // rdbIUserAdmin
@@ -299,18 +299,18 @@
             this.txtBoxUserName.TabIndex = 0;
             this.txtBoxUserName.Validating += new System.ComponentModel.CancelEventHandler(this.txtBoxUserName_Validating);
             // 
-            // estado
+            // ActiveUser
             // 
-            this.estado.AutoSize = true;
-            this.estado.Checked = true;
-            this.estado.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.estado.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.estado.Location = new System.Drawing.Point(574, 154);
-            this.estado.Name = "estado";
-            this.estado.Size = new System.Drawing.Size(115, 21);
-            this.estado.TabIndex = 10;
-            this.estado.Text = "UserDTO Activo";
-            this.estado.UseVisualStyleBackColor = true;
+            this.ActiveUser.AutoSize = true;
+            this.ActiveUser.Checked = true;
+            this.ActiveUser.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ActiveUser.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ActiveUser.Location = new System.Drawing.Point(574, 154);
+            this.ActiveUser.Name = "ActiveUser";
+            this.ActiveUser.Size = new System.Drawing.Size(115, 21);
+            this.ActiveUser.TabIndex = 10;
+            this.ActiveUser.Text = "Usuario Activo";
+            this.ActiveUser.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
@@ -318,9 +318,9 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(23, 28);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(111, 17);
+            this.label2.Size = new System.Drawing.Size(110, 17);
             this.label2.TabIndex = 61;
-            this.label2.Text = "Nombre UserDTO:";
+            this.label2.Text = "Nombre usuario:";
             // 
             // label24
             // 
@@ -549,7 +549,7 @@
             // 
             this.errorProviderApp.ContainerControl = this;
             // 
-            // FrameMaestroIUser
+            // FrameMaestroUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -558,10 +558,10 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "FrameMaestroIUser";
+            this.Name = "FrameMaestroUsuario";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Maestro de UserDTO";
+            this.Text = "Maestro de usuarios";
             this.panel1.ResumeLayout(false);
             this.opnPanel.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
@@ -579,7 +579,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.CheckBox estado;
+        private System.Windows.Forms.CheckBox ActiveUser;
         private System.Windows.Forms.TextBox txtBoxCLave;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label txtOp2;

@@ -46,6 +46,7 @@ namespace CapaPresentacion.Seguridad
             user.Mail = txtBoxMail.Text;
             user.Memo = txtBoxObservaciones.Text;
             user.Password = txtBoxCLave.Text;
+            user.Active = ActiveUser.Checked; 
             return user;
         }
 
@@ -58,8 +59,8 @@ namespace CapaPresentacion.Seguridad
 
                 try
                 {
-                    var newUser = await _userCL.InsertAsync(user, GlobalConfig.UserDTO);
-                    var mensaje = $"UserDTO {newUser.Name} código {newUser.UserName} - id {newUser.Id} creado exitosamente";
+                    var newUser = await _userCL.InsertAsync(user);
+                    var mensaje = $"Usuario {newUser.Name} código {newUser.UserName} - id {newUser.Id} creado exitosamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LimpiarFormulario(null, null);
                 }
@@ -80,8 +81,9 @@ namespace CapaPresentacion.Seguridad
             {
                 try
                 {
-                    await _userCL.UpdateAsync(BuildUser(), GlobalConfig.UserDTO);
-                    var mensaje = "UserDTO actualizado correctamente";
+                    var newUser = BuildUser(); 
+                    await _userCL.UpdateAsync(newUser);
+                    var mensaje = "Usuario actualizado correctamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -158,7 +160,7 @@ namespace CapaPresentacion.Seguridad
                 }
                 else
                 {
-                    MessageBox.Show($"No se encontro ningun UserDTO con el UserDTO {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show($"No se encontro ningún usuario con el código {tyxt}", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -184,7 +186,7 @@ namespace CapaPresentacion.Seguridad
             this.txtBoxMail.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
             this.txtBoxObservaciones.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
             this.txtBoxCLave.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
-            this.estado.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
+            this.ActiveUser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
             this.txtBoxUserName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
             rdbIUserNormal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
             rdbIUserAdmin.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserPressAnyKey);
@@ -199,7 +201,7 @@ namespace CapaPresentacion.Seguridad
             this.txtBoxTelefono.Text = _userInDashboard.PhoneNumber;
             this.txtBoxMail.Text = _userInDashboard.Mail;
             this.txtBoxObservaciones.Text = _userInDashboard.Memo;
-            this.estado.Checked = _userInDashboard.Active;
+            this.ActiveUser.Checked = _userInDashboard.Active;
             this.rdbIUserAdmin.Checked = (_userInDashboard.UserType == UserType.Administrador) ? true : false;
             this.rdbIUserNormal.Checked = (_userInDashboard.UserType == UserType.Usuario) ? true : false;
             this.txtBoxCLave.Text = _userInDashboard.Password;
@@ -223,11 +225,11 @@ namespace CapaPresentacion.Seguridad
             }
             else if (string.IsNullOrWhiteSpace(txtName))
             {
-                SetErrorMessage(txtBoxUserName, "Código de UserDTO no puede ir en blanco!", ref e, true);
+                SetErrorMessage(txtBoxUserName, "Código de usuario no puede ir en blanco!", ref e, true);
             }
             else if (!IsUserNameValid(txtName))
             {
-                SetErrorMessage(txtBoxUserName, "Código de UserDTO en uso!", ref e, true);
+                SetErrorMessage(txtBoxUserName, "Código de Usuario en uso!", ref e, true);
             }
             else
             {
@@ -279,7 +281,7 @@ namespace CapaPresentacion.Seguridad
 
             if (string.IsNullOrEmpty(txtNombre))
             {
-                SetErrorMessage(txtBoxNombre, "Nombre de UserDTO no puede ir en blanco!", ref e, true);
+                SetErrorMessage(txtBoxNombre, "Nombre de usuario no puede ir en blanco!", ref e, true);
             }
             else
             {

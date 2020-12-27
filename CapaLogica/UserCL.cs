@@ -9,10 +9,9 @@ namespace CapaLogica
 {
     public class IUserCL
     {
-        public async Task<UserDTO> InsertAsync(UserDTO userInsert, UserDTO user)
+        public async Task<UserDTO> InsertAsync(UserDTO user)
         {
-            var _user = userInsert as UserDTO;
-            var response = await RESTClient.TinyRestClient.PostRequest("users", _user).ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.PostRequest("users", user).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<UserDTO>();
@@ -36,9 +35,9 @@ namespace CapaLogica
             }
         }
 
-        public async Task UpdateAsync(UserDTO user, UserDTO userTrigger)
+        public async Task UpdateAsync(UserDTO user)
         {
-            var response = await RESTClient.TinyRestClient.PutRequest($"users/{user.Id}", user).ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.PutRequest($"users", user).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 //nothing to do

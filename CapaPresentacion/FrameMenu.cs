@@ -232,7 +232,7 @@ namespace CapaPresentacion
 
                 if ((GlobalConfig.UserDTO.Modules.FirstOrDefault(x => x.Codigo == 4) is var mIUser) && mIUser == null || !mIUser.TienePermiso)
                 {
-                    IUsersToolStripMenuItem.Enabled = false;
+                    UsersToolStripMenuItem.Enabled = false;
                     //maestroDeCompañiasToolStripMenuItem = false;
                 }
                 else
