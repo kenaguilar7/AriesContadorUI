@@ -28,7 +28,7 @@ namespace CapaPresentacion.Reportes
         private async void CargarDatos()
         {
 
-            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
+            var lstMeses = await fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             fechaTransaccions = lstMeses.ToList();
             this.lstMesInicio.DataSource = lstMeses;
         }
@@ -47,7 +47,7 @@ namespace CapaPresentacion.Reportes
 
 
                 var lstCuentas = new Dictionary<PostingPeriodDTO, List<AccountDTO>>();
-                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.company.Id);
+                var cuentas = await  cuentaCL.GetAllAsync(GlobalConfig.company.Code);
 
                 //cuentaCL.LLenarConSaldoB(((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, ((FechaTransaccion)lstMesInicio.SelectedItem).Fecha, cuentas, GlobalConfig.Compañia); 
                 foreach (var item in fechaTransaccions)

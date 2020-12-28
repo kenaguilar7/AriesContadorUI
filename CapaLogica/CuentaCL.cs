@@ -27,9 +27,9 @@ namespace CapaLogica
             }
         }
 
-        public async Task<List<AccountDTO>> GetAllAsync(int companyId)
+        public async Task<List<AccountDTO>> GetAllAsync(string companyId)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"accounts/{companyId}").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.GetRequest($"accounts/GetAllByBaseEntityId/{companyId}").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<List<AccountDTO>>();
@@ -83,18 +83,32 @@ namespace CapaLogica
             }
         }
 
-        public async Task<AccountDTO> GetFullBalanceAsync(int companyId, AccountDTO account)
+        public async Task<AccountDTO> GetFullBalanceAsync(string companyCode, AccountDTO account)
         {
-            var months = await new FechaTransaccionCL().GetAllAsync(companyId);
+            var months = await new FechaTransaccionCL().GetAllAsync(companyCode);
 
-            return await GetMonthlyBalanceAsync(companyId, account, months.GetOlderAccountPeriod(), months.GetNewerAccountPeriod());
+            return await GetMonthlyBalanceAsync(account, months);
         }
 
-        public async Task<AccountDTO> GetMonthlyBalanceAsync(int companyId, AccountDTO account, PostingPeriodDTO fromAccountPeriod, PostingPeriodDTO toAccountPeriod)
+        public async Task<List<AccountDTO>> GetDefaultAccountPlan()
         {
-            var urlString = $"company/{companyId}/accounts/GetFullBalanceWithDateRange/{account.Id}?fromAccountPeriodId={fromAccountPeriod.Id}&toAccountPeriodId={toAccountPeriod.Id}";
+            var response = await RESTClient.TinyRestClient.GetRequest($"accounts/GetDefaultContablePlan/").ExecuteAsHttpResponseMessageAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<List<AccountDTO>>();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
 
-            var response = await RESTClient.TinyRestClient.GetRequest(urlString).ExecuteAsHttpResponseMessageAsync();
+        public async Task<AccountDTO> GetMonthlyBalanceAsync(AccountDTO account, IEnumerable<PostingPeriodDTO> postingPeriods)
+        {
+            var urlString = $"accounts/GetAccountBalance/{account.Id}"; 
+
+            var response = await RESTClient.TinyRestClient.PostRequest(urlString).AddContent(postingPeriods).ExecuteAsHttpResponseMessageAsync();
+
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<AccountDTO>();

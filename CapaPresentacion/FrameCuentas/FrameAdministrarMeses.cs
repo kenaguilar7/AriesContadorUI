@@ -22,13 +22,13 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async void FrameAdministrarMesesLoad(object sender, EventArgs e)
         {
-            var companyId = GlobalConfig.company.Id;
+            var companyCode = GlobalConfig.company.Code;
             try
             {
 
-                dtRegistros.DataSource = await _fechaCL.GetDataTableAsync(companyId);
-                var lstMonths = (await _fechaCL.GetAllAsync(companyId)).TakeWhile(x => !x.Closed);
-                var lstAvailableMonths = await _fechaCL.GetAvailableMonthsAsync(companyId);
+                dtRegistros.DataSource = await _fechaCL.GetDataTableAsync(companyCode);
+                var lstMonths = (await _fechaCL.GetAllAsync(companyCode)).TakeWhile(x => !x.Closed);
+                var lstAvailableMonths = await _fechaCL.GetAvailableMonthsAsync(companyCode);
                 lstCerrarMes.DataSource = lstMonths.ToList();
                 lstAbrirMes.DataSource = lstAvailableMonths.ToList();
             }

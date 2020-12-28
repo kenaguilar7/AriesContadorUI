@@ -27,7 +27,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async void FrameSeleccionCuenta_Load(object sender, EventArgs e)
         {
-            LstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id); 
+            LstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code); 
             treeCuentas.Nodes.AddRange(TreeViewCuentas.CrearTreeView(LstCuentas));
 
         }

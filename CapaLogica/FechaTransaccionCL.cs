@@ -12,9 +12,9 @@ namespace CapaLogica
 {
     public class FechaTransaccionCL
     {
-        public async Task<IEnumerable<PostingPeriodDTO>> GetAllAsync(int companyid)
+        public async Task<IEnumerable<PostingPeriodDTO>> GetAllAsync(string companyid)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"PostingPeriods/GetAllByCompanyId/{companyid}").ExecuteAsHttpResponseMessageAsync();
+            var response = await RESTClient.TinyRestClient.GetRequest($"PostingPeriods/GetAllByBaseEntityId/{companyid}").ExecuteAsHttpResponseMessageAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -42,7 +42,7 @@ namespace CapaLogica
             }
         }
 
-        public async Task<DataTable> GetDataTableAsync(int companyid)
+        public async Task<DataTable> GetDataTableAsync(string companyid)
         {
             var response = await RESTClient.TinyRestClient
                 .GetRequest($"companies/{companyid}/AccountingPeriod/GetDataTable")
@@ -58,7 +58,7 @@ namespace CapaLogica
             }
         }
 
-        public async Task<IEnumerable<PostingPeriodDTO>> GetAvailableMonthsAsync(int companyid)
+        public async Task<IEnumerable<PostingPeriodDTO>> GetAvailableMonthsAsync(string companyid)
         {
             var response = await RESTClient.TinyRestClient
                 .GetRequest($"AccountingPeriod/GetAllOpen/{companyid}")

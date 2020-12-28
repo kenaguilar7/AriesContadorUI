@@ -18,6 +18,7 @@ namespace CapaPresentacion.FrameCompañias
     public partial class FrameMaestroCompañia : Form
     {
         private CompañiaCL _companyCL { get; } = new CompañiaCL();
+        private CuentaCL cuentaCL { get; } = new CuentaCL(); 
         private List<CompanyDTO> _lstCompanies { get; set; } = new List<CompanyDTO>();
         private CompanyDTO CompanyDTOOnUpdated { get; set; }
         public FrameMaestroCompañia()
@@ -54,6 +55,14 @@ namespace CapaPresentacion.FrameCompañias
         private async Task ExecutePostAsync()
         {
             var newCompany = BuilCompany();
+            newCompany.Account = await GetContablePlan();
+
+            foreach (AccountDTO accnt in newCompany.Account)
+            {
+                accnt.CompanyId = newCompany.Code;
+                accnt.UpdatedBy = newCompany.UpdatedBy;
+                accnt.CreatedBy = newCompany.CreatedBy;
+            }
 
             try
             {
@@ -69,6 +78,28 @@ namespace CapaPresentacion.FrameCompañias
                 //do something
             }
         }
+
+        private async Task<IEnumerable<AccountDTO>> GetContablePlan()
+        {
+            _ = new List<AccountDTO>();
+
+            var accountID = lstCopiarMaestroCuentas.SelectedItem as CompanyDTO;
+            var code = accountID.Code;
+            List<AccountDTO> accountPlan;
+            if (code == "Default")
+            {
+                //
+                accountPlan = await cuentaCL.GetDefaultAccountPlan();
+            }
+            else
+            {
+                //
+                accountPlan = await cuentaCL.GetAllAsync(code);
+            }
+
+            return accountPlan;
+        }
+
         private async void GuardarNuevaCompaña(object sender, EventArgs e)
         {
             if (ValidateChildren())
@@ -115,7 +146,7 @@ namespace CapaPresentacion.FrameCompañias
             ///Remove index change event momentarily
 
             this.lstTipoId.DataSource = Enum.GetValues(typeof(IdType));
-            this.lstMovimientosRegistro.DataSource = Enum.GetValues(typeof(CurrencyTypeCompany)); 
+            this.lstMovimientosRegistro.DataSource = Enum.GetValues(typeof(CurrencyTypeCompany));
 
             this.lstCompanias.SelectedIndexChanged -= new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
             var companyListFromApi = await _companyCL.GetAllAsync();
@@ -125,11 +156,10 @@ namespace CapaPresentacion.FrameCompañias
             this.lstCompanias.SelectedIndexChanged += new System.EventHandler(this.LstCompaniasSelectedIndexChanged);
 
             ///build copy from
-            var lstMCuentas = new string[_lstCompanies.Count + 1];
-            lstMCuentas[0] = "POR DEFECTO";
-            var companyNameList = (from cm in _lstCompanies select cm.ToString()).ToList<string>();
-            companyNameList.CopyTo(lstMCuentas, 1);
-            lstCopiarMaestroCuentas.DataSource = lstMCuentas;
+            var companieF = (from c in _lstCompanies select new CompanyDTO() { Code = c.Code, Name = c.Name }).ToList();
+            companieF.Insert(0,new CompanyDTO() { Code = "Default", Name = string.Empty });
+
+            lstCopiarMaestroCuentas.DataSource = companieF;
             lstCopiarMaestroCuentas.SelectedIndex = 0;
 
             txtCodigoCia.Text = await _companyCL.CreateNewCodeAsync();
@@ -139,7 +169,7 @@ namespace CapaPresentacion.FrameCompañias
         private void CargarCompaniaFormulario(CompanyDTO compania)
         {
 
-            lstTipoId.SelectedItem = compania.IdType; 
+            lstTipoId.SelectedItem = compania.IdType;
             lstCopiarMaestroCuentas.SelectedIndex = -1;
             lstCopiarMaestroCuentas.Enabled = false;
             CompanyDTOOnUpdated = compania;
@@ -168,7 +198,7 @@ namespace CapaPresentacion.FrameCompañias
                 txtBoxOp2.Text = compania.Op2; /*((PersonaFisica)compania).MyApellidoMaterno;*/
             }
 
-            this.lstMovimientosRegistro.SelectedItem = compania.CurrencyType; 
+            this.lstMovimientosRegistro.SelectedItem = compania.CurrencyType;
 
             if (compania.CurrencyType == CurrencyTypeCompany.Solo_Colones)
             {
@@ -270,7 +300,7 @@ namespace CapaPresentacion.FrameCompañias
         {
             this.LimpiarFormulario();
         }
-        
+
         private void Reporte(object sender, EventArgs e)
         {
             ReporteCompañia c = new ReporteCompañia();
@@ -278,7 +308,7 @@ namespace CapaPresentacion.FrameCompañias
             c.Show();
 
         }
-        
+
         private void SiguienteEnter(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)(Keys.Enter))
@@ -292,7 +322,7 @@ namespace CapaPresentacion.FrameCompañias
         {
             this.Close();
         }
-        
+
         private void TxtBoxBuscarLeave(object sender, EventArgs e)
         {
             string _code = CreateCodeFromTypingString();
@@ -302,7 +332,7 @@ namespace CapaPresentacion.FrameCompañias
             {
                 CargarCompaniaFormulario(searchedCompany);
             }
-            else if(string.IsNullOrEmpty(_code) == false)
+            else if (string.IsNullOrEmpty(_code) == false)
             {
                 MessageBox.Show($"No se encontró compañias con el codigo {_code}",
                                 StaticInfoString.NombreApp,
@@ -322,7 +352,7 @@ namespace CapaPresentacion.FrameCompañias
             }
             else
             {
-                return null; 
+                return null;
             }
 
         }
@@ -333,7 +363,7 @@ namespace CapaPresentacion.FrameCompañias
             var _code = (xx) ? "C" + num.ToString("000") : txtBoxBuscar.Text;
             return _code;
         }
-       
+
         private async void BtnDelete_Click(object sender, EventArgs e)
         {
             try

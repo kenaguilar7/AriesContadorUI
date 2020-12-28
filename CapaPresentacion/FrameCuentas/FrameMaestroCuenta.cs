@@ -43,7 +43,7 @@ namespace CapaPresentacion.FrameCuentas
                 var desicionHeredarSaldo = true;
 
 
-                if (cuenta.AccountType != AccountType.Cuenta_Titulo)
+                if (cuenta.AccountType == AccountType.Cuenta_Titulo)
                 {
                     MessageBox.Show("No se pueden crear cuentas a este nivel", StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     desicionHeredarSaldo = false;
@@ -94,7 +94,7 @@ namespace CapaPresentacion.FrameCuentas
 
         private async Task<AccountDTO> ObtenerSaldoDeCuentaAsync(AccountDTO cuenta)
         {
-            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.company.Id, cuenta);
+            return await _cuentaCL.GetFullBalanceAsync(GlobalConfig.company.Code, cuenta);
         }
 
         public bool TransferirCuenta(AccountDTO cuenta)
@@ -249,11 +249,13 @@ namespace CapaPresentacion.FrameCuentas
             PostingPeriodDTO startMonth = GetSelectedMonthInFechaInicio();
             PostingPeriodDTO endMonth = GetSelectedMonthInFechaFinal();
 
+            IEnumerable<PostingPeriodDTO> postingPeriods = _lstFechas; 
+
             try
             {
                 if (startMonth != null && endMonth != null && CuentaActual != null)
                 {
-                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(GlobalConfig.company.Id, CuentaActual, startMonth, endMonth);
+                    var _account = await _cuentaCL.GetMonthlyBalanceAsync(CuentaActual, postingPeriods);
                     PrintBalanceInCurPanel(_account);
                 }
             }
@@ -351,7 +353,7 @@ namespace CapaPresentacion.FrameCuentas
 
         private async Task LoadDatesAsync()
         {
-            _lstFechas = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
+            _lstFechas = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             ///Se añaden interfaces / copias (las interfaces no son copias) 
             ///la idea con eso es que cada item y de cada combo box tenga diferente hash
             var lstBfechasFnl = new List<PostingPeriodDTO> { (from c1 in _lstFechas select c1).OrderByDescending(x => x.Date).LastOrDefault() };
@@ -371,7 +373,7 @@ namespace CapaPresentacion.FrameCuentas
 
             try
             {
-                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id);
+                _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code);
                 //cargar las cuentas al arbol
                 var accounts = TreeViewCuentas.CrearTreeView(_lstCuentas); 
                 treeCuentas.Nodes.AddRange(accounts);

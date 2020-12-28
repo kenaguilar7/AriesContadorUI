@@ -167,7 +167,7 @@ namespace CapaPresentacion.FrameCuentas
         }
         private async Task LoadAccountingPeriodList()
         {
-            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.company.Id);
+            var lst = await _fechaTransaccion.GetAllAsync(GlobalConfig.company.Code);
             lstMesesAbiertos.DataSource = lst;
 
 

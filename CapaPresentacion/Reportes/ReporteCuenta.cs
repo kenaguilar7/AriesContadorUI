@@ -39,9 +39,9 @@ namespace CapaPresentacion.Reportes
         private async void CargarDatos(CompanyDTO compañia, UserDTO UserDTO)
         {
             _compania = compañia;
-            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id); 
+            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code); 
             _IUser = UserDTO;
-            lstFechas = await  _fechaTransaccion.GetAllAsync(compañia.Id);
+            lstFechas = await  _fechaTransaccion.GetAllAsync(compañia.Code);
 
             this.lstMesesAbiertos.DataSource = lstFechas;
             LlenarTabla(false);

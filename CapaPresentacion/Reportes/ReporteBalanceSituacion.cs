@@ -37,13 +37,13 @@ namespace CapaPresentacion.Reportes
         }
         private async Task LoadAccounts()
         {
-            var lst = await CuentaCL.GetAllAsync(GlobalConfig.company.Id);
+            var lst = await CuentaCL.GetAllAsync(GlobalConfig.company.Code);
             ListaCuentas = from c in lst where c.AccountTag == AccountTag.Ingreso || c.AccountTag == AccountTag.Egreso || c.AccountTag == AccountTag.Costo_Venta select c;
         }
 
         private async Task LoadPostingPeriods()
         {
-            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
+            var lstFechas = await FechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
             FillDropDownLists(lstFechas);
         }
 

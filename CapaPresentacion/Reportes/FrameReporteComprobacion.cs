@@ -38,8 +38,8 @@ namespace CapaPresentacion.Reportes
         /// </summary>
         private async void CargarDatos()
         {
-            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Id);
-            this.lstMesesAbiertos.DataSource = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Id);
+            _lstCuentas = await _cuentaCL.GetAllAsync(GlobalConfig.company.Code);
+            this.lstMesesAbiertos.DataSource = await _fechaTransaccionCL.GetAllAsync(GlobalConfig.company.Code);
         }
         /// <summary>
         /// Actualiza la vista del grid
