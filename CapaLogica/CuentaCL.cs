@@ -15,8 +15,10 @@ namespace CapaLogica
     {
         public async Task<AccountDTO> GetAccountById(int accountId)
         {
+            var url = $"accounts/GetById/{accountId}"; 
+            var response = await RESTClient.TinyRestClient.GetRequest(url)
+                            .ExecuteAsHttpResponseMessageAsync();
 
-            var response = await RESTClient.TinyRestClient.GetRequest($"company/accounts/getbyid").ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<AccountDTO>();

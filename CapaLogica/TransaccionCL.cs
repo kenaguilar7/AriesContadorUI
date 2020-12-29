@@ -8,9 +8,10 @@ namespace CapaLogica
 {
     public class TransaccionCL
     {
-        public async Task<JournalEntryLineDTO> InsertAsync(JournalEntryLineDTO transaccion, int asientoId)
+        public async Task<JournalEntryLineDTO> InsertAsync(JournalEntryLineDTO transaccion)
         {
-            var response = await RESTClient.TinyRestClient.PostRequest($"bookentry/{asientoId}/BookTransaction", transaccion).ExecuteAsHttpResponseMessageAsync();
+            var url = $"journalentrieslines"; 
+            var response = await RESTClient.TinyRestClient.PostRequest(url, transaccion).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<JournalEntryLineDTO>();
@@ -22,7 +23,11 @@ namespace CapaLogica
         }
         public async Task<IEnumerable<JournalEntryLineDTO>> GetALlAsync(int asientoId)
         {
-            var response = await RESTClient.TinyRestClient.GetRequest($"bookentry/{asientoId}/BookTransaction").ExecuteAsHttpResponseMessageAsync();
+            var url = $"journalentrieslines/GetAllByBaseEntityId/{asientoId}";
+            var response = await RESTClient.TinyRestClient
+                .GetRequest(url)
+                .ExecuteAsHttpResponseMessageAsync();
+
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<IEnumerable<JournalEntryLineDTO>>();
@@ -32,9 +37,10 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task UpdateAsync(JournalEntryLineDTO transaccion, int asientoId)
+        public async Task UpdateAsync(JournalEntryLineDTO transaccion)
         {
-            var response = await RESTClient.TinyRestClient.PutRequest($"bookentry/{asientoId}/BookTransaction/{transaccion.Id}", transaccion).ExecuteAsHttpResponseMessageAsync();
+            var url = $"journalentrieslines";
+            var response = await RESTClient.TinyRestClient.PutRequest(url, transaccion).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 //noting to do, the resource has been delete succesfull
@@ -44,9 +50,12 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task DeleteAsync(int transaccionId, int asientoId)
+        public async Task DeleteAsync(JournalEntryLineDTO journalEntryLine)
         {
-            var response = await RESTClient.TinyRestClient.DeleteRequest($"bookentry/{asientoId}/BookTransaction/{transaccionId}").ExecuteAsHttpResponseMessageAsync();
+            var url = $"journalentrieslines/delete";
+            var response = await RESTClient.TinyRestClient.PutRequest(url)
+                .AddContent(journalEntryLine)
+                .ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 //nothing to do, resource has been delete succesfull'

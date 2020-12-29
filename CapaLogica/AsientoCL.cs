@@ -11,13 +11,16 @@ namespace CapaLogica
     {
         //endpoints.MapControllerRoute("entries", "company/{companyid}/accountingperiod/{accountingperiodid}/{controller=Home}/{action=Index}");
 
-        public async Task<JournalEntryDTO> GetPreEntryAsync(string companyId, decimal fechaTransaccionId)
+        public async Task<int> GetPreEntryAsync(int fechaTransaccionId)
         {
-
-            var respose = await RESTClient.TinyRestClient.GetRequest($"company/{companyId}/accountingperiod/{fechaTransaccionId}/bookentry/GetPreEntry").ExecuteAsHttpResponseMessageAsync();
+            var url = $"journalEntry/GetConsecutive/{fechaTransaccionId}"; 
+            var respose = await RESTClient.TinyRestClient
+                        .GetRequest(url)
+                        .ExecuteAsHttpResponseMessageAsync();
+            
             if (respose.IsSuccessStatusCode)
             {
-                return await respose.Content.ReadAsAsync<JournalEntryDTO>();
+                return await respose.Content.ReadAsAsync<int>();
             }
             else
             {
@@ -25,9 +28,15 @@ namespace CapaLogica
             }
 
         }
-        public async Task<IEnumerable<JournalEntryDTO>> GetAllAsync(string companyId, decimal fechaTransaccionId)
+
+        public async Task<IEnumerable<JournalEntryDTO>> GetAllAsync(int postingPeriodId)
         {
-            var respose = await RESTClient.TinyRestClient.GetRequest($"company/{companyId}/accountingperiod/{fechaTransaccionId}/bookentry").ExecuteAsHttpResponseMessageAsync();
+            var url = $"JournalEntry/GetAllByBaseEntityId/{postingPeriodId}"; 
+
+            var respose = await RESTClient.TinyRestClient
+                            .GetRequest(url)
+                            .ExecuteAsHttpResponseMessageAsync();
+           
             if (respose.IsSuccessStatusCode)
             {
                 return await respose.Content.ReadAsAsync<IEnumerable<JournalEntryDTO>>();
@@ -37,10 +46,13 @@ namespace CapaLogica
                 throw new Exception(respose.ReasonPhrase);
             }
         }
-        public async Task<JournalEntryDTO> InsertAsync(string companyId, decimal fechaTransaccionId, JournalEntryDTO asiento)
-        {
 
-            var response = await RESTClient.TinyRestClient.PostRequest($"company/{companyId}/accountingperiod/{fechaTransaccionId}/bookentry", asiento).ExecuteAsHttpResponseMessageAsync();
+        public async Task<JournalEntryDTO> InsertAsync(JournalEntryDTO asiento)
+        {
+            var url = $"journalentry"; 
+            var response = await RESTClient.TinyRestClient.PostRequest(url, asiento)
+                .ExecuteAsHttpResponseMessageAsync();
+            
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<JournalEntryDTO>();
@@ -50,9 +62,13 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task DeleteAsync(string companyId,decimal fechaTransaccionId, double asientoid)
+        public async Task DeleteAsync(JournalEntryDTO journalEntry)
         {
-            var response = await RESTClient.TinyRestClient.DeleteRequest($"company/{companyId}/accountingperiod/{fechaTransaccionId}/bookentry/{asientoid}").ExecuteAsHttpResponseMessageAsync();
+            var url = "journalentry/delete"; 
+            var response = await RESTClient.TinyRestClient.PutRequest(url)
+                            .AddContent(journalEntry)
+                            .ExecuteAsHttpResponseMessageAsync();
+
             if (response.IsSuccessStatusCode)
             {
                 //nothing to do
@@ -62,9 +78,10 @@ namespace CapaLogica
                 throw new Exception(response.ReasonPhrase);
             }
         }
-        public async Task UpdateAsync(string companyId, decimal fechaTransaccionId, JournalEntryDTO asiento)
+        public async Task UpdateAsync(JournalEntryDTO asiento)
         {
-            var response = await RESTClient.TinyRestClient.PutRequest($"company/{companyId}/accountingperiod/{fechaTransaccionId}/bookentry", asiento).ExecuteAsHttpResponseMessageAsync();
+            var url = "journalentry"; 
+            var response = await RESTClient.TinyRestClient.PutRequest(url, asiento).ExecuteAsHttpResponseMessageAsync();
             if (response.IsSuccessStatusCode)
             {
                 //nothing to do

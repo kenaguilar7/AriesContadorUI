@@ -60,7 +60,7 @@ namespace CapaPresentacion.Seguridad
                 try
                 {
                     var newUser = await _userCL.InsertAsync(user);
-                    var mensaje = $"Usuario {newUser.Name} código {newUser.UserName} - id {newUser.Id} creado exitosamente";
+                    var mensaje = $"Usuario creado exitosamente";
                     MessageBox.Show(mensaje, StaticInfoString.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LimpiarFormulario(null, null);
                 }

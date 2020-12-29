@@ -23,7 +23,7 @@ namespace CapaPresentacion
 
         private async Task CheckForUpdates()
         {
-            
+
             using (var manager = new UpdateManager(ConfigurationManager.ConnectionStrings["UpdateServerString"].ConnectionString))
             {
                 await manager.UpdateApp();
@@ -46,8 +46,8 @@ namespace CapaPresentacion
 
         //public static bool GetPermiso(Ventana ventana, CRUDItem cRUDItem)
         //{
-            
-            
+
+
         //    return false;
         //}
 
@@ -60,9 +60,14 @@ namespace CapaPresentacion
 
         public static List<AccountDTO> Cuentas { get; set; } = new List<AccountDTO>();
         public static List<CompanyDTO> Compañias { get; set; } = new List<CompanyDTO>();
-        public static UserDTO UserDTO { get; set; }
+        public static UserDTO UserDTO { get { return CreateUserForTEsting();  } set { UserDTO = value;  } }
         public static CompanyDTO company { get; set; }
 
+        private static UserDTO CreateUserForTEsting()
+        {
+            return new UserDTO() { Id = 1 }; 
+
+        }
 
     }
 }
