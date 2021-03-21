@@ -369,11 +369,21 @@ namespace CapaPresentacion.FrameCuentas
             {
                 txtTotalCreditos.ForeColor = Color.Green;
                 txtTotalDebitos.ForeColor = Color.Green;
+
+                this.labelDiferencia.Visible = false;
+                this.txtDiferenciaSaldo.Visible = false;
+                this.txtDiferenciaSaldo.Text = string.Format("{0:₡###,###,###,##0.00}", 0);
+
             }
             else
             {
                 txtTotalCreditos.ForeColor = Color.Black;
                 txtTotalDebitos.ForeColor = Color.Black;
+
+                this.labelDiferencia.Visible = true;
+                this.txtDiferenciaSaldo.Visible = true;
+                var diferencia = _asiento.DebitosColones - _asiento.CreditosColones;
+                this.txtDiferenciaSaldo.Text = string.Format("{0:₡###,###,###,##0.00}", diferencia);
             }
         }
         /// <summary>
@@ -427,6 +437,7 @@ namespace CapaPresentacion.FrameCuentas
                 this.txtBoxDetalle.Clear();
                 this.lstTipoCambio.SelectedIndex = 0;
                 this.textBox1.Clear();
+                this.labelRutaNuevaCuenta.Text = "Ruta:";
                 ///labels de error
                 txtErorDetalle.Visible = false;
                 txtErrorFecha.Visible = false;
@@ -778,6 +789,18 @@ namespace CapaPresentacion.FrameCuentas
             {
                 this.txtBoxNombreCuenta.Tag = cuenta;
                 this.txtBoxNombreCuenta.Text = cuenta.Nombre;
+
+                var cuentaPath = txtPathCuenta.Text = $"Ruta: {cuenta.PathDirection}";
+                this.labelRutaNuevaCuenta.Text = cuentaPath.Substring(0, 40) + ((cuentaPath.Length > 40 )?"...":"");
+
+                ToolTip toolTip1 = new ToolTip();
+                toolTip1.AutoPopDelay = 5000;
+                toolTip1.InitialDelay = 1000;
+                toolTip1.ReshowDelay = 500;
+                toolTip1.ShowAlways = true;
+
+                toolTip1.SetToolTip(this.labelRutaNuevaCuenta, cuentaPath);
+
                 this.rDebitos.Focus();
                 return true;
             }

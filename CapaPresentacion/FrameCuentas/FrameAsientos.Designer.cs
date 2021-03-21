@@ -29,15 +29,15 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lstNumeroAsientos = new System.Windows.Forms.ComboBox();
             this.lstMesesAbiertos = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -47,6 +47,16 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.GridDatos = new System.Windows.Forms.DataGridView();
+            this.dataGridViewButtonColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dsd = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.debitos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnTipoCambio = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnMontoDolares = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnDummy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label8 = new System.Windows.Forms.Label();
             this.rCreditos = new System.Windows.Forms.RadioButton();
             this.rDebitos = new System.Windows.Forms.RadioButton();
@@ -69,6 +79,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.labelRutaNuevaCuenta = new System.Windows.Forms.Label();
             this.txtBoxDetalle = new System.Windows.Forms.TextBox();
             this.txtBoxReferencia = new System.Windows.Forms.TextBox();
             this.btnSeleccionarCuenta = new System.Windows.Forms.Button();
@@ -79,6 +90,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txtDiferenciaSaldo = new System.Windows.Forms.Label();
+            this.labelDiferencia = new System.Windows.Forms.Label();
             this.txtPathCuenta = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -92,16 +105,6 @@
             this.BtbEliminar = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.txtCuentaToolT = new System.Windows.Forms.ToolTip(this.components);
-            this.dataGridViewButtonColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dsd = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.debitos = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnTipoCambio = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnMontoDolares = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnDummy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.GridDatos)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -155,7 +158,7 @@
             // 
             this.txtTotalCreditos.AutoSize = true;
             this.txtTotalCreditos.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTotalCreditos.Location = new System.Drawing.Point(545, 316);
+            this.txtTotalCreditos.Location = new System.Drawing.Point(420, 316);
             this.txtTotalCreditos.Name = "txtTotalCreditos";
             this.txtTotalCreditos.Size = new System.Drawing.Size(41, 21);
             this.txtTotalCreditos.TabIndex = 12;
@@ -175,7 +178,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(423, 320);
+            this.label11.Location = new System.Drawing.Point(298, 320);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(118, 17);
             this.label11.TabIndex = 10;
@@ -196,8 +199,8 @@
             this.GridDatos.AllowUserToAddRows = false;
             this.GridDatos.AllowUserToDeleteRows = false;
             this.GridDatos.AllowUserToOrderColumns = true;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GridDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GridDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle10;
             this.GridDatos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.GridDatos.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.GridDatos.BackgroundColor = System.Drawing.SystemColors.Control;
@@ -222,13 +225,108 @@
             this.GridDatos.Name = "GridDatos";
             this.GridDatos.ReadOnly = true;
             this.GridDatos.RowHeadersVisible = false;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GridDatos.RowsDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GridDatos.RowsDefaultCellStyle = dataGridViewCellStyle18;
             this.GridDatos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.GridDatos.Size = new System.Drawing.Size(840, 254);
             this.GridDatos.TabIndex = 3;
             this.GridDatos.TabStop = false;
             this.GridDatos.SelectionChanged += new System.EventHandler(this.GridDatos_SelectionChanged);
+            // 
+            // dataGridViewButtonColumn1
+            // 
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dataGridViewButtonColumn1.DefaultCellStyle = dataGridViewCellStyle11;
+            this.dataGridViewButtonColumn1.FillWeight = 119.1247F;
+            this.dataGridViewButtonColumn1.HeaderText = "Cuenta";
+            this.dataGridViewButtonColumn1.Name = "dataGridViewButtonColumn1";
+            this.dataGridViewButtonColumn1.ReadOnly = true;
+            this.dataGridViewButtonColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewButtonColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dsd
+            // 
+            this.dsd.FillWeight = 119.1247F;
+            this.dsd.HeaderText = "Referencia";
+            this.dsd.Name = "dsd";
+            this.dsd.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.FillWeight = 119.1247F;
+            this.dataGridViewTextBoxColumn1.HeaderText = "Detalle";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            dataGridViewCellStyle12.Format = "D";
+            dataGridViewCellStyle12.NullValue = null;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle12;
+            this.dataGridViewTextBoxColumn3.FillWeight = 119.1247F;
+            this.dataGridViewTextBoxColumn3.HeaderText = "Fecha de documento";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            // 
+            // debitos
+            // 
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle13.Format = "₡#,0.00";
+            dataGridViewCellStyle13.NullValue = null;
+            this.debitos.DefaultCellStyle = dataGridViewCellStyle13;
+            this.debitos.FillWeight = 119.1247F;
+            this.debitos.HeaderText = "Debitos";
+            this.debitos.Name = "debitos";
+            this.debitos.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle14.Format = "₡#,0.00";
+            dataGridViewCellStyle14.NullValue = null;
+            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle14;
+            this.dataGridViewTextBoxColumn2.FillWeight = 119.1247F;
+            this.dataGridViewTextBoxColumn2.HeaderText = "Creditos";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            // 
+            // Column2
+            // 
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle15;
+            this.Column2.FillWeight = 107.5672F;
+            this.Column2.HeaderText = "Moneda";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            // 
+            // ColumnTipoCambio
+            // 
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle16.Format = "₡#,0.00";
+            dataGridViewCellStyle16.NullValue = null;
+            this.ColumnTipoCambio.DefaultCellStyle = dataGridViewCellStyle16;
+            this.ColumnTipoCambio.FillWeight = 107.5672F;
+            this.ColumnTipoCambio.HeaderText = "Tipo Cambio";
+            this.ColumnTipoCambio.Name = "ColumnTipoCambio";
+            this.ColumnTipoCambio.ReadOnly = true;
+            // 
+            // ColumnMontoDolares
+            // 
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle17.Format = "$#,0.00";
+            dataGridViewCellStyle17.NullValue = null;
+            this.ColumnMontoDolares.DefaultCellStyle = dataGridViewCellStyle17;
+            this.ColumnMontoDolares.FillWeight = 107.5672F;
+            this.ColumnMontoDolares.HeaderText = "Monto Dolares";
+            this.ColumnMontoDolares.Name = "ColumnMontoDolares";
+            this.ColumnMontoDolares.ReadOnly = true;
+            // 
+            // ColumnDummy
+            // 
+            this.ColumnDummy.FillWeight = 27.01692F;
+            this.ColumnDummy.HeaderText = "";
+            this.ColumnDummy.Name = "ColumnDummy";
+            this.ColumnDummy.ReadOnly = true;
             // 
             // label8
             // 
@@ -244,7 +342,7 @@
             // rCreditos
             // 
             this.rCreditos.AutoSize = true;
-            this.rCreditos.Location = new System.Drawing.Point(249, 50);
+            this.rCreditos.Location = new System.Drawing.Point(249, 74);
             this.rCreditos.Name = "rCreditos";
             this.rCreditos.Size = new System.Drawing.Size(70, 21);
             this.rCreditos.TabIndex = 99;
@@ -256,7 +354,7 @@
             // 
             this.rDebitos.AutoSize = true;
             this.rDebitos.Checked = true;
-            this.rDebitos.Location = new System.Drawing.Point(137, 50);
+            this.rDebitos.Location = new System.Drawing.Point(137, 74);
             this.rDebitos.Name = "rDebitos";
             this.rDebitos.Size = new System.Drawing.Size(66, 21);
             this.rDebitos.TabIndex = 99;
@@ -269,7 +367,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 18);
+            this.label1.Location = new System.Drawing.Point(3, 42);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(54, 17);
             this.label1.TabIndex = 0;
@@ -279,7 +377,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(3, 106);
+            this.label3.Location = new System.Drawing.Point(3, 130);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(73, 17);
             this.label3.TabIndex = 1;
@@ -290,7 +388,7 @@
             this.txtErrorFecha.AutoSize = true;
             this.txtErrorFecha.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtErrorFecha.ForeColor = System.Drawing.Color.Red;
-            this.txtErrorFecha.Location = new System.Drawing.Point(183, 168);
+            this.txtErrorFecha.Location = new System.Drawing.Point(183, 192);
             this.txtErrorFecha.Name = "txtErrorFecha";
             this.txtErrorFecha.Size = new System.Drawing.Size(13, 16);
             this.txtErrorFecha.TabIndex = 62;
@@ -302,7 +400,7 @@
             this.txtErrorMonto.AutoSize = true;
             this.txtErrorMonto.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtErrorMonto.ForeColor = System.Drawing.Color.Red;
-            this.txtErrorMonto.Location = new System.Drawing.Point(348, 237);
+            this.txtErrorMonto.Location = new System.Drawing.Point(348, 261);
             this.txtErrorMonto.Name = "txtErrorMonto";
             this.txtErrorMonto.Size = new System.Drawing.Size(13, 16);
             this.txtErrorMonto.TabIndex = 65;
@@ -314,7 +412,7 @@
             this.txtErrorTipoCambio.AutoSize = true;
             this.txtErrorTipoCambio.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtErrorTipoCambio.ForeColor = System.Drawing.Color.Red;
-            this.txtErrorTipoCambio.Location = new System.Drawing.Point(348, 203);
+            this.txtErrorTipoCambio.Location = new System.Drawing.Point(348, 227);
             this.txtErrorTipoCambio.Name = "txtErrorTipoCambio";
             this.txtErrorTipoCambio.Size = new System.Drawing.Size(13, 16);
             this.txtErrorTipoCambio.TabIndex = 64;
@@ -326,7 +424,7 @@
             this.txtErrorReferencia.AutoSize = true;
             this.txtErrorReferencia.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtErrorReferencia.ForeColor = System.Drawing.Color.Red;
-            this.txtErrorReferencia.Location = new System.Drawing.Point(348, 107);
+            this.txtErrorReferencia.Location = new System.Drawing.Point(348, 131);
             this.txtErrorReferencia.Name = "txtErrorReferencia";
             this.txtErrorReferencia.Size = new System.Drawing.Size(13, 16);
             this.txtErrorReferencia.TabIndex = 63;
@@ -338,7 +436,7 @@
             this.txtErorDetalle.AutoSize = true;
             this.txtErorDetalle.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtErorDetalle.ForeColor = System.Drawing.Color.Red;
-            this.txtErorDetalle.Location = new System.Drawing.Point(348, 139);
+            this.txtErorDetalle.Location = new System.Drawing.Point(348, 163);
             this.txtErorDetalle.Name = "txtErorDetalle";
             this.txtErorDetalle.Size = new System.Drawing.Size(13, 16);
             this.txtErorDetalle.TabIndex = 62;
@@ -349,7 +447,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(3, 50);
+            this.label7.Location = new System.Drawing.Point(3, 74);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(115, 17);
             this.label7.TabIndex = 2;
@@ -359,7 +457,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(194, 204);
+            this.label6.Location = new System.Drawing.Point(194, 228);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(87, 17);
             this.label6.TabIndex = 18;
@@ -370,7 +468,7 @@
             this.btnAgregarTransa.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAgregarTransa.Image = global::CapaPresentacion.Properties.Resources.icons8_añadir_25;
             this.btnAgregarTransa.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAgregarTransa.Location = new System.Drawing.Point(262, 265);
+            this.btnAgregarTransa.Location = new System.Drawing.Point(262, 289);
             this.btnAgregarTransa.Name = "btnAgregarTransa";
             this.btnAgregarTransa.Size = new System.Drawing.Size(83, 30);
             this.btnAgregarTransa.TabIndex = 7;
@@ -385,7 +483,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(3, 171);
+            this.label5.Location = new System.Drawing.Point(3, 195);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(73, 17);
             this.label5.TabIndex = 3;
@@ -399,7 +497,7 @@
             this.lstTipoCambio.Items.AddRange(new object[] {
             "Colones",
             "Dolares"});
-            this.lstTipoCambio.Location = new System.Drawing.Point(105, 200);
+            this.lstTipoCambio.Location = new System.Drawing.Point(105, 224);
             this.lstTipoCambio.Name = "lstTipoCambio";
             this.lstTipoCambio.Size = new System.Drawing.Size(75, 24);
             this.lstTipoCambio.TabIndex = 4;
@@ -410,7 +508,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(3, 237);
+            this.label13.Location = new System.Drawing.Point(3, 261);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(52, 17);
             this.label13.TabIndex = 4;
@@ -420,7 +518,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(3, 139);
+            this.label4.Location = new System.Drawing.Point(3, 163);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(52, 17);
             this.label4.TabIndex = 2;
@@ -429,7 +527,7 @@
             // fechaFactura
             // 
             this.fechaFactura.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fechaFactura.Location = new System.Drawing.Point(105, 168);
+            this.fechaFactura.Location = new System.Drawing.Point(105, 192);
             this.fechaFactura.Mask = "00/00/0000";
             this.fechaFactura.Name = "fechaFactura";
             this.fechaFactura.Size = new System.Drawing.Size(75, 22);
@@ -471,12 +569,13 @@
             this.tabControl1.Location = new System.Drawing.Point(8, 17);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(370, 338);
+            this.tabControl1.Size = new System.Drawing.Size(370, 367);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.labelRutaNuevaCuenta);
             this.tabPage1.Controls.Add(this.txtBoxDetalle);
             this.tabPage1.Controls.Add(this.txtBoxReferencia);
             this.tabPage1.Controls.Add(this.btnSeleccionarCuenta);
@@ -505,14 +604,23 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(362, 305);
+            this.tabPage1.Size = new System.Drawing.Size(362, 334);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Asientos";
+            // 
+            // labelRutaNuevaCuenta
+            // 
+            this.labelRutaNuevaCuenta.AutoSize = true;
+            this.labelRutaNuevaCuenta.Location = new System.Drawing.Point(3, 13);
+            this.labelRutaNuevaCuenta.Name = "labelRutaNuevaCuenta";
+            this.labelRutaNuevaCuenta.Size = new System.Drawing.Size(39, 17);
+            this.labelRutaNuevaCuenta.TabIndex = 100;
+            this.labelRutaNuevaCuenta.Text = "Ruta:";
             // 
             // txtBoxDetalle
             // 
             this.txtBoxDetalle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.txtBoxDetalle.Location = new System.Drawing.Point(104, 136);
+            this.txtBoxDetalle.Location = new System.Drawing.Point(104, 160);
             this.txtBoxDetalle.MaxLength = 100;
             this.txtBoxDetalle.Name = "txtBoxDetalle";
             this.txtBoxDetalle.Size = new System.Drawing.Size(240, 22);
@@ -523,7 +631,7 @@
             // txtBoxReferencia
             // 
             this.txtBoxReferencia.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtBoxReferencia.Location = new System.Drawing.Point(104, 104);
+            this.txtBoxReferencia.Location = new System.Drawing.Point(104, 128);
             this.txtBoxReferencia.MaxLength = 100;
             this.txtBoxReferencia.Name = "txtBoxReferencia";
             this.txtBoxReferencia.Size = new System.Drawing.Size(240, 22);
@@ -537,7 +645,7 @@
             this.btnSeleccionarCuenta.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSeleccionarCuenta.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSeleccionarCuenta.ForeColor = System.Drawing.Color.Red;
-            this.btnSeleccionarCuenta.Location = new System.Drawing.Point(321, 15);
+            this.btnSeleccionarCuenta.Location = new System.Drawing.Point(321, 39);
             this.btnSeleccionarCuenta.Name = "btnSeleccionarCuenta";
             this.btnSeleccionarCuenta.Size = new System.Drawing.Size(30, 28);
             this.btnSeleccionarCuenta.TabIndex = 99;
@@ -551,7 +659,7 @@
             // txtTipoCambio
             // 
             this.txtTipoCambio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTipoCambio.Location = new System.Drawing.Point(291, 202);
+            this.txtTipoCambio.Location = new System.Drawing.Point(291, 226);
             this.txtTipoCambio.MaxLength = 5;
             this.txtTipoCambio.Name = "txtTipoCambio";
             this.txtTipoCambio.Size = new System.Drawing.Size(54, 22);
@@ -564,7 +672,7 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(105, 234);
+            this.textBox1.Location = new System.Drawing.Point(105, 258);
             this.textBox1.MaxLength = 16;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(240, 22);
@@ -578,7 +686,7 @@
             this.txtBoxNombreCuenta.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.txtBoxNombreCuenta.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtBoxNombreCuenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtBoxNombreCuenta.Location = new System.Drawing.Point(105, 15);
+            this.txtBoxNombreCuenta.Location = new System.Drawing.Point(105, 39);
             this.txtBoxNombreCuenta.Name = "txtBoxNombreCuenta";
             this.txtBoxNombreCuenta.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.txtBoxNombreCuenta.Size = new System.Drawing.Size(214, 22);
@@ -590,7 +698,7 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(3, 204);
+            this.label15.Location = new System.Drawing.Point(3, 228);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(61, 17);
             this.label15.TabIndex = 36;
@@ -600,7 +708,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label9.Location = new System.Drawing.Point(3, 75);
+            this.label9.Location = new System.Drawing.Point(3, 99);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(353, 17);
             this.label9.TabIndex = 34;
@@ -612,12 +720,14 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 29);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(362, 305);
+            this.tabPage2.Size = new System.Drawing.Size(362, 334);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "bancos";
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.txtDiferenciaSaldo);
+            this.groupBox2.Controls.Add(this.labelDiferencia);
             this.groupBox2.Controls.Add(this.txtPathCuenta);
             this.groupBox2.Controls.Add(this.panel1);
             this.groupBox2.Controls.Add(this.txtTotalCreditos);
@@ -628,9 +738,29 @@
             this.groupBox2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(402, 79);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(849, 357);
+            this.groupBox2.Size = new System.Drawing.Size(849, 390);
             this.groupBox2.TabIndex = 67;
             this.groupBox2.TabStop = false;
+            // 
+            // txtDiferenciaSaldo
+            // 
+            this.txtDiferenciaSaldo.AutoSize = true;
+            this.txtDiferenciaSaldo.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDiferenciaSaldo.Location = new System.Drawing.Point(660, 317);
+            this.txtDiferenciaSaldo.Name = "txtDiferenciaSaldo";
+            this.txtDiferenciaSaldo.Size = new System.Drawing.Size(41, 21);
+            this.txtDiferenciaSaldo.TabIndex = 70;
+            this.txtDiferenciaSaldo.Text = "0.00";
+            // 
+            // labelDiferencia
+            // 
+            this.labelDiferencia.AutoSize = true;
+            this.labelDiferencia.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelDiferencia.Location = new System.Drawing.Point(568, 319);
+            this.labelDiferencia.Name = "labelDiferencia";
+            this.labelDiferencia.Size = new System.Drawing.Size(86, 17);
+            this.labelDiferencia.TabIndex = 69;
+            this.labelDiferencia.Text = "DIFERENCIA:";
             // 
             // txtPathCuenta
             // 
@@ -657,7 +787,7 @@
             // 
             this.groupBox3.Controls.Add(this.flowLayoutPanel1);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(11, 439);
+            this.groupBox3.Location = new System.Drawing.Point(11, 469);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(1240, 55);
             this.groupBox3.TabIndex = 3;
@@ -790,104 +920,9 @@
             this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(11, 79);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(380, 358);
+            this.groupBox4.Size = new System.Drawing.Size(380, 390);
             this.groupBox4.TabIndex = 1;
             this.groupBox4.TabStop = false;
-            // 
-            // dataGridViewButtonColumn1
-            // 
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dataGridViewButtonColumn1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridViewButtonColumn1.FillWeight = 119.1247F;
-            this.dataGridViewButtonColumn1.HeaderText = "Cuenta";
-            this.dataGridViewButtonColumn1.Name = "dataGridViewButtonColumn1";
-            this.dataGridViewButtonColumn1.ReadOnly = true;
-            this.dataGridViewButtonColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewButtonColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // dsd
-            // 
-            this.dsd.FillWeight = 119.1247F;
-            this.dsd.HeaderText = "Referencia";
-            this.dsd.Name = "dsd";
-            this.dsd.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.FillWeight = 119.1247F;
-            this.dataGridViewTextBoxColumn1.HeaderText = "Detalle";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            dataGridViewCellStyle3.Format = "D";
-            dataGridViewCellStyle3.NullValue = null;
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle3;
-            this.dataGridViewTextBoxColumn3.FillWeight = 119.1247F;
-            this.dataGridViewTextBoxColumn3.HeaderText = "Fecha de documento";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            // 
-            // debitos
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.Format = "₡#,0.00";
-            dataGridViewCellStyle4.NullValue = null;
-            this.debitos.DefaultCellStyle = dataGridViewCellStyle4;
-            this.debitos.FillWeight = 119.1247F;
-            this.debitos.HeaderText = "Debitos";
-            this.debitos.Name = "debitos";
-            this.debitos.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle5.Format = "₡#,0.00";
-            dataGridViewCellStyle5.NullValue = null;
-            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle5;
-            this.dataGridViewTextBoxColumn2.FillWeight = 119.1247F;
-            this.dataGridViewTextBoxColumn2.HeaderText = "Creditos";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            // 
-            // Column2
-            // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle6;
-            this.Column2.FillWeight = 107.5672F;
-            this.Column2.HeaderText = "Moneda";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            // 
-            // ColumnTipoCambio
-            // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle7.Format = "₡#,0.00";
-            dataGridViewCellStyle7.NullValue = null;
-            this.ColumnTipoCambio.DefaultCellStyle = dataGridViewCellStyle7;
-            this.ColumnTipoCambio.FillWeight = 107.5672F;
-            this.ColumnTipoCambio.HeaderText = "Tipo Cambio";
-            this.ColumnTipoCambio.Name = "ColumnTipoCambio";
-            this.ColumnTipoCambio.ReadOnly = true;
-            // 
-            // ColumnMontoDolares
-            // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle8.Format = "$#,0.00";
-            dataGridViewCellStyle8.NullValue = null;
-            this.ColumnMontoDolares.DefaultCellStyle = dataGridViewCellStyle8;
-            this.ColumnMontoDolares.FillWeight = 107.5672F;
-            this.ColumnMontoDolares.HeaderText = "Monto Dolares";
-            this.ColumnMontoDolares.Name = "ColumnMontoDolares";
-            this.ColumnMontoDolares.ReadOnly = true;
-            // 
-            // ColumnDummy
-            // 
-            this.ColumnDummy.FillWeight = 27.01692F;
-            this.ColumnDummy.HeaderText = "";
-            this.ColumnDummy.Name = "ColumnDummy";
-            this.ColumnDummy.ReadOnly = true;
             // 
             // FrameAsientos
             // 
@@ -895,7 +930,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1264, 500);
+            this.ClientSize = new System.Drawing.Size(1264, 531);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -991,5 +1026,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnTipoCambio;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnMontoDolares;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnDummy;
+        private System.Windows.Forms.Label labelRutaNuevaCuenta;
+        private System.Windows.Forms.Label txtDiferenciaSaldo;
+        private System.Windows.Forms.Label labelDiferencia;
     }
 }
