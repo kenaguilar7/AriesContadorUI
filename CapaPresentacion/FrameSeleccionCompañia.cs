@@ -16,18 +16,25 @@ namespace CapaPresentacion
     public partial class FrameSeleccionCompañia : Form
     {
 
+        private readonly CompañiaCL _comñiaCL = new CompañiaCL(); 
         FrameMenu fm = null;
         public FrameSeleccionCompañia(FrameMenu fm)
         {
             this.fm = fm as FrameMenu;
             InitializeComponent();
-            CargarCompañias();
+            CargarCompañiasAsync();
         }
 
-        private void CargarCompañias()
+        private async Task CargarCompañiasAsync()
         {
+            var lst = await _comñiaCL.GetAllAsync(GlobalConfig.Usuario);
+            
+            var _lstCompanies = (from c in lst where c.Activo == true orderby c.Nombre select c).ToList<Compañia>();
 
-            var _lstCompanies = (from c in new CompañiaCL().GetAll(GlobalConfig.Usuario) where c.Activo == true orderby c.Nombre select c).ToList<Compañia>();
+            //var d1 = lst.TakeWhile(x=> x is PersonaFisica);
+            //var d2 = lst.TakeWhile(x => x is PersonaJuridica);
+
+
 
             lstCompanias.DataSource = _lstCompanies;
             lstCompanias.SelectedIndex = -1;

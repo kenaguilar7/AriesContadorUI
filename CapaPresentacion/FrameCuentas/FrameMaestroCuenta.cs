@@ -4,6 +4,7 @@ using CapaEntidad.Enumeradores;
 using CapaEntidad.Interfaces;
 using CapaEntidad.Textos;
 using CapaLogica;
+using CapaLogica.Validaciones;
 using CapaPresentacion.cods;
 using CapaPresentacion.Reportes;
 using System;
@@ -28,6 +29,7 @@ namespace CapaPresentacion.FrameCuentas
             CargarDatos();
             CargarDatosAListas();
             //treeCuentas.ExpandAll(); 
+
         }
         public bool TransferirCuenta(Cuenta cuenta)
         {
@@ -42,10 +44,12 @@ namespace CapaPresentacion.FrameCuentas
         #region Carga de datos
         private async Task CargarDatos()
         {
+
+            var lista = await _cuentaCL.GetAllJusu("c001");
             _lstCuentas.Clear();
             //_lstCuentas = await Task.Run(() => _cuentaCL.GetAll(GlobalConfig.Compañia            
-            _lstCuentas = await Task.Run(() => _cuentaCL.GetAll(GlobalConfig.Compañia));
-            _lstCuentas = _cuentaCL.GetAll(GlobalConfig.Compañia);
+            _lstCuentas = await _cuentaCL.GetAll(GlobalConfig.Compañia.Codigo);
+            //_lstCuentas = _cuentaCL.GetAll(GlobalConfig.Compañia);
             treeCuentas.Nodes.AddRange(TreeViewCuentas.CrearTreeView(_lstCuentas));
             // CargarDatosAListas();
         }
@@ -309,29 +313,24 @@ namespace CapaPresentacion.FrameCuentas
         {
             try
             {
+                Cuenta cuenta = treeCuentas.SelectedNode.Tag as Cuenta ?? throw new Exception("Seleccione una cuenta");
+                IEnumerable<string> brokendRules = null;
 
-                if (treeCuentas.SelectedNode is null)
+                if (cuenta.Validate(new CuentaIsGoodFatherValidator(), ref brokendRules))
                 {
-                    MessageBox.Show("Seleccione una cuenta ", TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
-                }
-                else if (!(treeCuentas.SelectedNode.Tag is Cuenta cuenta) || cuenta.Indicador == IndicadorCuenta.Cuenta_Titulo)
-                {
-                    MessageBox.Show("No se puede crear cuentas en este nivel", TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
+                    FrameNuevaCuenta nv = new FrameNuevaCuenta(this, cuenta);
+                    nv.ShowDialog();
                 }
                 else
                 {
-                    FrameNuevaCuenta nv = new FrameNuevaCuenta(this, cuenta);
-                    nv.lstCuentas = _lstCuentas;
-                    nv.ShowDialog();
+                    MessageBox.Show("No se puede crear cuentas en este nivel", TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
         /// <summary>
         /// Evento que ocurre cuando se presiona el boton de editar una cuenta

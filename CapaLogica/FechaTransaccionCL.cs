@@ -177,7 +177,7 @@ namespace CapaLogica
 
                 if (!BuscarAsientosDescuadrados(compañia, t, out mensaje))
                 {
-                    var lstCuentas = cuentaCL.GetAll(compañia);
+                    var lstCuentas = cuentaCL.GetAll(compañia).ToList<Cuenta>();
 
                     cuentaCL.LLenarConSaldos(t.Fecha, t.Fecha, lstCuentas, compañia);
 
@@ -269,9 +269,11 @@ namespace CapaLogica
             ///  ***Guardar una copia de las cuentas para retornarla y generar el balance de 
             ///  comprobación y que este pueda ser impreso
             CuentaCL _cuentaCL = new CuentaCL();
-            var cuentas = _cuentaCL.GetAll(compañia);
+            List<Cuenta> cuentas = _cuentaCL.GetAll(compañia).ToList<Cuenta>();
             _cuentaCL.LLenarConSaldos(meses[0].Fecha, firstMont.Fecha, cuentas, compañia);
             var _cuenta = SaldoReporComprobacion(cuentas, cuenta);
+
+            
 
             var rsl = _cuentaCL.GenerarSaldosEnCeroParaCierreDeAsieto(_cuenta, compañia, usuario, cuentas.Count);
             if (!rsl)

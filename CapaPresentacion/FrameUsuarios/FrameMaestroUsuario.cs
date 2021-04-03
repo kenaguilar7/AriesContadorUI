@@ -6,6 +6,7 @@ using CapaLogica;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CapaPresentacion.Seguridad
@@ -38,25 +39,20 @@ namespace CapaPresentacion.Seguridad
             this.txtBoxUsuario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
             rdbUsuarioNormal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
             rdbUsuarioAdmin.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ENTER_KeyPress);
-
         }
         /// <summary>
         /// Carga datos 
         /// </summary>
         /// <param name="usuario"></param>
-        private void CargarDatos()
+        private async Task CargarDatos()
         {
             lstUsuarios.Items.Clear();
-            var lst = usuarioCL.GetAll();
+            var lst = await usuarioCL.GetAllAsync();
             lstUsuarios.Items.AddRange(lst.ToArray());
             ListUsuarios = lst;
 
         }
-        /// <summary>
-        /// Guarda un nuevo usuario
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void GuardarUsuario(object sender, EventArgs e)
         {
             try
@@ -65,36 +61,36 @@ namespace CapaPresentacion.Seguridad
                 //    == DialogResult.Yes)
                 //{
 
-                    var usuario = new Usuario(
-                          myCedula: this.txtBoxID.Text,
-                          myNombre: this.txtBoxNombre.Text,
-                          username: this.txtBoxUsuario.Text,
-                          tipoUsuario: TipoUsuario.Usuario,
-                          myApellidoPaterno: this.txtBoxOp1.Text,
-                          myApellidoMaterno: this.txtBoxOp2.Text,
-                          myTelefono: this.txtBoxTelefono.Text,
-                          myMail: this.txtBoxMail.Text,
-                          myNotas: this.txtBoxObservaciones.Text,
-                          myClave: this.txtBoxCLave.Text,
-                          myActivo: this.estado.Checked
-                          );
+                var usuario = new Usuario(
+                      myCedula: this.txtBoxID.Text,
+                      myNombre: this.txtBoxNombre.Text,
+                      username: this.txtBoxUsuario.Text,
+                      tipoUsuario: TipoUsuario.Usuario,
+                      myApellidoPaterno: this.txtBoxOp1.Text,
+                      myApellidoMaterno: this.txtBoxOp2.Text,
+                      myTelefono: this.txtBoxTelefono.Text,
+                      myMail: this.txtBoxMail.Text,
+                      myNotas: this.txtBoxObservaciones.Text,
+                      myClave: this.txtBoxCLave.Text,
+                      myActivo: this.estado.Checked
+                      );
 
-                    if (rdbUsuarioAdmin.Checked)
-                    {
-                        usuario.TipoUsuario = TipoUsuario.Administrador;
-                    }
+                if (rdbUsuarioAdmin.Checked)
+                {
+                    usuario.TipoUsuario = TipoUsuario.Administrador;
+                }
 
-                    if (usuarioCL.Insert(usuario, GlobalConfig.Usuario, out String mensaje))
-                    {
-                        MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LimpiarFormulario(null, null);
-                    }
-                    else
-                    {
-                        MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    }
-
-                //}
+                if (usuarioCL.Insert(usuario, GlobalConfig.Usuario).GetAwaiter().GetResult() != null)
+                {
+                    var mensaje = "usuario creado exitosamente";
+                    MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarFormulario(null, null);
+                }
+                else
+                {
+                    var mensaje = "No se pudo crear el usuario";
+                    MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
 
             }
             catch (Exception ex)
@@ -123,17 +119,10 @@ namespace CapaPresentacion.Seguridad
             this.btnActualizar.Visible = true;
             this.btnGuardar.Visible = false;
             this.txtBoxUsuario.Enabled = false;
-            this.txtBoxID.Enabled = false; 
+            this.txtBoxID.Enabled = false;
 
         }
-        /// <summary>
-        /// Actualiza el usuario caragado al formulario 
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ActualizarUsuario(object sender, EventArgs e)
-        {
+        private async void ActualizarUsuario() {
             try
             {
 
@@ -151,7 +140,7 @@ namespace CapaPresentacion.Seguridad
                          myMail: this.txtBoxMail.Text,
                          myNotas: this.txtBoxObservaciones.Text,
                          myClave: this.txtBoxCLave.Text,
-                         myUpdated: GlobalConfig.Usuario.UsuarioId,
+                         myUpdated: GlobalConfig.Usuario.UsuarioId.ToString(),
                          myActivo: this.estado.Checked,
                          //myAdmin: this.IsAdmin.Checked,
                          tipoUsuario: TipoUsuario.Usuario
@@ -164,13 +153,15 @@ namespace CapaPresentacion.Seguridad
 
                     userUpd.TipoUsuario = (rdbUsuarioAdmin.Checked) ? TipoUsuario.Administrador : TipoUsuario.Usuario;
 
-                    if (usuarioCL.Update(userUpd, GlobalConfig.Usuario, out String mensaje))
+                    if (await usuarioCL.Update(userUpd, GlobalConfig.Usuario))
                     {
+                        var mensaje = "successful";
                         MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LimpiarFormulario(null, null);
                     }
                     else
                     {
+                        var mensaje = "error";
                         MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
 
@@ -181,6 +172,10 @@ namespace CapaPresentacion.Seguridad
             {
                 MessageBox.Show(ex.Message, TextoGeneral.MensajeBannerError, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        private void ActualizarUsuario(object sender, EventArgs e)
+        {
+            ActualizarUsuario(); 
         }
         /// <summary>
         /// Sale
@@ -219,7 +214,7 @@ namespace CapaPresentacion.Seguridad
             this.btnGuardar.Visible = true;
             this.txtBoxUsuario.Clear();
             this.txtBoxUsuario.Enabled = true;
-            this.txtBoxID.Enabled = true; 
+            this.txtBoxID.Enabled = true;
             CargarDatos();
         }
         /// <summary>
@@ -362,7 +357,8 @@ namespace CapaPresentacion.Seguridad
                     MessageBox.Show("Formato de cédula no valido", TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtErrorCedula.Visible = true;
                 }
-                else if ((ListUsuarios.Where(x=> x.MyCedula == txtBoxID.Text).Count()) > 0) {
+                else if ((ListUsuarios.Where(x => x.MyCedula == txtBoxID.Text).Count()) > 0)
+                {
                     MessageBox.Show("Esta número de identificación se encuentra ocupado", TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtErrorCedula.Visible = true;
                 }

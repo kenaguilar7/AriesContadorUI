@@ -3,6 +3,7 @@ using CapaEntidad.Enumeradores;
 using CapaEntidad.Interfaces;
 using CapaEntidad.Textos;
 using CapaLogica;
+using CapaLogica.Validaciones;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -13,7 +14,6 @@ namespace CapaPresentacion.FrameCuentas
     {
         private CuentaCL cuentaCL = new CuentaCL();
         private Cuenta CuentaPadre { get; set; } = new Cuenta();
-        public List<Cuenta> lstCuentas = new List<Cuenta>();
         private ICallingForm FormParaEnviarCuenta = null;
         public FrameNuevaCuenta(ICallingForm callingFrom, Cuenta cuenta)
         {
@@ -31,50 +31,74 @@ namespace CapaPresentacion.FrameCuentas
                 SendKeys.Send("{TAB}");
             }
         }
+
+        private Cuenta CrearEntidad()
+        {
+
+            return new Cuenta
+            {
+                Nombre = txtBoxNombre.Text,
+                Indicador = IndicadorCuenta.Cuenta_Auxiliar,
+                MyCompania = CuentaPadre.MyCompania,
+                TipoCuenta = CuentaPadre.TipoCuenta,
+                Detalle = txtBoxDetalle.Text,
+                Padre = CuentaPadre.Id,
+                Editable = true
+            };
+
+        }
+        public void SetUpTransfferpipe(Cuenta cuenta)
+        {
+
+            if (FormParaEnviarCuenta != null)
+            {
+                FormParaEnviarCuenta.TransferirCuenta(cuenta);
+            }
+
+        }
+        public void PintarErrores(IEnumerable<string> brokenRules) {
+
+            foreach (var bkndRule in brokenRules)
+            {
+                //todo
+            }
+
+        }
         private void CrearCuenta(object sender, EventArgs e)
         {
-            try
+            IEnumerable<string> brokenRules = null;
+            var nuevaCuenta = CrearEntidad();
+            var mensaje = "";
+            var urlresource = "";
+            
+
+            if (!nuevaCuenta.Validate(new CuentaRegisterValidator(), ref brokenRules))
             {
-                Cuenta nuevaCuenta = new Cuenta
+                PintarErrores(brokenRules); 
+            }
+            else
+            {
+                try
                 {
-                    Nombre = txtBoxNombre.Text,
-                    Indicador = IndicadorCuenta.Cuenta_Auxiliar,
-                    MyCompania = CuentaPadre.MyCompania,
-                    TipoCuenta = CuentaPadre.TipoCuenta,
-                    Detalle = txtBoxDetalle.Text,
-                    Padre = CuentaPadre.Id,
-                    Editable = true
-                };
-
-                    if (!cuentaCL.VerificarSiEsApta(CuentaPadre, out String Mensaje))
-                    {
-                        if (MessageBox.Show(Mensaje, TextoGeneral.NombreApp, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                    }
-
-                    if (cuentaCL.Insert(ref nuevaCuenta, CuentaPadre, out String mensaje, GlobalConfig.Usuario))
-                    {
-                        MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        if (FormParaEnviarCuenta != null)
-                        {
-                            FormParaEnviarCuenta.TransferirCuenta(nuevaCuenta);
-                        }
-
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    }
+                    urlresource = cuentaCL.Insert(nuevaCuenta, CuentaPadre, GlobalConfig.Usuario).GetAwaiter().GetResult();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             }
-            catch (Exception ex)
+
+            if (urlresource != null)
             {
-                MessageBox.Show(ex.Message, TextoGeneral.MensajeBannerError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SetUpTransfferpipe(nuevaCuenta);
+                this.Close();
             }
+            else
+            {
+                MessageBox.Show(mensaje, TextoGeneral.NombreApp, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
 
         }
         private void CerrarClick(object sender, EventArgs e)

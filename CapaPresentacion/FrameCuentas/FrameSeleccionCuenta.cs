@@ -98,7 +98,7 @@ namespace CapaPresentacion.FrameCuentas
                 else
                 {
                     FrameNuevaCuenta nv = new FrameNuevaCuenta(this, cuenta);
-                    nv.lstCuentas = LstCuentas;
+                    
                     nv.ShowDialog();
                 }
 

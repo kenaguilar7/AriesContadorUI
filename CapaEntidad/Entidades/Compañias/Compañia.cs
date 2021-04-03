@@ -2,9 +2,11 @@
 using CapaEntidad.Enumeradores;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CapaEntidad.Entidades.Compañias
 {
+    //[JsonConverter(typeof(ByteConverter))]
     public class Compañia
     {
 
